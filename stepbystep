@@ -1,0 +1,84 @@
+Step 1: Set Up the Project
+
+1. Use SQLite
+
+- Create a database to store users, posts, comments, and likes/dislikes.
+- Use at least one SELECT, CREATE, and INSERT query.
+- Design an Entity-Relationship Diagram (ERD) to structure the database.
+
+2. Set Up Docker
+
+- Containerize your forum application.
+- Include SQLite setup in the container.
+
+Step 2: User Authentication
+
+1. Registration
+
+- Collect user credentials (email, username, password).
+- Check if the email is already registered; return an error if it is.
+- Encrypt passwords for bonus points.
+
+2. Login and Sessions
+
+- Create login functionality.
+- Use cookies to maintain user sessions with expiration dates.
+- Bonus: Use UUID for session identifiers.
+
+Step 3: Forum Features
+
+1. Communication
+
+- Registered users can:
+  - Create posts (associate categories to posts).
+  - Comment on posts.
+- All users (registered or not) can:
+  -View posts and comments.
+
+2. Likes and Dislikes
+
+- Registered users can like/dislike posts and comments.
+- Display the count of likes/dislikes to all users.
+
+3. Filtering
+
+- Implement filters for posts by:
+  - Categories (like subforums).
+  - Posts created by the logged-in user.
+  - Posts liked by the logged-in user.
+
+Step 4: Error Handling and Best Practices
+
+1. Handle:
+
+- Website errors (HTTP status codes).
+- Technical errors (e.g., database issues).
+
+2. Write clean, modular, and testable code:
+
+- Create unit tests for important features.
+
+Step 5: Restrictions
+
+- Avoid frontend frameworks (React, Angular, Vue, etc.).
+- Only use standard Go packages and libraries:
+  - sqlite3 for database interaction.
+  - bcrypt for password encryption.
+  - UUID for session management.
+
+Step 6: Core Concepts You'll Learn
+
+1. Web basics:
+
+   - HTML, HTTP, sessions, and cookies.
+
+2. Docker basics:
+
+   - Containerizing, creating images, and dependency management.
+
+3. SQL:
+
+   - Database design, queries, and manipulation.
+
+4. Security:
+   - Password encryption and session management.
