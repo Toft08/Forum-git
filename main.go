@@ -25,7 +25,7 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-// Render HTML templates
+// renderTemplate handles the rendering of HTML templates with provided data
 func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 	t, err := template.ParseFiles("templates/" + tmpl + ".html")
 	if err != nil {
@@ -35,12 +35,12 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 	t.Execute(w, data)
 }
 
-// Home Page
+// homePage renders the index page
 func homePage(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "index", nil)
 }
 
-// Sign Up Handler
+// signUp handles both GET and POST requests for user registration
 func signUp(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		renderTemplate(w, "signup", nil)
@@ -52,14 +52,14 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 
-		// Hash the password
+		// Hash the password before storing in database
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 
-		// Insert user into DB
+		// Attempt to insert new user into database
 		_, err = db.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", username, email, hashedPassword)
 		if err != nil {
 			http.Error(w, "Email already exists", http.StatusBadRequest)
@@ -70,7 +70,7 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Login Handler
+// login handles both GET and POST requests for user authentication
 func login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		renderTemplate(w, "login", nil)
@@ -81,7 +81,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 
-		// Fetch user
+		// Query database for user's hashed password using their email
 		var hashedPassword string
 		err := db.QueryRow("SELECT password FROM users WHERE email = ?", email).Scan(&hashedPassword)
 		if err != nil {
@@ -89,7 +89,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Compare passwords
+		// Verify submitted password matches stored hash
 		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 		if err != nil {
 			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
