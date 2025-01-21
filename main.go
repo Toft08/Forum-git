@@ -15,6 +15,8 @@ func main() {
 	db = initDB()
 	defer db.Close()
 
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
+
 	http.HandleFunc("/", homePage)
 	http.HandleFunc("/signup", signUp)
 	http.HandleFunc("/login", login)
