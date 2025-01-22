@@ -27,29 +27,17 @@ func main() {
 
 // renderTemplate handles the rendering of HTML templates with provided data
 func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
-	t, err := template.ParseFiles("templates/" + tmpl + ".html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		return
-	}
-	t.Execute(w, data)
-}
-func homePage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/index.html", "templates/header.html", "templates/navBar.html")
+	t, err := template.ParseFiles("templates/"+tmpl+".html", "templates/header.html", "templates/navBar.html")
 	if err != nil {
 		http.Error(w, "Error loading templates", http.StatusInternalServerError)
 		log.Println("Error parsing template:", err)
 		return
 	}
+	t.Execute(w, data)
+}
 
-	err = tmpl.ExecuteTemplate(w, "index.html", nil)
-	if err != nil {
-		http.Error(w, "Error rendering page", http.StatusInternalServerError)
-		log.Println("Error executing template:", err)
-		return
-	}
-
-	log.Printf("Response Status: %d\n", http.StatusOK)
+func homePage(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "index", nil)
 }
 
 // signUp handles both GET and POST requests for user registration
