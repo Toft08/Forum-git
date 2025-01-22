@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -20,6 +21,7 @@ func main() {
 	http.HandleFunc("/", homePage)
 	http.HandleFunc("/signup", signUp)
 	http.HandleFunc("/login", login)
+	http.HandleFunc("/create-post", createPost)
 
 	log.Println("Server is running on http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
@@ -37,7 +39,33 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 }
 
 func homePage(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "index", nil)
+	message := r.URL.Query().Get("message")
+
+	// Fetch posts from the database
+	rows, err := db.Query("SELECT title, content FROM Post ORDER BY created_at DESC")
+	if err != nil {
+		log.Println("Error fetching posts:", err)
+		http.Error(w, "Failed to load posts", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	// Build a list of posts
+	var posts []map[string]string
+	for rows.Next() {
+		var title, content string
+		rows.Scan(&title, &content)
+		posts = append(posts, map[string]string{
+			"Title":   title,
+			"Content": content,
+		})
+	}
+
+	// Pass posts to template
+	renderTemplate(w, "index", map[string]interface{}{
+		"Message": message,
+		"Posts":   posts,
+	})
 }
 
 // signUp handles both GET and POST requests for user registration
@@ -60,8 +88,9 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Attempt to insert new user into database
-		_, err = db.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", username, email, hashedPassword)
+		_, err = db.Exec("INSERT INTO User (username, email, password, created_at) VALUES (?, ?, ?, ?)", username, email, hashedPassword, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
+			log.Println("Error inserting user:", err)
 			http.Error(w, "Email already exists", http.StatusBadRequest)
 			return
 		}
@@ -78,12 +107,12 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
-		email := r.FormValue("email")
+		username := r.FormValue("username")
 		password := r.FormValue("password")
 
 		// Query database for user's hashed password using their email
 		var hashedPassword string
-		err := db.QueryRow("SELECT password FROM users WHERE email = ?", email).Scan(&hashedPassword)
+		err := db.QueryRow("SELECT password FROM User WHERE username = ?", username).Scan(&hashedPassword)
 		if err != nil {
 			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
@@ -93,6 +122,31 @@ func login(w http.ResponseWriter, r *http.Request) {
 		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 		if err != nil {
 			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+			return
+		}
+		http.Redirect(w, r, "/?message=Login successful!", http.StatusFound)
+
+	}
+}
+func createPost(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		// Render the "Create Post" form
+		renderTemplate(w, "create-post", nil)
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		// Parse form values
+		title := r.FormValue("title")
+		content := r.FormValue("content")
+		user_id := 1 // Replace with the logged-in user's ID
+
+		// Insert post into the database
+		_, err := db.Exec("INSERT INTO Post (title, content, user_id, created_at) VALUES (?, ?, ?, ?)",
+			title, content, user_id, time.Now().Format("2006-01-02 15:04:05"))
+		if err != nil {
+			log.Println("Error creating post:", err)
+			http.Error(w, "Failed to create post", http.StatusInternalServerError)
 			return
 		}
 
