@@ -10,7 +10,7 @@ import (
 
 var db *sql.DB
 
-var tmpl = template.Must(template.ParseGlob("../templates/*.html"))
+var tmpl = template.Must(template.ParseGlob("templates/*.html"))
 
 func PageHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -19,11 +19,11 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.URL.Path {
 	case "/":
-		homePage(w, r)
+		HomePage(w, r)
 	case "/login":
-		login(w, r)
+		Login(w, r)
 	case "/signup":
-		signUp(w, r)
+		SignUp(w, r)
 
 	}
 }
@@ -31,7 +31,7 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 // renderTemplate handles the rendering of HTML templates with provided data
 func renderTemplate(w http.ResponseWriter, t string, data interface{}) {
 
-	err := tmpl.ExecuteTemplate(w, t, data)
+	err := tmpl.ExecuteTemplate(w, t+".html", data)
 	if err != nil {
 		log.Println("Error executing template:", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)

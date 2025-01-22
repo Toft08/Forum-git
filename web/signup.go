@@ -1,15 +1,17 @@
 package web
 
 import (
+	"log"
 	"net/http"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 // signUp handles both GET and POST requests for user registration
-func signUp(w http.ResponseWriter, r *http.Request) {
+func SignUp(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		renderTemplate(w, "signup.html", nil)
+		renderTemplate(w, "signup", nil)
 		return
 	}
 
@@ -26,12 +28,13 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Attempt to insert new user into database
-		_, err = db.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", username, email, hashedPassword)
+		_, err = db.Exec("INSERT INTO User (username, email, password, created_at) VALUES (?, ?, ?, ?)", username, email, hashedPassword, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
+			log.Println("Error inserting user:", err)
 			http.Error(w, "Email already exists", http.StatusBadRequest)
 			return
 		}
 
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/login", http.StatusFound)
 	}
 }

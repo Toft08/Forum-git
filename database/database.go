@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"database/sql"
@@ -8,7 +8,7 @@ import (
 )
 
 // initDB initializes the SQLite database and returns a database connection object.
-func initDB() *sql.DB {
+func InitDB() *sql.DB {
 	db, err := sql.Open("sqlite3", "./database.db")
 	if err != nil {
 		log.Fatal(err)

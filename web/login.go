@@ -7,19 +7,19 @@ import (
 )
 
 // login handles both GET and POST requests for user authentication
-func login(w http.ResponseWriter, r *http.Request) {
+func Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		renderTemplate(w, "login.html", nil)
+		renderTemplate(w, "login", nil)
 		return
 	}
 
 	if r.Method == http.MethodPost {
-		email := r.FormValue("email")
+		username := r.FormValue("username")
 		password := r.FormValue("password")
 
 		// Query database for user's hashed password using their email
 		var hashedPassword string
-		err := db.QueryRow("SELECT password FROM users WHERE email = ?", email).Scan(&hashedPassword)
+		err := db.QueryRow("SELECT password FROM User WHERE username = ?", username).Scan(&hashedPassword)
 		if err != nil {
 			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
