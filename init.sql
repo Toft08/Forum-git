@@ -56,6 +56,14 @@ CREATE TABLE Like (
     FOREIGN KEY (comment_id) REFERENCES Comment (id) ON DELETE CASCADE
 );
 
+-- Create SESSION table
+CREATE TABLE SESSION (
+    id TEXT PRIMARY KEY, -- Unique session ID (UUID)
+    user_id INTEGER NOT NULL,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES USER (id)
+);
+
 INSERT INTO User (email, username, password, created_at) VALUES 
 ('admin@example.com', 'admin', 'hashedpassword', datetime('now'));
 

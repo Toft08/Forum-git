@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -112,7 +113,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 		// Query database for user's hashed password using their email
 		var hashedPassword string
-		err := db.QueryRow("SELECT password FROM User WHERE username = ?", username).Scan(&hashedPassword)
+		var userID int
+		err := db.QueryRow("SELECT password FROM User WHERE username = ?", username).Scan(&userID, &hashedPassword)
 		if err != nil {
 			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
@@ -124,6 +126,22 @@ func login(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
 		}
+
+		sessionID := uuid.NewString()
+		_, err = db.Exec("INSERT INTO Session (id, user_id, created_at) VALUES (?,?,?)",
+			sessionID, userID, time.Now().Format("2006-01-02 15:04:05"))
+		if err != nil {
+			log.Println("Error creating session:", err)
+			http.Error(w, "Failed to create session", http.StatusInternalServerError)
+			return
+		}
+		// Set session ID as a cookie
+		http.SetCookie(w, &http.Cookie{
+			Name:    "session_id",
+			Value:   sessionID,
+			Expires: time.Now().Add(24 * time.Hour),
+		})
+
 		http.Redirect(w, r, "/?message=Login successful!", http.StatusFound)
 
 	}
@@ -139,11 +157,24 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 		// Parse form values
 		title := r.FormValue("title")
 		content := r.FormValue("content")
-		user_id := 1 // Replace with the logged-in user's ID
+		// Get session ID from cookie
+		cookie, err := r.Cookie("session_id")
+		if err != nil {
+			http.Error(w, "Unauthorized: No session found", http.StatusUnauthorized)
+			return
+		}
+
+		// Retrieve user ID from session
+		var userID int
+		err = db.QueryRow("SELECT user_id FROM Session WHERE id = ?", cookie.Value).Scan(&userID)
+		if err != nil {
+			http.Error(w, "Unauthorized: Invalid session", http.StatusUnauthorized)
+			return
+		}
 
 		// Insert post into the database
-		_, err := db.Exec("INSERT INTO Post (title, content, user_id, created_at) VALUES (?, ?, ?, ?)",
-			title, content, user_id, time.Now().Format("2006-01-02 15:04:05"))
+		_, err = db.Exec("INSERT INTO Post (title, content, user_id, created_at) VALUES (?, ?, ?, ?)",
+			title, content, userID, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
 			log.Println("Error creating post:", err)
 			http.Error(w, "Failed to create post", http.StatusInternalServerError)
