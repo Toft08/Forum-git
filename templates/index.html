@@ -25,25 +25,16 @@
         {{end}}
         <h2>Latest Posts</h2>
         
-        <!-- Example post structure -->
+        {{range .Posts}}
         <div class="post">
-            <h2>Post Title 1</h2>
-            <p>By <strong>Username</strong></p>
-            <p>Category: <em>General</em></p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            <a href="/post/1">Read More</a>
-        </div>
+            <h3>{{.Title}}</h3>
+            <p>{{.Content}}</p>
+            </div>
+            {{else}}
+            <p>No posts yet. Be the first to create one!</p>
+            {{end}}
+        <a href="/create-post">Create Post</a>
 
-        <div class="post">
-            <h2>Post Title 2</h2>
-            <p>By <strong>AnotherUser</strong></p>
-            <p>Category: <em>Technology</em></p>
-            <p>Praesent vel ligula scelerisque, vulputate dolor nec, volutpat mauris.</p>
-            <a href="/post/2">Read More</a>
-        </div>
-     
-
-        <!-- Add more posts dynamically -->
     </main>
     <footer>
         <p>&copy; 2025 Simple Forum. All rights reserved.</p>
