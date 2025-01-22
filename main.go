@@ -34,10 +34,22 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 	}
 	t.Execute(w, data)
 }
-
-// homePage renders the index page
 func homePage(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "index", nil)
+	tmpl, err := template.ParseFiles("templates/index.html", "templates/header.html", "templates/navBar.html")
+	if err != nil {
+		http.Error(w, "Error loading templates", http.StatusInternalServerError)
+		log.Println("Error parsing template:", err)
+		return
+	}
+
+	err = tmpl.ExecuteTemplate(w, "index.html", nil)
+	if err != nil {
+		http.Error(w, "Error rendering page", http.StatusInternalServerError)
+		log.Println("Error executing template:", err)
+		return
+	}
+
+	log.Printf("Response Status: %d\n", http.StatusOK)
 }
 
 // signUp handles both GET and POST requests for user registration
