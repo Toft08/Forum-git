@@ -1,0 +1,77 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    min-height: 100vh;
+}
+
+/* Headings */
+h1 {
+    text-align: center;
+    color: #f5f2f2;
+}
+
+/* Navigation bar */
+nav {
+    display: flex;
+    justify-content: space-between;
+    background-color: #333;
+    padding: 1rem 0;
+    position: fixed; 
+    top: 0px; 
+    width: 100%;
+    z-index: 999;
+}
+.nav-left {
+    padding-left: 20px;
+}
+.nav-right {
+    padding-right: 20px;
+}
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 1rem;
+    font-size: 1.1rem;
+}
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* Main content area */
+main {
+    max-width: 800px;
+    margin: 120px auto 2rem;
+    padding: 1rem;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+/* Post Cards */
+.post {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+}
+.post h2 {
+    margin: 0 0 0.5rem;
+}
+.post p {
+    margin: 0.5rem 0;
+}
+
+/* Footer styling */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
