@@ -8,3 +8,5 @@ First dowload the repo to you local machine with 'git clone'
 give premissions to the shell script with 'chmod +x setup.sh'
 run the script with './setup.sh'
 now database is created and you can start the server with 'go run .'
+
+![alt text](ERD.png)
