@@ -20,6 +20,9 @@
         </div>
     </nav>
     <main>
+        {{if .Message}}
+        <p style="color: green; font-weight: bold;">{{.Message}}</p>
+        {{end}}
         <h2>Latest Posts</h2>
         
         <!-- Example post structure -->
@@ -38,6 +41,7 @@
             <p>Praesent vel ligula scelerisque, vulputate dolor nec, volutpat mauris.</p>
             <a href="/post/2">Read More</a>
         </div>
+     
 
         <!-- Add more posts dynamically -->
     </main>

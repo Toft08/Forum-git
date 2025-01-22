@@ -38,7 +38,12 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 
 // homePage renders the index page
 func homePage(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "index", nil)
+	message := r.URL.Query().Get("message")
+	data := map[string]string{
+		"Message": message,
+	}
+	renderTemplate(w, "index", data)
+
 }
 
 // signUp handles both GET and POST requests for user registration
@@ -97,7 +102,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
 		}
+		http.Redirect(w, r, "/?message=Login successful!", http.StatusFound)
 
-		http.Redirect(w, r, "/", http.StatusFound)
 	}
 }
