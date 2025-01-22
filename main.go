@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -60,8 +61,9 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Attempt to insert new user into database
-		_, err = db.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", username, email, hashedPassword)
+		_, err = db.Exec("INSERT INTO User (username, email, password, created_at) VALUES (?, ?, ?, ?)", username, email, hashedPassword, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
+			log.Println("Error inserting user:", err)
 			http.Error(w, "Email already exists", http.StatusBadRequest)
 			return
 		}
@@ -78,12 +80,12 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
-		email := r.FormValue("email")
+		username := r.FormValue("username")
 		password := r.FormValue("password")
 
 		// Query database for user's hashed password using their email
 		var hashedPassword string
-		err := db.QueryRow("SELECT password FROM users WHERE email = ?", email).Scan(&hashedPassword)
+		err := db.QueryRow("SELECT password FROM User WHERE username = ?", username).Scan(&hashedPassword)
 		if err != nil {
 			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
