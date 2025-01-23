@@ -24,7 +24,12 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 		Login(w, r)
 	case "/signup":
 		SignUp(w, r)
-
+	case "/logout":
+		Logout(w, r)
+	case "/create post":
+		CreatePost(w, r)
+	case "/error handler":
+		errorHandler(w, "error", "error", http.StatusNotFound)
 	}
 }
 
@@ -37,4 +42,28 @@ func renderTemplate(w http.ResponseWriter, t string, data interface{}) {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
+}
+
+func errorHandler(w http.ResponseWriter, errorMessage string, tmpl string, statusCode int) {
+	log.Printf("Response status: %d\n", statusCode)
+	t, err := template.ParseFiles("templates/"+tmpl+".html", "templates/addons.html")
+	if err != nil {
+		http.Error(w, errorMessage, http.StatusInternalServerError)
+		log.Println("Error parsing template:", err)
+		return
+	}
+	t.Execute(w, t)
+	// htmlFileAddress := "templates/" + htmlFileName
+	// tmpl, err := template.ParseFiles(htmlFileAddress, "templates/header.html", "templates/navBar.html")
+	// if err != nil {
+	// 	log.Println(err)
+	// 	http.Error(w, errorMessage, statusCode)
+	// 	return
+	// }
+	// err = renderTemplate(w, "error", nil)
+	// if err != nil {
+	// 	if statusCode == http.StatusInternalServerError {
+	// 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	// 	}
+	// }
 }

@@ -19,19 +19,22 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 		// Query database for user's hashed password using their email
 		var hashedPassword string
-		err := db.QueryRow("SELECT password FROM User WHERE username = ?", username).Scan(&hashedPassword)
+		var userID int
+		err := db.QueryRow("SELECT id, password FROM User WHERE username = ?", username).Scan(&userID, &hashedPassword)
 		if err != nil {
-			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+			errorHandler(w, "error1InLogin", "error", http.StatusNotFound)
+			// http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
 		}
 
 		// Verify submitted password matches stored hash
 		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 		if err != nil {
-			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+			errorHandler(w, "error2InLogin", "error", http.StatusNotFound)
+			// http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
 		}
+		http.Redirect(w, r, "/?message=Login successful!", http.StatusFound)
 
-		http.Redirect(w, r, "/", http.StatusFound)
 	}
 }
