@@ -2,9 +2,13 @@
 <body>
 {{template "navBar"}}
     <main>
-        <h2>Error recived</h2>
+        <h2>Error received</h2>
         <div id="error">
-    <!-- Maybe add the "goBack" template herelater -->
+            {{define "content"}}
+                <h1>Error</h1>
+                <p>{{.ErrorMessage}}</p>
+                <a href="/">Go back to Home</a>
+            {{end}}
         </div>
     </main>
     <footer>

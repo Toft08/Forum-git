@@ -6,7 +6,7 @@ import (
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		errorHandler(w, "error1InHomepage", "error", http.StatusNotFound)
+		ErrorHandler(w, "error1InHomepage", "error", http.StatusNotFound)
 		return
 	}
 
@@ -16,7 +16,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query("SELECT title, content FROM Post ORDER BY created_at DESC")
 	if err != nil {
 		// log.Println("Error fetching posts:", err)
-		errorHandler(w, "error2InHomePage", "error", http.StatusNotFound)
+		ErrorHandler(w, "error2InHomePage", "error", http.StatusNotFound)
 		// http.Error(w, "Failed to load posts", http.StatusInternalServerError)
 		return
 	}
@@ -34,7 +34,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Pass posts to template
-	renderTemplate(w, "index", map[string]interface{}{
+	RenderTemplate(w, "index", map[string]interface{}{
 		"Message": message,
 		"Posts":   posts,
 	})

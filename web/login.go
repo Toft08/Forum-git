@@ -11,7 +11,7 @@ import (
 // login handles both GET and POST requests for user authentication
 func Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		renderTemplate(w, "login", nil)
+		RenderTemplate(w, "login", nil)
 		return
 	}
 
@@ -24,14 +24,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		var userID int
 		err := db.QueryRow("SELECT id, password FROM User WHERE username = ?", username).Scan(&userID, &hashedPassword)
 		if err != nil {
-			errorHandler(w, "error1InLogin", "error", http.StatusNotFound)
+			ErrorHandler(w, "error1InLogin", "error", http.StatusNotFound)
 			// http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
 		}
 		// Verify submitted password matches stored hash
 		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 		if err != nil {
-			errorHandler(w, "error2InLogin", "error", http.StatusNotFound)
+			ErrorHandler(w, "error2InLogin", "error", http.StatusNotFound)
 			// http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
 		}

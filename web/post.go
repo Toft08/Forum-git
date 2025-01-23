@@ -24,7 +24,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	// Render form if logged in, otherwise show error message
 	if r.Method == http.MethodGet {
-		renderTemplate(w, "create-post", map[string]interface{}{
+		RenderTemplate(w, "create-post", map[string]interface{}{
 			"IsLoggedIn": isLoggedIn,
 		})
 		return
@@ -56,7 +56,8 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 			title, content, userID, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
 			log.Println("Error creating post:", err)
-			http.Error(w, "Failed to create post", http.StatusInternalServerError)
+			ErrorHandler(w, "errorInCreatePost", "error", http.StatusNotFound)
+			// http.Error(w, "Failed to create post", http.StatusInternalServerError)
 			return
 		}
 
