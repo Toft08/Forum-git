@@ -15,14 +15,16 @@
             <a href="#">Likes</a>
         </div>
         <div class="nav-right">
-            <a href="/signup">Sign Up</a>
-            <a href="/login">Log In</a>
+            {{if .IsLoggedIn}}
+                <a href="/logout">Log Out</a>
+            {{else}}
+                <a href="/signup">Sign Up</a>
+                <a href="/login">Log In</a>
+            {{end}}
         </div>
     </nav>
     <main>
-        {{if .Message}}
-        <p style="color: green; font-weight: bold;">{{.Message}}</p>
-        {{end}}
+      
         <h2>Latest Posts</h2>
         
         {{range .Posts}}

@@ -23,6 +23,7 @@ func main() {
 	http.HandleFunc("/signup", signUp)
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/create-post", createPost)
+	http.HandleFunc("/logout", logout)
 
 	log.Println("Server is running on http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
@@ -114,7 +115,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		// Query database for user's hashed password using their email
 		var hashedPassword string
 		var userID int
-		err := db.QueryRow("SELECT password FROM User WHERE username = ?", username).Scan(&userID, &hashedPassword)
+		err := db.QueryRow("SELECT id, password FROM User WHERE username = ?", username).Scan(&userID, &hashedPassword)
 		if err != nil {
 			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
@@ -123,11 +124,13 @@ func login(w http.ResponseWriter, r *http.Request) {
 		// Verify submitted password matches stored hash
 		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 		if err != nil {
+			log.Println("Password does not match hash", err)
 			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
 		}
 
 		sessionID := uuid.NewString()
+
 		_, err = db.Exec("INSERT INTO Session (id, user_id, created_at) VALUES (?,?,?)",
 			sessionID, userID, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
@@ -137,15 +140,20 @@ func login(w http.ResponseWriter, r *http.Request) {
 		}
 		// Set session ID as a cookie
 		http.SetCookie(w, &http.Cookie{
-			Name:    "session_id",
-			Value:   sessionID,
-			Expires: time.Now().Add(24 * time.Hour),
+			Name:     "session_id",
+			Value:    sessionID,
+			Expires:  time.Now().Add(24 * time.Hour),
+			HttpOnly: true,
+		})
+		renderTemplate(w, "index", map[string]interface{}{
+			"IsLoggedIn": isLoggedIn,
 		})
 
-		http.Redirect(w, r, "/?message=Login successful!", http.StatusFound)
-
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
 	}
 }
+
 func createPost(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		// Render the "Create Post" form
@@ -183,4 +191,23 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
+}
+
+func logout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_id",
+		Value:    "",
+		Expires:  time.Now().Add(-1 * time.Hour),
+		HttpOnly: true,
+	})
+
+	http.Redirect(w, r, "/", http.StatusFound)
+}
+func isLoggedIn(r *http.Request) bool {
+	cookie, err := r.Cookie("session_id")
+	if err != nil || cookie.Value == "" {
+		return false
+	}
+
+	return true
 }
