@@ -15,11 +15,17 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusFound)
 }
-func IsLoggedIn(r *http.Request) bool {
+func IsLoggedIn(r *http.Request) (bool, int) {
 	cookie, err := r.Cookie("session_id")
-	if err != nil || cookie.Value == "" {
-		return false
+	if err != nil {
+		return false, 0
 	}
 
-	return true
+	var userID int
+	err = db.QueryRow("SELECT user_id FROM Session WHERE id = ?", cookie.Value).Scan(&userID)
+	if err != nil {
+		return false, 0
+	}
+
+	return true, userID
 }

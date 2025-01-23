@@ -2,7 +2,9 @@ package web
 
 import (
 	"net/http"
+	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -26,7 +28,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			// http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
 		}
-
 		// Verify submitted password matches stored hash
 		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 		if err != nil {
@@ -34,7 +35,23 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			// http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
 		}
-		http.Redirect(w, r, "/?message=Login successful!", http.StatusFound)
+		sessionID := uuid.NewString()
+
+		// Store session ID in database, associated with userID
+		_, err = db.Exec("INSERT INTO Session (id, user_id, created_at) VALUES (?, ?, ?)", sessionID, userID, time.Now().Format("2006-01-02 15:04:05"))
+		if err != nil {
+			http.Error(w, "Failed to create session", http.StatusInternalServerError)
+			return
+		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session_id",
+			Value:    sessionID,
+			Expires:  time.Now().Add(24 * time.Hour),
+			HttpOnly: true,
+		})
+
+		http.Redirect(w, r, "/", http.StatusFound)
 
 	}
 }

@@ -57,7 +57,7 @@ CREATE TABLE Like (
 );
 
 -- Create SESSION table
-CREATE TABLE SESSION (
+CREATE TABLE Session (
     id TEXT PRIMARY KEY, -- Unique session ID (UUID)
     user_id INTEGER NOT NULL,
     created_at TEXT NOT NULL,

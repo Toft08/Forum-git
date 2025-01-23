@@ -2,6 +2,7 @@
 <body>
     {{template "navBar"}}
     <h2>Create a New Post</h2>
+    {{if .IsLoggedIn}}
     <form action="/create-post" method="POST">
         <label for="title">Title:</label>
         <input type="text" id="title" name="title" required>
@@ -11,6 +12,9 @@
         <br>
         <button type="submit">Submit Post</button>
     </form>
+    {{else}}
+    <p>You must be logged in to create a post.</p>
+    {{end}}
 </body>
 {{template "footer"}}
 </html>
