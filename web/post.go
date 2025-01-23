@@ -9,7 +9,7 @@ import (
 func CreatePost(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		// Render the "Create Post" form
-		renderTemplate(w, "create-post", nil)
+		RenderTemplate(w, "create-post", nil)
 		return
 	}
 
@@ -37,7 +37,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 			title, content, userID, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
 			log.Println("Error creating post:", err)
-			errorHandler(w, "errorInCreatePost", "error", http.StatusNotFound)
+			ErrorHandler(w, "errorInCreatePost", "error", http.StatusNotFound)
 			// http.Error(w, "Failed to create post", http.StatusInternalServerError)
 			return
 		}

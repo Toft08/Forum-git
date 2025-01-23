@@ -29,12 +29,12 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 	case "/create post":
 		CreatePost(w, r)
 	case "/error handler":
-		errorHandler(w, "error", "error", http.StatusNotFound)
+		ErrorHandler(w, "error", "error", http.StatusNotFound)
 	}
 }
 
 // renderTemplate handles the rendering of HTML templates with provided data
-func renderTemplate(w http.ResponseWriter, t string, data interface{}) {
+func RenderTemplate(w http.ResponseWriter, t string, data interface{}) {
 
 	err := tmpl.ExecuteTemplate(w, t+".html", data)
 	if err != nil {
@@ -44,7 +44,7 @@ func renderTemplate(w http.ResponseWriter, t string, data interface{}) {
 	}
 }
 
-func errorHandler(w http.ResponseWriter, errorMessage string, tmpl string, statusCode int) {
+func ErrorHandler(w http.ResponseWriter, errorMessage string, tmpl string, statusCode int) {
 	log.Printf("Response status: %d\n", statusCode)
 	t, err := template.ParseFiles("templates/"+tmpl+".html", "templates/addons.html")
 	if err != nil {
