@@ -26,10 +26,10 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 		SignUp(w, r)
 	case "/logout":
 		Logout(w, r)
-	case "/create post":
+	case "/create-post":
 		CreatePost(w, r)
-	case "/error handler":
-		ErrorHandler(w, "error", "error", http.StatusNotFound)
+	case "/errorhandler":
+		ErrorHandler(w, "Page not found", "error", http.StatusNotFound)
 	}
 }
 
@@ -46,24 +46,8 @@ func RenderTemplate(w http.ResponseWriter, t string, data interface{}) {
 
 func ErrorHandler(w http.ResponseWriter, errorMessage string, tmpl string, statusCode int) {
 	log.Printf("Response status: %d\n", statusCode)
-	t, err := template.ParseFiles("templates/"+tmpl+".html", "templates/addons.html")
-	if err != nil {
-		http.Error(w, errorMessage, http.StatusInternalServerError)
-		log.Println("Error parsing template:", err)
-		return
-	}
-	t.Execute(w, t)
-	// htmlFileAddress := "templates/" + htmlFileName
-	// tmpl, err := template.ParseFiles(htmlFileAddress, "templates/header.html", "templates/navBar.html")
-	// if err != nil {
-	// 	log.Println(err)
-	// 	http.Error(w, errorMessage, statusCode)
-	// 	return
-	// }
-	// err = renderTemplate(w, "error", nil)
-	// if err != nil {
-	// 	if statusCode == http.StatusInternalServerError {
-	// 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-	// 	}
-	// }
+	w.WriteHeader(statusCode) // Set the HTTP status code before rendering
+	RenderTemplate(w, tmpl, map[string]string{
+		"ErrorMessage": errorMessage,
+	})
 }
