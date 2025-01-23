@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/assets/loginsignup.css">
-    <title>Login</title>
-</head>
+{{template "head"}}
 <body>
+   {{template "navBar"}}
     <div class="container">
         <h1>Login</h1>
         <form action="/login" method="POST">
@@ -23,4 +17,5 @@
         </div>
     </div>
 </body>
+{{template "footer"}}
 </html>
