@@ -26,9 +26,9 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 		SignUp(w, r)
 	case "/logout":
 		Logout(w, r)
-	case "/create post":
+	case "/create-post":
 		CreatePost(w, r)
-	case "/error handler":
+	case "/errorhandler":
 		errorHandler(w, "error", "error", http.StatusNotFound)
 	}
 }

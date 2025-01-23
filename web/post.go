@@ -1,6 +1,7 @@
 package web
 
 import (
+	"log"
 	"net/http"
 	"time"
 )
@@ -10,12 +11,15 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	var isLoggedIn bool
 	cookie, err := r.Cookie("session_id")
 	if err == nil {
+		log.Println("Session ID:", cookie.Value)
 		// Check if session ID exists in the database
 		var sessionID string
 		err = db.QueryRow("SELECT id FROM Session WHERE id = ?", cookie.Value).Scan(&sessionID)
 		if err == nil && sessionID != "" {
 			isLoggedIn = true
 		}
+	} else {
+		log.Println("No session ID cookie found")
 	}
 
 	// Render form if logged in, otherwise show error message
@@ -35,6 +39,8 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 
 		title := r.FormValue("title")
 		content := r.FormValue("content")
+		log.Println("Received title:", title)
+		log.Println("Received content:", content)
 
 		// Get user ID from session
 		var userID int
@@ -43,11 +49,13 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Invalid session", http.StatusUnauthorized)
 			return
 		}
+		log.Println("User ID for sessionn:", userID)
 
 		// Insert post into the database
 		_, err = db.Exec("INSERT INTO Post (title, content, user_id, created_at) VALUES (?, ?, ?, ?)",
 			title, content, userID, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
+			log.Println("Error creating post:", err)
 			http.Error(w, "Failed to create post", http.StatusInternalServerError)
 			return
 		}
