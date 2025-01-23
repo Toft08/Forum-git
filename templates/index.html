@@ -23,9 +23,9 @@
         
         {{range .Posts}}
         <div class="post">
-            <h3>{{.Title}}</h3>
+            <h3><a href="/post/{{.ID}}">{{.Title}}</a></h3> 
             <p>{{.Content}}</p>
-            </div>
+        </div>
             {{else}}
             <p>No posts yet. Be the first to create one!</p>
             {{end}}

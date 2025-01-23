@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strings"
 )
 
 var db *sql.DB
@@ -28,8 +29,11 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 		Logout(w, r)
 	case "/create post":
 		CreatePost(w, r)
-	case "/error handler":
-		errorHandler(w, "error", "error", http.StatusNotFound)
+
+	default:
+		if strings.HasPrefix(r.URL.Path, "/post") {
+			PostHandler(w, r)
+		}
 	}
 }
 
