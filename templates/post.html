@@ -1,0 +1,27 @@
+{{template "head"}}
+<body>
+{{template "navBar"}}
+   
+    <main>
+      
+        <h2>{{.PostTitle}}</h2>
+
+        <div class="post">
+            <p>{{.PostContent}}</p>
+            </div>
+            {{ if eq (len .Comments) 0 }}
+            <p>No comments yet. Be the first to create one!</p>
+        {{ else }}
+            <h3>Comments</h3>
+            {{ range $index, $comment := .Comments }} 
+                <div class="comment">
+                    <p>{{ $comment.Content }}</p>
+                </div>
+            {{ end }}
+        {{ end }}
+        <a href="/create-post">Create Post</a>
+
+    </main>
+{{template "footer"}}
+</body>
+</html>
