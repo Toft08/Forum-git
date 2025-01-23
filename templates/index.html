@@ -1,22 +1,6 @@
 {{template "head"}}
 <body>
 {{template "navBar"}}
-   
-    <nav>
-        <div class="nav-left">
-            <a href="/">Home</a>
-            <a href="#">Categories</a>
-            <a href="#">Likes</a>
-        </div>
-        <div class="nav-right">
-            {{if .IsLoggedIn}}
-                <a href="/logout">Log Out</a>
-            {{else}}
-                <a href="/signup">Sign Up</a>
-                <a href="/login">Log In</a>
-            {{end}}
-        </div>
-    </nav>
     <main>
       
         <h2>Latest Posts</h2>
