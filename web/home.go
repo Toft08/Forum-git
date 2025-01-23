@@ -9,6 +9,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, "error1InHomepage", "error", http.StatusNotFound)
 		return
 	}
+	IsLoggedIn, _ := IsLoggedIn(r)
 
 	message := r.URL.Query().Get("message")
 
@@ -35,7 +36,8 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 
 	// Pass posts to template
 	RenderTemplate(w, "index", map[string]interface{}{
-		"Message": message,
-		"Posts":   posts,
+		"Message":    message,
+		"Posts":      posts,
+		"isLoggedIn": IsLoggedIn,
 	})
 }

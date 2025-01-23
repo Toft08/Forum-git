@@ -35,23 +35,49 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			// http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
 		}
-		sessionID := uuid.NewString()
+		// sessionID := uuid.NewString()
+		// http.SetCookie(w, &http.Cookie{
+		// 	Name:     "session_id",
+		// 	Value:    sessionID,
+		// 	Expires:  time.Now().Add(24 * time.Hour),
+		// 	HttpOnly: true,
+		// 	Path:    "/",
+		// })
 
 		// Store session ID in database, associated with userID
-		_, err = db.Exec("INSERT INTO Session (id, user_id, created_at) VALUES (?, ?, ?)", sessionID, userID, time.Now().Format("2006-01-02 15:04:05"))
-		if err != nil {
+		// _, err = db.Exec("INSERT INTO Session (id, user_id, created_at) VALUES (?, ?, ?)", sessionID, userID, time.Now().Format("2006-01-02 15:04:05"))
+		// if err != nil {
+		// 	http.Error(w, "Failed to create session", http.StatusInternalServerError)
+		// 	return
+		// }
+		if err := createSession(w, userID); err != nil {
 			http.Error(w, "Failed to create session", http.StatusInternalServerError)
 			return
 		}
 
-		http.SetCookie(w, &http.Cookie{
-			Name:     "session_id",
-			Value:    sessionID,
-			Expires:  time.Now().Add(24 * time.Hour),
-			HttpOnly: true,
-		})
-
 		http.Redirect(w, r, "/", http.StatusFound)
 
 	}
+}
+func createSession(w http.ResponseWriter, userID int) error {
+
+	_, err := db.Exec("DELETE FROM Session WHERE user_id = ?", userID)
+	if err != nil {
+		return err
+	}
+
+	sessionID := uuid.NewString()
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_id",
+		Value:    sessionID,
+		Expires:  time.Now().Add(24 * time.Hour),
+		HttpOnly: true,
+		Path:     "/",
+	})
+
+	// Store session ID in database
+	_, err = db.Exec("INSERT INTO Session (id, user_id, created_at) VALUES (?, ?, ?)",
+		sessionID, userID, time.Now().Format("2006-01-02 15:04:05"))
+
+	return err
 }

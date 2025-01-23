@@ -1,6 +1,7 @@
 package web
 
 import (
+	"log"
 	"net/http"
 	"time"
 )
@@ -18,9 +19,11 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 func IsLoggedIn(r *http.Request) (bool, int) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
+		log.Println("No session ID cookie found")
 		return false, 0
 	}
-
+	log.Println("Session ID:", cookie.Value)
+	
 	var userID int
 	err = db.QueryRow("SELECT user_id FROM Session WHERE id = ?", cookie.Value).Scan(&userID)
 	if err != nil {
