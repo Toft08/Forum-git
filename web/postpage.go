@@ -8,28 +8,6 @@ import (
 	"strings"
 )
 
-type CommentDetails struct {
-	CommentID int
-	Content   string
-	UserID    int
-	Username  string
-	Likes     int
-	Dislikes  int
-}
-
-type PostDetails struct {
-	PostID      int
-	UserID      int
-	Username    string
-	PostTitle   string
-	PostContent string
-	Comments    []CommentDetails
-	Categories  []string
-	CreatedAt   string
-	Likes       int
-	Dislikes    int
-}
-
 // PostHandler handles requests to view a specific post
 func PostHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -46,16 +24,6 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	comments, err := getComments(postID)
-	if err != nil {
-		log.Println("Error fetching comments:", err)
-		errorHandler(w, "Internal Server Error", "error", http.StatusInternalServerError)
-		return
-	}
-
-	log.Println(comments)
-	post.Comments = comments
-
 	renderTemplate(w, "post", post)
 
 }
@@ -64,33 +32,42 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 func getPostDetails(postID int) (*PostDetails, error) {
 
 	row := db.QueryRow(database.PostContent(), postID)
-
+	log.Println("Query row")
+	var err error
 	// Scan the data into a PostDetails struct
 	post := PostDetails{}
-	//var categories string
-	err := row.Scan(
+	var categories string
+	log.Println("starting scanning")
+	err = row.Scan(
 		&post.PostID,
 		&post.UserID,
 		&post.Username,
 		&post.PostTitle,
 		&post.PostContent,
 		&post.CreatedAt,
-		//&categories,
 		&post.Likes,
 		&post.Dislikes,
+		&categories,
 	)
+
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
+	log.Println("scanning done")
 
-	// Split the concatenated categories into a slice
-	// DATABASE MISSING CAT POST CONNECTION
-	// post.Categories = []string{}
-	// if categories != "" {
-	// 	catSlice := strings.Fields(categories)
-	// 	post.Categories = catSlice
+	if categories != "" {
+		post.Categories = strings.Split(categories, ",")
+	}
 
-	// }
+	log.Println("Adding comments")
+	postComments, err := getComments(postID)
+	if err != nil {
+		log.Println("Error getting comments")
+		return nil, err
+	}
+	post.Comments = postComments
+
 	return &post, nil
 }
 

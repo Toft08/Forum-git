@@ -11,12 +11,16 @@ func PostContent() string {
 			post.content AS post_content,
 			post.created_at AS post_created_at,
 			COUNT(CASE WHEN like.type = 0 THEN 1 END) AS post_likes,
-			COUNT(CASE WHEN like.type = 1 THEN 1 END) AS post_dislikes
+			COUNT(CASE WHEN like.type = 1 THEN 1 END) AS post_dislikes,
+			COALESCE(GROUP_CONCAT(Category.name, ','), '') AS categories
 		FROM post
 		LEFT JOIN user ON post.user_id = user.id
 		LEFT JOIN like ON post.id = like.post_id
+		LEFT JOIN Post_Category ON Post.id = Post_Category.post_id
+		LEFT JOIN Category ON Post_Category.category_id = Category.id
 		WHERE post.id = ?
 		GROUP BY post.id;
+
 	`
 	return query
 }

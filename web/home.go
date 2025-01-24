@@ -3,7 +3,6 @@ package web
 import (
 	"log"
 	"net/http"
-	"strconv"
 )
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
@@ -12,12 +11,12 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	message := r.URL.Query().Get("message")
+	//message := r.URL.Query().Get("message")
 
 	// Fetch posts from the database
-	rows, err := db.Query("SELECT id, title, content FROM Post ORDER BY created_at DESC")
+	rows, err := db.Query("SELECT id FROM Post ORDER BY created_at DESC")
 	if err != nil {
-		log.Println("Error fetching posts:", err)
+		log.Println("Error fetching post ids:", err)
 		errorHandler(w, "error2InHomePage", "error", http.StatusNotFound)
 		// http.Error(w, "Failed to load posts", http.StatusInternalServerError)
 		return
@@ -25,22 +24,21 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	// Build a list of posts
-	var posts []map[string]string
+	posts := []PostDetails{}
+
 	for rows.Next() {
+		log.Println("Post id rows")
 		var id int
-		var title, content string
-		rows.Scan(&id, &title, &content)
-		userID := strconv.Itoa(id)
-		posts = append(posts, map[string]string{
-			"ID":      userID,
-			"Title":   title,
-			"Content": content,
-		})
+		rows.Scan(&id)
+		post, err := getPostDetails(id)
+
+		if err != nil {
+			errorHandler(w, "Internal Server Error", "error", http.StatusInternalServerError)
+		}
+		posts = append(posts, *post)
+
 	}
 
 	// Pass posts to template
-	renderTemplate(w, "index", map[string]interface{}{
-		"Message": message,
-		"Posts":   posts,
-	})
+	renderTemplate(w, "index", posts)
 }

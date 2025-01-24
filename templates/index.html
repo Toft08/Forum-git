@@ -9,22 +9,20 @@
             <a href="#">Likes</a>
         </div>
         <div class="nav-right">
-            {{if .IsLoggedIn}}
-                <a href="/logout">Log Out</a>
-            {{else}}
+
                 <a href="/signup">Sign Up</a>
                 <a href="/login">Log In</a>
-            {{end}}
+
         </div>
     </nav>
     <main>
       
         <h2>Latest Posts</h2>
         
-        {{range .Posts}}
+        {{range .}}
         <div class="post">
-            <h3><a href="/post/{{.ID}}">{{.Title}}</a></h3> 
-            <p>{{.Content}}</p>
+            <h3><a href="/post/{{.PostID}}">{{.PostTitle}}</a></h3> 
+            <p>{{.PostContent}}</p>
         </div>
             {{else}}
             <p>No posts yet. Be the first to create one!</p>
