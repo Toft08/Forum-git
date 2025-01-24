@@ -6,22 +6,47 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // PostHandler handles requests to view a specific post
 func PostHandler(w http.ResponseWriter, r *http.Request) {
-
-	data := PageDetails{}
-
-	IsLoggedIn, _ := IsLoggedIn(r)
-
-	data.LoggedIn = IsLoggedIn
 
 	postID, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/post/"))
 	if err != nil {
 		log.Println("Error converting postID to int:", err)
 		ErrorHandler(w, "Page Not Found", "error", http.StatusNotFound)
 	}
+
+	if r.Method == http.MethodPost {
+
+		IsLoggedIn, userID := IsLoggedIn(r)
+
+		if !IsLoggedIn {
+			ErrorHandler(w, "Unauthorized: You must be logged in to create a post", "error", http.StatusUnauthorized)
+			return
+		}
+
+		content := r.FormValue("comment")
+		log.Println("Received content:", content)
+
+		// Insert post into the database
+		_, err := db.Exec("INSERT INTO Comment (post_id, content, user_id, created_at) VALUES (?, ?, ?, ?)",
+			postID, content, userID, time.Now().Format("2006-01-02 15:04:05"))
+		if err != nil {
+			log.Println("Error creating post:", err)
+			ErrorHandler(w, "errorInCreatePost", "error", http.StatusNotFound)
+			return
+		}
+	} else if r.Method != http.MethodGet {
+		ErrorHandler(w, "Method not allowed", "error", http.StatusMethodNotAllowed)
+	}
+
+	data := PageDetails{}
+
+	IsLoggedIn, _ := IsLoggedIn(r)
+
+	data.LoggedIn = IsLoggedIn
 
 	post, err := getPostDetails(postID)
 	if err != nil {

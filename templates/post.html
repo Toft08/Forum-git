@@ -19,8 +19,21 @@
                 </div>
             {{ end }}
         {{ end }}
+        <h3>Comment</h3>
+        
         {{ end }}
-        <a href="/create-post">Create Post</a>
+        {{if .LoggedIn }}
+        {{range .Posts}}
+        <form action="/post/{{.PostID}}" method="POST">
+            <label for="comment">Comment:</label>
+            <textarea id="comment" name="comment" required></textarea>
+            <br>
+            <button type="submit">Submit Comment</button>
+        </form>
+        {{else}}
+        <p>You must be logged in to leave a comment.</p>
+        {{end}}
+        {{end}}
 
     </main>
 {{template "footer"}}
