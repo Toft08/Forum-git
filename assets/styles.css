@@ -40,10 +40,19 @@ nav a:hover {
     text-decoration: underline;
 }
 
+a {
+    color: #007BFF;
+    text-decoration: none;
+}
+a:hover {
+    color:#0056b3;
+}
+
 /* Main content area */
 main {
     max-width: 800px;
-    margin: 120px auto 2rem;
+    width: 60%;
+    margin: 10px auto 2rem;
     padding: 1rem;
     background: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -95,6 +104,11 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+textarea {
+    resize: none; /* Prevent manual horizontal resizing */
+    overflow: hidden; /* Hide overflow while resizing */
 }
 
 /* Form styling */
