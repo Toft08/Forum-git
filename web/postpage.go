@@ -11,20 +11,28 @@ import (
 // PostHandler handles requests to view a specific post
 func PostHandler(w http.ResponseWriter, r *http.Request) {
 
+	data := PageDetails{}
+
+	IsLoggedIn, _ := IsLoggedIn(r)
+
+	data.LoggedIn = IsLoggedIn
+
 	postID, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/post/"))
 	if err != nil {
 		log.Println("Error converting postID to int:", err)
-		errorHandler(w, "Page Not Found", "error", http.StatusNotFound)
+		ErrorHandler(w, "Page Not Found", "error", http.StatusNotFound)
 	}
 
 	post, err := getPostDetails(postID)
 	if err != nil {
 		log.Println("Error fetching post details:", err)
-		errorHandler(w, "Internal Server Error", "error", http.StatusInternalServerError)
+		ErrorHandler(w, "Internal Server Error", "error", http.StatusInternalServerError)
 		return
 	}
 
-	renderTemplate(w, "post", post)
+	data.Posts = append(data.Posts, *post)
+
+	RenderTemplate(w, "post", data)
 
 }
 

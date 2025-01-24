@@ -10,17 +10,23 @@
 {{end}}
 
 {{define "navBar"}}
-<nav class="nav">
-    <div class="nav-left">
-        <a href="/">Home</a>
-        <a href="#">Categories</a>
-        <a href="#">Likes</a>
-    </div>
-    <div class="nav-right">
-        <a href="/signup">Sign Up</a>
-        <a href="/login">Log In</a>
-    </div>
-</nav>
+  <nav class="nav">
+        <div class="nav-left">
+            <a href="/">Home</a>
+            <a href="#">Categories</a>
+            <a href="#">Likes</a>
+        </div>
+        <div class="nav-right">
+         
+            {{if .LoggedIn}}
+            <button><a href="/logout">Log Out</a></button>
+        {{else}}
+            <button><a href="/signup">Sign Up</a></button>
+            <button><a href="/login">Log In</a></button>
+        {{end}}
+        
+        </div>
+    </nav>
 {{end}}
 
 {{define "footer"}}

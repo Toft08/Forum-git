@@ -21,3 +21,8 @@ type PostDetails struct {
 	Likes       int
 	Dislikes    int
 }
+
+type PageDetails struct {
+	LoggedIn bool
+	Posts    []PostDetails
+}

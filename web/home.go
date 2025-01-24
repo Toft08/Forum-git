@@ -7,17 +7,23 @@ import (
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		errorHandler(w, "error1InHomepage", "error", http.StatusNotFound)
+		ErrorHandler(w, "error1InHomepage", "error", http.StatusNotFound)
 		return
 	}
+
+	data := PageDetails{}
+
+	IsLoggedIn, _ := IsLoggedIn(r)
+
+	data.LoggedIn = IsLoggedIn
 
 	//message := r.URL.Query().Get("message")
 
 	// Fetch posts from the database
 	rows, err := db.Query("SELECT id FROM Post ORDER BY created_at DESC")
 	if err != nil {
-		log.Println("Error fetching post ids:", err)
-		errorHandler(w, "error2InHomePage", "error", http.StatusNotFound)
+		// log.Println("Error fetching posts:", err)
+		ErrorHandler(w, "error2InHomePage", "error", http.StatusNotFound)
 		// http.Error(w, "Failed to load posts", http.StatusInternalServerError)
 		return
 	}
@@ -33,12 +39,13 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		post, err := getPostDetails(id)
 
 		if err != nil {
-			errorHandler(w, "Internal Server Error", "error", http.StatusInternalServerError)
+			ErrorHandler(w, "Internal Server Error", "error", http.StatusInternalServerError)
 		}
 		posts = append(posts, *post)
 
 	}
+	data.Posts = posts
 
 	// Pass posts to template
-	renderTemplate(w, "index", posts)
+	RenderTemplate(w, "index", data)
 }
