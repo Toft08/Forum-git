@@ -33,6 +33,8 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 	default:
 		if strings.HasPrefix(r.URL.Path, "/post") {
 			PostHandler(w, r)
+		} else {
+			ErrorHandler(w, "Page not found", "error", http.StatusNotFound)
 		}
 	}
 }
