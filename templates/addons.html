@@ -17,13 +17,12 @@
             <a href="#">Likes</a>
         </div>
         <div class="nav-right">
-         
             {{if .LoggedIn}}
-            <button><a href="/logout">Log Out</a></button>
-        {{else}}
-            <button><a href="/signup">Sign Up</a></button>
-            <button><a href="/login">Log In</a></button>
-        {{end}}
+            <button class="logout-button" onclick="window.location.href='/logout';">Log Out</button>
+            {{else}}
+            <button class="signup-button" onclick="window.location.href='/signup';">Sign Up</button>
+            <button class="login-button" onclick="window.location.href='/login';">Log In</button>
+            {{end}}
         
         </div>
     </nav>
