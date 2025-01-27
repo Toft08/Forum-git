@@ -54,8 +54,17 @@ func RenderTemplate(w http.ResponseWriter, t string, data interface{}) {
 
 func ErrorHandler(w http.ResponseWriter, errorMessage string, tmpl string, statusCode int) {
 	log.Printf("Response status: %d\n", statusCode)
-	w.WriteHeader(statusCode) // Set the HTTP status code before rendering
-	RenderTemplate(w, tmpl, map[string]string{
+	log.Printf("Error message: %s\n", errorMessage)
+
+	w.WriteHeader(statusCode)
+
+	err := tmpl.ExecuteTemplate(w, "error.html", map[string]string{
 		"ErrorMessage": errorMessage,
 	})
+	if err != nil {
+		// If rendering the template fails
+		log.Printf("Error executing template: %s\n", err)
+		http.Error(w, errorMessage, statusCode)
+		return
+	}
 }
