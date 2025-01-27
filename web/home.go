@@ -7,7 +7,7 @@ import (
 
 func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	if r.URL.Path != "/" {
-		ErrorHandler(w, "error1InHomepage", "error", http.StatusNotFound)
+		ErrorHandler(w, "error1InHomepage", http.StatusNotFound)
 		return
 	}
 	var err error
@@ -22,7 +22,7 @@ func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	rows, err := db.Query("SELECT id FROM Post ORDER BY created_at DESC")
 	if err != nil {
 		// log.Println("Error fetching posts:", err)
-		ErrorHandler(w, "error2InHomePage", "error", http.StatusNotFound)
+		ErrorHandler(w, "error2InHomePage", http.StatusNotFound)
 		return
 	}
 	defer rows.Close()
@@ -34,7 +34,7 @@ func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		post, err := getPostDetails(id)
 
 		if err != nil {
-			ErrorHandler(w, "Internal Server Error", "error", http.StatusInternalServerError)
+			ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 		}
 		data.Posts = append(data.Posts, *post)
 

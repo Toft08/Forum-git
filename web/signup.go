@@ -23,7 +23,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		// Hash the password before storing in database
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
-			ErrorHandler(w, "error1InSignup", "error", http.StatusNotFound)
+			ErrorHandler(w, "error1InSignup", http.StatusNotFound)
 			// http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
@@ -33,7 +33,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		_, err = db.Exec("INSERT INTO User (username, email, password, created_at) VALUES (?, ?, ?, ?)",
 			username, email, hashedPassword, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
-			ErrorHandler(w, "error2InSignup", "error", http.StatusNotFound)
+			ErrorHandler(w, "error2InSignup", http.StatusNotFound)
 			log.Println("Error inserting user:", err)
 			return
 		}
