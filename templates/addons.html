@@ -14,7 +14,9 @@
         <div class="nav-left">
             <a href="/">Home</a>
             <a href="#">Categories</a>
-            <a href="#">Likes</a>
+            {{if .LoggedIn}}
+            <a href="#">My Page</a>
+            {{end}}
         </div>
         <div class="nav-right">
             {{if .LoggedIn}}
