@@ -67,6 +67,7 @@ main {
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #fff;
+    display: block;
 }
 .post h2 {
     margin: 0 0 0.5rem;
@@ -74,6 +75,51 @@ main {
 .post p {
     margin: 0.5rem 0;
 }
+
+.post-content {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 0.5rem 0;
+}
+
+/* Default button styles */
+.reaction-btn {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+  }
+  
+  .reaction-btn:hover {
+    background-color: #c5c5c5;
+  }
+
+  /* Active state for like button */
+  .reaction-btn#like-btn.active {
+    background-color: #469c64;
+  }
+  
+  /* Active state for dislike button */
+  .reaction-btn#dislike-btn.active {
+    background-color: #bc2a42;
+  }
+  
+  .comment-like-btn.active{
+    background-color: #469c64;
+  }
+
+  .comment-dislike-btn.active {
+    background-color: #bc2a42;
+  }
+  
+  .reaction-count {
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 5px;
+  }
 
 /* Footer styling */
 footer {

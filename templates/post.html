@@ -8,8 +8,14 @@
         <h3>Author: {{.Username}}</h3>
         <div class="post">
             <p>{{.PostContent}}</p>
-            </div>
-            {{ if eq (len .Comments) 0 }}
+            <div class="reaction-buttons">
+                <button id="like-btn" class="reaction-btn">👍</button>
+                <span id="like-count" class="reaction-count">0</span>
+                <button id="dislike-btn" class="reaction-btn">👎</button>
+                <span id="dislike-count" class="reaction-count">0</span>
+              </div>
+        </div>
+        {{ if eq (len .Comments) 0 }}
             <p>No comments yet. Be the first to create one!</p>
         {{ else }}
             <h3>Comments:</h3>
@@ -17,6 +23,12 @@
                 <div class="comment">
                     <p><strong>{{ $comment.Username }}</strong> says:</p>
                     <p>{{ $comment.Content }}</p>
+                    <div class="reaction-buttons">
+                        <button class="comment-like-btn reaction-btn">👍</button>
+                        <span class="comment-like-count reaction-count">0</span>
+                        <button class="comment-dislike-btn reaction-btn">👎</button>
+                        <span class="comment-dislike-count reaction-count">0</span>
+                      </div>
                 </div>
             {{ end }}
         {{ end }}
@@ -44,6 +56,105 @@
 textarea.addEventListener("input", function () {
     this.style.height = "auto"; // Reset height to auto so it calculates properly
     this.style.height = this.scrollHeight + "px"; // Set height to scrollHeight
+});
+
+// Get button elements and counters
+const likeBtn = document.getElementById('like-btn');
+const dislikeBtn = document.getElementById('dislike-btn');
+const likeCount = document.getElementById('like-count');
+const dislikeCount = document.getElementById('dislike-count');
+
+// Track the state of likes and dislikes
+let isLiked = false;
+let isDisliked = false;
+
+// Event listener for like button
+likeBtn.addEventListener('click', () => {
+  if (isLiked) {
+    // If already liked, remove the like
+    likeCount.textContent = parseInt(likeCount.textContent) - 1;
+    likeBtn.classList.remove('active');
+    isLiked = false;
+  } else {
+    // Add like and remove dislike if needed
+    likeCount.textContent = parseInt(likeCount.textContent) + 1;
+    likeBtn.classList.add('active');
+    isLiked = true;
+
+    if (isDisliked) {
+      dislikeCount.textContent = parseInt(dislikeCount.textContent) - 1;
+      dislikeBtn.classList.remove('active');
+      isDisliked = false;
+    }
+  }
+});
+
+// Event listener for dislike button
+dislikeBtn.addEventListener('click', () => {
+  if (isDisliked) {
+    // If already disliked, remove the dislike
+    dislikeCount.textContent = parseInt(dislikeCount.textContent) - 1;
+    dislikeBtn.classList.remove('active');
+    isDisliked = false;
+  } else {
+    // Add dislike and remove like if needed
+    dislikeCount.textContent = parseInt(dislikeCount.textContent) + 1;
+    dislikeBtn.classList.add('active');
+    isDisliked = true;
+
+    if (isLiked) {
+      likeCount.textContent = parseInt(likeCount.textContent) - 1;
+      likeBtn.classList.remove('active');
+      isLiked = false;
+    }
+  }
+});
+
+// Like and dislike functionality for comments
+document.querySelectorAll('.comment').forEach(comment => {
+  const likeBtn = comment.querySelector('.comment-like-btn');
+  const dislikeBtn = comment.querySelector('.comment-dislike-btn');
+  const likeCount = comment.querySelector('.comment-like-count');
+  const dislikeCount = comment.querySelector('.comment-dislike-count');
+
+  let isLiked = false;
+  let isDisliked = false;
+
+  likeBtn.addEventListener('click', () => {
+    if (isLiked) {
+      likeCount.textContent = parseInt(likeCount.textContent) - 1;
+      likeBtn.classList.remove('active');
+      isLiked = false;
+    } else {
+      likeCount.textContent = parseInt(likeCount.textContent) + 1;
+      likeBtn.classList.add('active');
+      isLiked = true;
+
+      if (isDisliked) {
+        dislikeCount.textContent = parseInt(dislikeCount.textContent) - 1;
+        dislikeBtn.classList.remove('active');
+        isDisliked = false;
+      }
+    }
+  });
+
+  dislikeBtn.addEventListener('click', () => {
+    if (isDisliked) {
+      dislikeCount.textContent = parseInt(dislikeCount.textContent) - 1;
+      dislikeBtn.classList.remove('active');
+      isDisliked = false;
+    } else {
+      dislikeCount.textContent = parseInt(dislikeCount.textContent) + 1;
+      dislikeBtn.classList.add('active');
+      isDisliked = true;
+
+      if (isLiked) {
+        likeCount.textContent = parseInt(likeCount.textContent) - 1;
+        likeBtn.classList.remove('active');
+        isLiked = false;
+      }
+    }
+  });
 });
 </script>
 </html>
