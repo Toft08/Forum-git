@@ -20,7 +20,10 @@ func PostHandler(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	// Check the cookie and get userID
 	var userID int
-	data.LoggedIn, userID = IsLoggedIn(r)
+	data.LoggedIn, userID = VerifySession(r)
+	if err != nil {
+		log.Println("Error verifying session:", err)
+	}
 	data.Posts = nil
 
 	if r.Method == http.MethodPost {

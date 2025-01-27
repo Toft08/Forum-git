@@ -15,10 +15,10 @@ func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	var userID int
 	var rows *sql.Rows
 	var err error
-	data.LoggedIn, userID = IsLoggedIn(r)
 
-	//message := r.URL.Query().Get("message")
-	if data.LoggedIn && r.Method == http.MethodPost {
+	data.LoggedIn, userID = VerifySession(r)
+
+	if data.LoggedIn && r.Method == http.MethodPost { // NEED SOME KIND OF FLAG FROM FRONT SO THAT I KNOW IF I SHOULD GET THE CREATED POSTS OR LIKED POSTS
 		// Fetch posts from the database for a specific user
 		rows, err = db.Query("SELECT id FROM Post WHERE user_id = ? ORDER BY created_at DESC", userID)
 		if err != nil {
