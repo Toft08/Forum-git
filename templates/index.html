@@ -2,17 +2,37 @@
 <body>
 {{template "navBar" .}}
     <main>
+
+        <!-- Filter Form -->
+        <form class="filter" method="GET" action="/">
+            <!-- Topic Filter -->
+            <div class="filter-group">
+                <label for="topicFilter" class="filter-label">Filter by Topic:</label>
+                <select id="topicFilter" name="topic" class="filter-select">
+                    <option value="General" selected>General</option>
+                    <option value="Home">Home</option>
+                    <option value="Health">Health</option>
+                    <option value="Sports">Sports</option>
+                </select>
+            </div>
+            {{if .LoggedIn}}
+            <!-- Post Filter -->
+            <div class="filter-group">
+                <label for="postFilter" class="filter-label">Filter Posts:</label>
+                <select id="postFilter" name="filter" class="filter-select">
+                    <option value="None">-</option>
+                    <option value="createdByMe">Created by Me</option>
+                    <option value="likedByMe">Liked by Me</option>
+                    <option value="dislikedByMe">Disliked by Me</option>
+                </select>
+            </div>
+            {{end}}
+                <button type="submit" class="filter-button">Apply Filters</button>
+        </form>
+
         <h2>Latest Posts</h2>
         
-        {{range .Posts}}
-        <div class="post">
-            <h3><a href="/post/{{.PostID}}">{{.PostTitle}}</a></h3> 
-            <p>{{.PostContent}}</p>
-        </div>
-            {{else}}
-            <p>No posts yet. Be the first to create one!</p>
-            {{end}}
-        <a href="/create-post">Create Post</a>
+        {{template "posts" .}}
 
     </main>
 {{template "footer"}}
