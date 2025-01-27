@@ -205,3 +205,15 @@ button:hover {
 .signup-link a:hover {
     text-decoration: underline;
 }
+
+.filter {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 18px;
+}
+
+.filter-group {
+    padding: 10px;
+}
