@@ -26,6 +26,7 @@ nav {
 }
 .nav-left {
     padding-left: 20px;
+    padding-top: 10px;
 }
 .nav-right {
     padding-right: 20px;
@@ -37,13 +38,22 @@ nav a {
     font-size: 1.1rem;
 }
 nav a:hover {
-    text-decoration: underline;
+    color : #ccc;
+}
+
+a {
+    color: #007BFF;
+    text-decoration: none;
+}
+a:hover {
+    color:#0056b3;
 }
 
 /* Main content area */
 main {
     max-width: 800px;
-    margin: 120px auto 2rem;
+    width: 60%;
+    margin: 10px auto 2rem;
     padding: 1rem;
     background: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -97,6 +107,11 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+textarea {
+    resize: none; /* Prevent manual horizontal resizing */
+    overflow: hidden; /* Hide overflow while resizing */
+}
+
 /* Form styling */
 form {
     display: flex;
@@ -123,6 +138,7 @@ button {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 18px;
 }
 
 button:hover {

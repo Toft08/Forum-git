@@ -14,16 +14,17 @@
         <div class="nav-left">
             <a href="/">Home</a>
             <a href="#">Categories</a>
-            <a href="#">Likes</a>
+            {{if .LoggedIn}}
+            <a href="#">My Page</a>
+            {{end}}
         </div>
         <div class="nav-right">
-         
-        {{if .LoggedIn}}
-            <button><a href="/logout">Log Out</a></button>
-        {{else}}
-            <button><a href="/signup">Sign Up</a></button>
-            <button><a href="/login">Log In</a></button>
-        {{end}}
+            {{if .LoggedIn}}
+            <button class="logout-button" onclick="window.location.href='/logout';">Log Out</button>
+            {{else}}
+            <button class="signup-button" onclick="window.location.href='/signup';">Sign Up</button>
+            <button class="login-button" onclick="window.location.href='/login';">Log In</button>
+            {{end}}
         
         </div>
     </nav>

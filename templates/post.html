@@ -12,21 +12,20 @@
             {{ if eq (len .Comments) 0 }}
             <p>No comments yet. Be the first to create one!</p>
         {{ else }}
-            <h3>Comments</h3>
+            <h3>Comments:</h3>
             {{ range $index, $comment := .Comments }} 
                 <div class="comment">
                     <p>{{ $comment.Content }}</p>
                 </div>
             {{ end }}
         {{ end }}
-        <h3>Comment</h3>
         
         {{ end }}
         {{if .LoggedIn }}
         {{range .Posts}}
         <form action="/post/{{.PostID}}" method="POST">
-            <label for="comment">Comment:</label>
-            <textarea id="comment" name="comment" required></textarea>
+            <label for="comment"></label>
+            <textarea id="comment" name="comment" placeholder="Enter comment here" required></textarea>
             <br>
             <button type="submit">Submit Comment</button>
         </form>
@@ -38,4 +37,12 @@
     </main>
 {{template "footer"}}
 </body>
+<script>
+    const textarea = document.getElementById("comment");
+
+textarea.addEventListener("input", function () {
+    this.style.height = "auto"; // Reset height to auto so it calculates properly
+    this.style.height = this.scrollHeight + "px"; // Set height to scrollHeight
+});
+</script>
 </html>
