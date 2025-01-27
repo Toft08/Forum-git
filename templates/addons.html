@@ -14,9 +14,6 @@
         <div class="nav-left">
             <a href="/">Home</a>
             <a href="#">Categories</a>
-            {{if .LoggedIn}}
-            <a href="#">My Page</a>
-            {{end}}
         </div>
         <div class="nav-right">
             {{if .LoggedIn}}
@@ -30,6 +27,17 @@
     </nav>
 {{end}}
 
+{{define "posts"}}
+{{range .Posts}}
+<div class="post">
+    <h3><a href="/post/{{.PostID}}">{{.PostTitle}}</a></h3> 
+    <p>{{.PostContent}}</p>
+</div>
+    {{else}}
+    <p>No posts yet. Be the first to create one!</p>
+    {{end}}
+<a href="/create-post">Create Post</a>
+{{end}}
 {{define "footer"}}
 <footer>
     <p>&copy; 2025 Simple Forum. All rights reserved.</p>
