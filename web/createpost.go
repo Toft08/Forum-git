@@ -6,9 +6,8 @@ import (
 	"time"
 )
 
-func CreatePost(w http.ResponseWriter, r *http.Request) {
+func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	// Check if user is logged in
-	var isLoggedIn bool
 	cookie, err := r.Cookie("session_id")
 	if err == nil {
 		log.Println("Session ID:", cookie.Value)
@@ -16,7 +15,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		var sessionID string
 		err = db.QueryRow("SELECT id FROM Session WHERE id = ?", cookie.Value).Scan(&sessionID)
 		if err == nil && sessionID != "" {
-			isLoggedIn = true
+			data.LoggedIn = true
 		}
 	} else {
 		log.Println("No session ID cookie found")
@@ -24,15 +23,13 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	// Render form if logged in, otherwise show error message
 	if r.Method == http.MethodGet {
-		RenderTemplate(w, "create-post", map[string]interface{}{
-			"IsLoggedIn": isLoggedIn,
-		})
+		RenderTemplate(w, "create-post", data)
 		return
 	}
 
 	// Process post creation if POST method and logged in
 	if r.Method == http.MethodPost {
-		if !isLoggedIn {
+		if !data.LoggedIn {
 			http.Error(w, "Unauthorized: You must be logged in to create a post", http.StatusUnauthorized)
 			return
 		}

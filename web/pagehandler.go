@@ -15,24 +15,28 @@ var tmpl = template.Must(template.ParseGlob("templates/*.html"))
 
 func PageHandler(w http.ResponseWriter, r *http.Request) {
 
+	data := PageDetails{}
+
 	db = database.InitDB()
 	defer db.Close()
 
 	switch r.URL.Path {
 	case "/":
-		HomePage(w, r)
+		HomePage(w, r, &data)
 	case "/login":
-		Login(w, r)
+		Login(w, r, &data)
 	case "/signup":
-		SignUp(w, r)
+		SignUp(w, r, &data)
 	case "/logout":
-		Logout(w, r)
+		Logout(w, r, &data)
 	case "/create-post":
-		CreatePost(w, r)
+		CreatePost(w, r, &data)
 
 	default:
 		if strings.HasPrefix(r.URL.Path, "/post") {
-			PostHandler(w, r)
+			PostHandler(w, r, &data)
+		} else {
+			ErrorHandler(w, "Page not found", "error", http.StatusNotFound)
 		}
 	}
 }
