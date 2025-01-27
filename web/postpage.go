@@ -10,7 +10,7 @@ import (
 )
 
 // PostHandler handles requests to view a specific post
-func PostHandler(w http.ResponseWriter, r *http.Request) {
+func PostHandler(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	postID, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/post/"))
 	if err != nil {
@@ -18,17 +18,19 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(w, "Page Not Found", "error", http.StatusNotFound)
 	}
 
+	// Check the cookie and get userID
+	var userID int
+	data.LoggedIn, userID = IsLoggedIn(r)
+	data.Posts = nil
+
 	if r.Method == http.MethodPost {
 
-		IsLoggedIn, userID := IsLoggedIn(r)
-
-		if !IsLoggedIn {
+		if !data.LoggedIn {
 			ErrorHandler(w, "Unauthorized: You must be logged in to create a post", "error", http.StatusUnauthorized)
 			return
 		}
 
 		content := r.FormValue("comment")
-		log.Println("Received content:", content)
 
 		// Insert post into the database
 		_, err := db.Exec("INSERT INTO Comment (post_id, content, user_id, created_at) VALUES (?, ?, ?, ?)",
@@ -41,12 +43,6 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	} else if r.Method != http.MethodGet {
 		ErrorHandler(w, "Method not allowed", "error", http.StatusMethodNotAllowed)
 	}
-
-	data := PageDetails{}
-
-	IsLoggedIn, _ := IsLoggedIn(r)
-
-	data.LoggedIn = IsLoggedIn
 
 	post, err := getPostDetails(postID)
 	if err != nil {
@@ -65,12 +61,10 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 func getPostDetails(postID int) (*PostDetails, error) {
 
 	row := db.QueryRow(database.PostContent(), postID)
-	log.Println("Query row")
 	var err error
 	// Scan the data into a PostDetails struct
 	post := PostDetails{}
 	var categories string
-	log.Println("starting scanning")
 	err = row.Scan(
 		&post.PostID,
 		&post.UserID,
@@ -84,10 +78,9 @@ func getPostDetails(postID int) (*PostDetails, error) {
 	)
 
 	if err != nil {
-		log.Println(err)
+		log.Println("Error scanning rows")
 		return nil, err
 	}
-	log.Println("scanning done")
 
 	if categories != "" {
 		post.Categories = strings.Split(categories, ",")
