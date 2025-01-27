@@ -9,7 +9,7 @@ import (
 )
 
 // login handles both GET and POST requests for user authentication
-func Login(w http.ResponseWriter, r *http.Request) {
+func Login(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	if r.Method == http.MethodGet {
 		RenderTemplate(w, "login", nil)
 		return
@@ -25,14 +25,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		err := db.QueryRow("SELECT id, password FROM User WHERE username = ?", username).Scan(&userID, &hashedPassword)
 		if err != nil {
 			ErrorHandler(w, "error1InLogin", "error", http.StatusNotFound)
-			// http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
 		}
 		// Verify submitted password matches stored hash
 		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 		if err != nil {
 			ErrorHandler(w, "error2InLogin", "error", http.StatusNotFound)
-			// http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 			return
 		}
 		// sessionID := uuid.NewString()
@@ -54,6 +52,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to create session", http.StatusInternalServerError)
 			return
 		}
+
+		data.LoggedIn = true
 
 		http.Redirect(w, r, "/", http.StatusFound)
 

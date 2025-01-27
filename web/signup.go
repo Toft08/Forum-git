@@ -9,7 +9,7 @@ import (
 )
 
 // signUp handles both GET and POST requests for user registration
-func SignUp(w http.ResponseWriter, r *http.Request) {
+func SignUp(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	if r.Method == http.MethodGet {
 		RenderTemplate(w, "signup", nil)
 		return
@@ -29,13 +29,29 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Attempt to insert new user into database
-		_, err = db.Exec("INSERT INTO User (username, email, password, created_at) VALUES (?, ?, ?, ?)", username, email, hashedPassword, time.Now().Format("2006-01-02 15:04:05"))
+		//result, err := db.Exec("INSERT INTO User (username, email, password, created_at) VALUES (?, ?, ?, ?)",
+		_, err = db.Exec("INSERT INTO User (username, email, password, created_at) VALUES (?, ?, ?, ?)",
+			username, email, hashedPassword, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
 			ErrorHandler(w, "error2InSignup", "error", http.StatusNotFound)
 			log.Println("Error inserting user:", err)
-			// http.Error(w, "Email already exists", http.StatusBadRequest)
 			return
 		}
+
+		// Loggin the registered user in directly OR redirecting to the login page
+		// userID, err := result.LastInsertId()
+		// if err != nil {
+		// 	log.Println("Error getting user ID:", err)
+		// 	http.Error(w, "Failed to retrieve user ID", http.StatusInternalServerError)
+		// 	return
+		// }
+
+		// if err := createSession(w, int(userID)); err != nil {
+		// 	http.Error(w, "Failed to create session", http.StatusInternalServerError)
+		// 	return
+		// }
+
+		// data.LoggedIn = true
 
 		http.Redirect(w, r, "/", http.StatusFound)
 	}

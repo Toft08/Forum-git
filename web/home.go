@@ -5,17 +5,13 @@ import (
 	"net/http"
 )
 
-func HomePage(w http.ResponseWriter, r *http.Request) {
+func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	if r.URL.Path != "/" {
 		ErrorHandler(w, "error1InHomepage", "error", http.StatusNotFound)
 		return
 	}
 
-	data := PageDetails{}
-
-	IsLoggedIn, _ := IsLoggedIn(r)
-
-	data.LoggedIn = IsLoggedIn
+	data.LoggedIn, _ = IsLoggedIn(r)
 
 	//message := r.URL.Query().Get("message")
 
@@ -24,13 +20,9 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// log.Println("Error fetching posts:", err)
 		ErrorHandler(w, "error2InHomePage", "error", http.StatusNotFound)
-		// http.Error(w, "Failed to load posts", http.StatusInternalServerError)
 		return
 	}
 	defer rows.Close()
-
-	// Build a list of posts
-	posts := []PostDetails{}
 
 	for rows.Next() {
 		log.Println("Post id rows")
@@ -41,11 +33,9 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ErrorHandler(w, "Internal Server Error", "error", http.StatusInternalServerError)
 		}
-		posts = append(posts, *post)
+		data.Posts = append(data.Posts, *post)
 
 	}
-	data.Posts = posts
-
 	// Pass posts to template
 	RenderTemplate(w, "index", data)
 }

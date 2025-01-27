@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func Logout(w http.ResponseWriter, r *http.Request) {
+func Logout(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	cookie, err := r.Cookie("session_id")
 	if err == nil {
 		// Delete session from database
@@ -22,6 +22,8 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 		Path:     "/",
 	})
+
+	data.LoggedIn = false
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
