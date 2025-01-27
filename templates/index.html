@@ -1,20 +1,21 @@
 {{template "head"}}
 <body>
-{{template "navBar"}}
+{{template "navBar" .}}
     <main>
-      
         <h2>Latest Posts</h2>
-        
+
         {{range .Posts}}
         <div class="post">
             <h3><a href="/post/{{.PostID}}">{{.PostTitle}}</a></h3> 
+            <p>Author: {{.Username}}</p>
             <p>{{.PostContent}}</p>
+            <p><strong>Comments:</strong> {{len .Comments}}</p>
         </div>
-            {{else}}
-            <p>No posts yet. Be the first to create one!</p>
-            {{end}}
+        {{else}}
+        <p>No posts yet. Be the first to create one!</p>
+        {{end}}
+        
         <a href="/create-post">Create Post</a>
-
     </main>
 {{template "footer"}}
 </body>

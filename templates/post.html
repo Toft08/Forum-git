@@ -1,11 +1,11 @@
 {{template "head"}}
 <body>
-{{template "navBar"}}
+{{template "navBar" .}}
    
     <main>
         {{range .Posts}}
         <h2>{{.PostTitle}}</h2>
-
+        <h3>Author: {{.Username}}</h3>
         <div class="post">
             <p>{{.PostContent}}</p>
             </div>
@@ -15,6 +15,7 @@
             <h3>Comments:</h3>
             {{ range $index, $comment := .Comments }} 
                 <div class="comment">
+                    <p><strong>{{ $comment.Username }}</strong> says:</p>
                     <p>{{ $comment.Content }}</p>
                 </div>
             {{ end }}
