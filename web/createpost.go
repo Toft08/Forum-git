@@ -8,19 +8,15 @@ import (
 
 func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	// Check if user is logged in
-	var isLoggedIn bool
 	var userID int
+	var err error
 
-	sessionID, err := GetSessionID(r)
-	if err == nil {
-		// Verify session ID in the database
-		isLoggedIn, userID, err = VerifySession(sessionID)
-		if err != nil {
-			log.Println("Error verifying session:", err)
-		}
-	} else {
-		log.Println("No session ID cookie found")
+	// Verify session ID in the database
+	data.LoggedIn, userID, err = VerifySession(r)
+	if err != nil {
+		log.Println("Error verifying session:", err)
 	}
+	log.Println("No session ID cookie found")
 
 	// Render form if logged in, otherwise show error message
 	if r.Method == http.MethodGet {
@@ -54,18 +50,25 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 }
 
 // GetSessionID retrieves the session ID from the cookie
-func GetSessionID(r *http.Request) (string, error) {
+// func GetSessionID(r *http.Request) (string, error) {
+// 	cookie, err := r.Cookie("session_id")
+// 	if err != nil {
+
+//		}
+//		log.Println("Session ID:", cookie.Value)
+//		return cookie.Value, nil
+//	}
+//
+// VerifySession checks if the session ID exists in the database
+func VerifySession(r *http.Request) (bool, int, error) {
+	var userID int
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		log.Println("Session ID:", cookie.Value)
-
+		log.Println("No session ID cookie found")
+		return false, 0, err
 	}
-	return cookie.Value, nil
-}
-// VerifySession checks if the session ID exists in the database
-func VerifySession(sessionID string) (bool, int, error) {
-	var userID int
-	err := db.QueryRow("SELECT user_id FROM Session WHERE id = ?", sessionID).Scan(&userID)
+
+	err = db.QueryRow("SELECT user_id FROM Session WHERE id = ?", cookie.Value).Scan(&userID)
 	if err != nil {
 		return false, 0, err // return false if session ID not found
 	}

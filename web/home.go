@@ -10,8 +10,11 @@ func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		ErrorHandler(w, "error1InHomepage", "error", http.StatusNotFound)
 		return
 	}
-
-	data.LoggedIn, _ = IsLoggedIn(r)
+	var err error
+	data.LoggedIn, _, err = VerifySession(r)
+	if err != nil {
+		log.Println("Error verifying session:", err)
+	}
 
 	//message := r.URL.Query().Get("message")
 
