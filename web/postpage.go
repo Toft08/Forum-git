@@ -15,7 +15,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	postID, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/post/"))
 	if err != nil {
 		log.Println("Error converting postID to int:", err)
-		ErrorHandler(w, "Page Not Found", "error", http.StatusNotFound)
+		ErrorHandler(w, "Page Not Found", http.StatusNotFound)
 	}
 
 	// Check the cookie and get userID
@@ -29,7 +29,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	if r.Method == http.MethodPost {
 
 		if !data.LoggedIn {
-			ErrorHandler(w, "Unauthorized: You must be logged in to create a post", "error", http.StatusUnauthorized)
+			ErrorHandler(w, "Unauthorized: You must be logged in to create a post", http.StatusUnauthorized)
 			return
 		}
 
@@ -40,17 +40,17 @@ func PostHandler(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 			postID, content, userID, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
 			log.Println("Error creating post:", err)
-			ErrorHandler(w, "errorInCreatePost", "error", http.StatusNotFound)
+			ErrorHandler(w, "errorInCreatePost", http.StatusNotFound)
 			return
 		}
 	} else if r.Method != http.MethodGet {
-		ErrorHandler(w, "Method not allowed", "error", http.StatusMethodNotAllowed)
+		ErrorHandler(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 
 	post, err := getPostDetails(postID)
 	if err != nil {
 		log.Println("Error fetching post details:", err)
-		ErrorHandler(w, "Internal Server Error", "error", http.StatusInternalServerError)
+		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 

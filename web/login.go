@@ -24,13 +24,13 @@ func Login(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		var userID int
 		err := db.QueryRow("SELECT id, password FROM User WHERE username = ?", username).Scan(&userID, &hashedPassword)
 		if err != nil {
-			ErrorHandler(w, "error1InLogin", "error", http.StatusNotFound)
+			ErrorHandler(w, "error1InLogin", http.StatusNotFound)
 			return
 		}
 		// Verify submitted password matches stored hash
 		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 		if err != nil {
-			ErrorHandler(w, "error2InLogin", "error", http.StatusNotFound)
+			ErrorHandler(w, "error2InLogin", http.StatusNotFound)
 			return
 		}
 		// sessionID := uuid.NewString()

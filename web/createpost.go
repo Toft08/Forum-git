@@ -37,7 +37,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 			title, content, userID, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
 			log.Println("Error creating post:", err)
-			ErrorHandler(w, "errorInCreatePost", "error", http.StatusNotFound)
+			ErrorHandler(w, "errorInCreatePost", http.StatusNotFound)
 			return
 		}
 
