@@ -89,7 +89,6 @@ func getPostDetails(postID int) (*PostDetails, error) {
 		post.Categories = strings.Split(categories, ",")
 	}
 
-	log.Println("Adding comments")
 	postComments, err := getComments(postID)
 	if err != nil {
 		log.Println("Error getting comments")

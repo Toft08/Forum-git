@@ -51,7 +51,21 @@ func MyLikes() string {
 		Post.id 
 	FROM Post 
 	INNER JOIN Like ON Post.id = Like.post_id
-	WHERE Like.user_id = ?
+	WHERE Like.user_id = ? AND Like.type = 1
+	ORDER BY Post.created_at DESC;
+	`
+
+	return query
+}
+
+// MyDislikes returns the query to fetch posts disliked by the user
+func MyDislikes() string {
+	query := `
+	SELECT
+		Post.id 
+	FROM Post 
+	INNER JOIN Like ON Post.id = Like.post_id
+	WHERE Like.user_id = ? AND Like.type = 2
 	ORDER BY Post.created_at DESC;
 	`
 
