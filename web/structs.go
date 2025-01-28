@@ -24,5 +24,11 @@ type PostDetails struct {
 
 type PageDetails struct {
 	LoggedIn bool
+	Categories []Category
 	Posts    []PostDetails
+}
+
+type Category struct {
+	ID int
+	Name string
 }

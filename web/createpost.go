@@ -3,6 +3,7 @@ package web
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -20,6 +21,11 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	// Render form if logged in, otherwise show error message
 	if r.Method == http.MethodGet {
+		data.Categories, err = GetCategories(db)
+		if err != nil {
+			ErrorHandler(w, "Error in CreatePost: Retrieving categories", http.StatusNotFound)
+			return
+		}
 		RenderTemplate(w, "create-post", data)
 		return
 	}
@@ -33,14 +39,19 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 		title := r.FormValue("title")
 		content := r.FormValue("content")
+		categoryID, err := strconv.Atoi(r.FormValue("category"))
+		if err != nil {
+			ErrorHandler(w, "Error in CreatePost: Converting category ID", http.StatusBadRequest)
+			return
+		}
 		log.Println("Received title:", title)
 		log.Println("Received content:", content)
+		log.Println("Received category ID:", categoryID)
 
 		// Insert post into the database
 		_, err = db.Exec("INSERT INTO Post (title, content, user_id, created_at) VALUES (?, ?, ?, ?)",
-			title, content, userID, time.Now().Format("2006-01-02 15:04:05"))
+			title, content, userID, categoryID, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
-			log.Println("Error creating post:", err)
 			ErrorHandler(w, "errorInCreatePost", http.StatusNotFound)
 			return
 		}
