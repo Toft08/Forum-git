@@ -21,11 +21,6 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	// Render form if logged in, otherwise show error message
 	if r.Method == http.MethodGet {
-		data.Categories, err = GetCategories(db)
-		if err != nil {
-			ErrorHandler(w, "Error in CreatePost: Retrieving categories", http.StatusNotFound)
-			return
-		}
 		RenderTemplate(w, "create-post", data)
 		return
 	}
@@ -33,7 +28,8 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	// Process post creation if POST method and logged in
 	if r.Method == http.MethodPost {
 		if !data.LoggedIn {
-			http.Error(w, "Unauthorized: You must be logged in to create a post", http.StatusUnauthorized)
+			ErrorHandler(w, "Unauthorized: You must be logged in to create a post", http.StatusUnauthorized)
+			// http.Error(w, "Unauthorized: You must be logged in to create a post", http.StatusUnauthorized)
 			return
 		}
 
@@ -49,7 +45,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		log.Println("Received category ID:", categoryID)
 
 		// Insert post into the database
-		_, err = db.Exec("INSERT INTO Post (title, content, user_id, created_at) VALUES (?, ?, ?, ?)",
+		_, err = db.Exec("INSERT INTO Post (title, content, user_id, category_id, created_at) VALUES (?, ?, ?, ?)",
 			title, content, userID, categoryID, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
 			ErrorHandler(w, "errorInCreatePost", http.StatusNotFound)

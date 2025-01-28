@@ -20,6 +20,14 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 	db = database.InitDB()
 	defer db.Close()
 
+	    // Retrieve categories from the database
+		var err error
+		data.Categories, err = GetCategories(db)
+		if err != nil {
+			ErrorHandler(w, "Error retrieving categories", http.StatusInternalServerError)
+			return
+		}
+
 	switch r.URL.Path {
 	case "/":
 		HomePage(w, r, &data)
