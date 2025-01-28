@@ -49,16 +49,6 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	}
 }
 
-// GetSessionID retrieves the session ID from the cookie
-// func GetSessionID(r *http.Request) (string, error) {
-// 	cookie, err := r.Cookie("session_id")
-// 	if err != nil {
-
-//		}
-//		log.Println("Session ID:", cookie.Value)
-//		return cookie.Value, nil
-//	}
-//
 // VerifySession checks if the session ID exists in the database
 func VerifySession(r *http.Request) (bool, int, error) {
 	var userID int
