@@ -1,16 +1,11 @@
 {{template "head"}}
 <body>
-{{template "navBar" .}}
     <main>
         <h2>Error received</h2>
         <div id="error">
-            <h1>Error</h1>
-            {{.ErrorMessage}}
-            <a href="/">Go back to Home</a>
+                {{.ErrorMessage}}
+                <a href="/">Go back to Home</a>
         </div>
     </main>
-    <footer>
-        <p>&copy; 2025 Simple Forum. All rights reserved.</p>
-    </footer>
 </body>
 </html>
