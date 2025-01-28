@@ -20,6 +20,14 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 	db = database.InitDB()
 	defer db.Close()
 
+	// Retrieve categories from the database
+	var err error
+	data.Categories, err = GetCategories()
+	if err != nil {
+		ErrorHandler(w, "Error retrieving categories", http.StatusInternalServerError)
+		return
+	}
+
 	switch r.URL.Path {
 	case "/":
 		HomePage(w, r, &data)
@@ -41,7 +49,7 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// renderTemplate handles the rendering of HTML templates with provided data
+// RenderTemplate handles the rendering of HTML templates with provided data
 func RenderTemplate(w http.ResponseWriter, t string, data interface{}) {
 
 	err := tmpl.ExecuteTemplate(w, t+".html", data)
@@ -67,4 +75,21 @@ func ErrorHandler(w http.ResponseWriter, errorMessage string, statusCode int) {
 		http.Error(w, errorMessage, statusCode)
 		return
 	}
+}
+
+// VerifySession checks if the session ID exists in the database
+func VerifySession(r *http.Request) (bool, int) {
+	var userID int
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		log.Println("No session ID cookie found")
+		return false, 0
+	}
+
+	err = db.QueryRow("SELECT user_id FROM Session WHERE id = ?", cookie.Value).Scan(&userID)
+	if err != nil {
+		log.Println("No userID found for the cookie")
+		return false, 0
+	}
+	return true, userID
 }

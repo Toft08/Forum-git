@@ -22,15 +22,15 @@ type PostDetails struct {
 	Dislikes    int
 }
 
-type CategoryDetails struct {
-	CategoryID int
-	Name       string
-}
-
 type PageDetails struct {
 	LoggedIn         bool
-	Posts            []PostDetails
 	Categories       []CategoryDetails
-	SelectedFilter   string
+	Posts            []PostDetails
 	SelectedCategory string
+	SelectedFilter   string
+}
+
+type CategoryDetails struct {
+	CategoryID   int
+	CategoryName string
 }

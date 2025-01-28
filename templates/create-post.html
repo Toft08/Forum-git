@@ -10,6 +10,15 @@
         <label for="content">Content:</label>
         <textarea id="content" name="content" required></textarea>
         <br>
+        <label for="category">Category:</label>
+        <select id="category" name="category" required>
+            <option value="general" selected>General</option>
+            <option value="tutorial">Tutorial</option>
+            <option value="question">Question</option>
+            {{range .Categories}}
+            <option value="{{.ID}}">{{.Name}}</option>
+            {{end}}
+        </select>
         <button type="submit">Submit Post</button>
     </form>
     {{else}}
