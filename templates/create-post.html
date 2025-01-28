@@ -1,20 +1,62 @@
 {{template "head"}}
 <body>
     {{template "navBar" .}}
-    <h2>Create a New Post</h2>
     {{if .LoggedIn}}
-    <form action="/create-post" method="POST">
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required>
-        <br>
-        <label for="content">Content:</label>
-        <textarea id="content" name="content" required></textarea>
-        <br>
-        <button type="submit">Submit Post</button>
-    </form>
+    <div class="container">
+        <form action="/create-post" method="POST">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required>
+            <br>
+            <label for="content">Content:</label>
+            <textarea id="content" name="content" required></textarea>
+            <br>
+            <label for="topics">Select Topics:</label>
+            <div class="bubble-buttons" id="topics">
+                <button type="button" class="bubble-button" data-value="General" selected>General</button>
+                <button type="button" class="bubble-button" data-value="Home">Home</button>
+                <button type="button" class="bubble-button" data-value="Health">Health</button>
+                <button type="button" class="bubble-button" data-value="Sports">Sports</button>
+            </div>
+            <input type="hidden" name="topics" id="selectedTopics" value="General">
+            <br>
+            <button type="submit">Submit Post</button>
+        </form>
     {{else}}
     <p>You must be logged in to create a post.</p>
     {{end}}
+    </div>
+    <script>
+        const bubbleButtons = document.querySelectorAll('.bubble-button');
+        const selectedTopicsInput = document.getElementById('selectedTopics');
+
+        // Set "General" as the default selection
+        const generalButton = document.querySelector('.bubble-button[data-value="General"]');
+        generalButton.classList.add('active');
+
+        // Ensure the hidden input has "General" by default
+        selectedTopicsInput.value = "General";
+
+        // Add click event listeners
+        bubbleButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Toggle the active state
+                button.classList.toggle('active');
+
+                // Update the hidden input with selected values
+                const selectedTopics = Array.from(bubbleButtons)
+                    .filter(btn => btn.classList.contains('active'))
+                    .map(btn => btn.getAttribute('data-value'));
+
+                // Ensure "General" is always selected if no topics are selected
+                if (selectedTopics.length === 0) {
+                    generalButton.classList.add('active');
+                    selectedTopics.push("General");
+                }
+
+                selectedTopicsInput.value = selectedTopics.join(',');
+            });
+        });
+    </script>
 </body>
 {{template "footer"}}
 </html>
