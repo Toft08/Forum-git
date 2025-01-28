@@ -4,22 +4,22 @@ package database
 func PostContent() string {
 	query := `
 		SELECT 
-			post.id AS post_id,
-			post.user_id AS user_id,
-			user.username AS username, 
-			post.title AS post_title,
-			post.content AS post_content,
-			post.created_at AS post_created_at,
-			COUNT(CASE WHEN like.type = 0 THEN 1 END) AS post_likes,
-			COUNT(CASE WHEN like.type = 1 THEN 1 END) AS post_dislikes,
+			Post.id AS post_id,
+			Post.user_id AS user_id,
+			User.username AS username, 
+			Post.title AS post_title,
+			Post.content AS post_content,
+			Post.created_at AS post_created_at,
+			COUNT(CASE WHEN Like.type = 0 THEN 1 END) AS post_likes,
+			COUNT(CASE WHEN Like.type = 1 THEN 1 END) AS post_dislikes,
 			COALESCE(GROUP_CONCAT(Category.name, ','), '') AS categories
 		FROM post
-		LEFT JOIN user ON post.user_id = user.id
-		LEFT JOIN like ON post.id = like.post_id
+		LEFT JOIN user ON Post.user_id = User.id
+		LEFT JOIN like ON Post.id = Like.post_id
 		LEFT JOIN Post_Category ON Post.id = Post_Category.post_id
 		LEFT JOIN Category ON Post_Category.category_id = Category.id
-		WHERE post.id = ?
-		GROUP BY post.id;
+		WHERE Post.id = ?
+		GROUP BY Post.id;
 
 	`
 	return query
@@ -29,17 +29,45 @@ func PostContent() string {
 func CommentContent() string {
 	query := `
 		SELECT 
-			comment.id AS comment_id,
-			comment.content AS comment_content,
-			comment.user_id,
-			user.username AS username,
-			COUNT(CASE WHEN like.type = 0 THEN 1 END) AS comment_likes,
-			COUNT(CASE WHEN like.type = 1 THEN 1 END) AS comment_dislikes
+			Comment.id AS comment_id,
+			Comment.content AS comment_content,
+			Comment.user_id,
+			User.username AS username,
+			COUNT(CASE WHEN Like.type = 0 THEN 1 END) AS comment_likes,
+			COUNT(CASE WHEN Like.type = 1 THEN 1 END) AS comment_dislikes
 		FROM comment
-		LEFT JOIN user ON comment.user_id = user.id
-		LEFT JOIN like ON comment.id = like.comment_id
-		WHERE comment.post_id = ?
-		GROUP BY comment.id, user.id;
+		LEFT JOIN user ON Comment.user_id = User.id
+		LEFT JOIN like ON Comment.id = Like.comment_id
+		WHERE Comment.post_id = ?
+		GROUP BY Comment.id, User.id;
 `
+	return query
+}
+
+// MyLikes returns the query to fetch posts liked by the user
+func MyLikes() string {
+	query := `
+	SELECT
+		Post.id 
+	FROM Post 
+	INNER JOIN Like ON Post.id = Like.post_id
+	WHERE Like.user_id = ? AND Like.type = 1
+	ORDER BY Post.created_at DESC;
+	`
+
+	return query
+}
+
+// MyDislikes returns the query to fetch posts disliked by the user
+func MyDislikes() string {
+	query := `
+	SELECT
+		Post.id 
+	FROM Post 
+	INNER JOIN Like ON Post.id = Like.post_id
+	WHERE Like.user_id = ? AND Like.type = 2
+	ORDER BY Post.created_at DESC;
+	`
+
 	return query
 }

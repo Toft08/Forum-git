@@ -20,7 +20,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	// Check the cookie and get userID
 	var userID int
-	data.LoggedIn, userID, err = VerifySession(r)
+	data.LoggedIn, userID = VerifySession(r)
 	if err != nil {
 		log.Println("Error verifying session:", err)
 	}
@@ -89,7 +89,6 @@ func getPostDetails(postID int) (*PostDetails, error) {
 		post.Categories = strings.Split(categories, ",")
 	}
 
-	log.Println("Adding comments")
 	postComments, err := getComments(postID)
 	if err != nil {
 		log.Println("Error getting comments")

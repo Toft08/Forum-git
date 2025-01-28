@@ -1,31 +1,20 @@
 package web
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 )
 
+// CreatePost receives details for created post and inserts them into the database
 func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
-	// Check if user is logged in
 	var userID int
 	var err error
 
-	// Verify session ID in the database
-	data.LoggedIn, userID, err = VerifySession(r)
-	if err != nil {
-		log.Println("Error verifying session:", err)
-	}
-	log.Println("No session ID cookie found")
+	data.LoggedIn, userID = VerifySession(r)
 
-	// Render form if logged in, otherwise show error message
-	if r.Method == http.MethodGet {
-		RenderTemplate(w, "create-post", data)
-		return
-	}
-
-	// Process post creation if POST method and logged in
 	if r.Method == http.MethodPost {
 		if !data.LoggedIn {
 			ErrorHandler(w, "Unauthorized: You must be logged in to create a post", http.StatusUnauthorized)
@@ -33,41 +22,62 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 			return
 		}
 
-		title := r.FormValue("title")
-		content := r.FormValue("content")
-		categoryID, err := strconv.Atoi(r.FormValue("category"))
+		err = r.ParseForm()
 		if err != nil {
-			ErrorHandler(w, "Error in CreatePost: Converting category ID", http.StatusBadRequest)
+			http.Error(w, "Unable to parse form", http.StatusBadRequest)
 			return
 		}
+
+		title := r.FormValue("title")
+		content := r.FormValue("content")
+
+		categories := r.Form["category"]
+
 		log.Println("Received title:", title)
 		log.Println("Received content:", content)
-		log.Println("Received category ID:", categoryID)
 
 		// Insert post into the database
-		_, err = db.Exec("INSERT INTO Post (title, content, user_id, category_id, created_at) VALUES (?, ?, ?, ?)",
-			title, content, userID, categoryID, time.Now().Format("2006-01-02 15:04:05"))
+		var result sql.Result
+		result, err = db.Exec("INSERT INTO Post (title, content, user_id, created_at) VALUES (?, ?, ?, ?)",
+			title, content, userID, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
 			ErrorHandler(w, "errorInCreatePost", http.StatusNotFound)
 			return
 		}
 
+		// Get the post id for the post inserted
+		postID, err := result.LastInsertId()
+		if err != nil {
+			ErrorHandler(w, "errorGettingPostID", http.StatusInternalServerError)
+			return
+		}
+		// If no category chosen, give category id 1 (=general)
+		if len(categories) == 0 {
+			categories = append(categories, "1")
+		}
+		// Add all categories into Post_category table
+		for _, cat := range categories {
+			var categoryID int
+			categoryID, err = strconv.Atoi(cat)
+			if err != nil {
+				log.Println("Error converting categoryID", err)
+				ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
+
+			}
+			_, err = db.Exec("INSERT INTO Post_category (category_id, post_id) VALUES (?, ?)",
+				categoryID, postID)
+			if err != nil {
+				ErrorHandler(w, "errorInInsertCategory", http.StatusNotFound)
+				return
+			}
+		}
+
 		http.Redirect(w, r, "/", http.StatusFound)
-	}
-}
 
-// VerifySession checks if the session ID exists in the database
-func VerifySession(r *http.Request) (bool, int, error) {
-	var userID int
-	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		log.Println("No session ID cookie found")
-		return false, 0, err
+	} else if r.Method != http.MethodGet {
+
+		ErrorHandler(w, "Wrong method", http.StatusMethodNotAllowed)
 	}
 
-	err = db.QueryRow("SELECT user_id FROM Session WHERE id = ?", cookie.Value).Scan(&userID)
-	if err != nil {
-		return false, 0, err // return false if session ID not found
-	}
-	return true, userID, nil
+	RenderTemplate(w, "create-post", data)
 }

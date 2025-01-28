@@ -1,7 +1,6 @@
 package web
 
 import (
-	"database/sql"
 	"log"
 )
 
@@ -16,7 +15,7 @@ import (
 // }
 
 // GetCategories retrieves all categories from the database
-func GetCategories(db *sql.DB) ([]Category, error) {
+func GetCategories() ([]CategoryDetails, error) {
 	rows, err := db.Query("SELECT id, name FROM Category")
 	if err != nil {
 		log.Println("Error retrieving categories:", err)
@@ -24,10 +23,10 @@ func GetCategories(db *sql.DB) ([]Category, error) {
 	}
 	defer rows.Close()
 
-	var categories []Category
+	var categories []CategoryDetails
 	for rows.Next() {
-		var category Category
-		if err := rows.Scan(&category.ID, &category.Name); err != nil {
+		var category CategoryDetails
+		if err := rows.Scan(&category.CategoryID, &category.CategoryName); err != nil {
 			log.Println("Error scanning category:", err)
 			return nil, err
 		}
