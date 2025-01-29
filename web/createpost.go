@@ -32,7 +32,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		title := r.FormValue("title")
 		content := r.FormValue("content")
 
-		categories := r.Form["category"]
+		categories := r.Form["topics"]
 
 		log.Printf("Title: %v\nContent: %v\nCategories: %v\n", title, content, categories)
 
