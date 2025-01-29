@@ -14,8 +14,8 @@
             <div class="bubble-buttons" id="topics">
                 {{ range $index, $category := .Categories }}
                 <button type="button" class="bubble-button {{ if eq $index 0 }}selected{{ end }}" 
-                        data-value="{{ $category.Name }}">
-                    {{ $category.Name }}
+                        data-value="{{ $category.CategoryName }}">
+                    {{ $category.CategoryName }}
                 </button>
                 {{ end }}
             </div>
