@@ -13,33 +13,37 @@ import (
 func Login(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	switch r.Method {
 	case http.MethodGet:
-		RenderTemplate(w, "login", nil)
+		handleLoginGet(w)
 	case http.MethodPost:
-		HandleLoginPost(w, r, data)
+		handleLoginPost(w, r, data)
 	default:
 		ErrorHandler(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
 }
 
-func HandleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
+func handleLoginGet(w http.ResponseWriter) {
+	RenderTemplate(w, "login", nil)
+}
+
+func handleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	userID, hashedPassword, err := GetUserCredentials(username)
+	userID, hashedPassword, err := getUserCredentials(username)
 	if err != nil {
-		HandleLoginError(w, "error1InLogin", err)
+		handleLoginError(w, "error1InLogin", err)
 		return
 	}
 
 	// Verify password
-	if err := VerifyPassword(hashedPassword, password); err != nil {
-		HandleLoginError(w, "error2InLogin", err)
+	if err := verifyPassword(hashedPassword, password); err != nil {
+		handleLoginError(w, "error2InLogin", err)
 		return
 	}
 
 	// Create session
-	if err := CreateSession(w, userID); err != nil {
-		ErrorHandler(w, "Failed to create session", http.StatusInternalServerError)
+	if err := createSession(w, userID); err != nil {
+		http.Error(w, "Failed to create session", http.StatusInternalServerError)
 		return
 	}
 
@@ -47,7 +51,7 @@ func HandleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) 
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-func GetUserCredentials(username string) (int, string, error) {
+func getUserCredentials(username string) (int, string, error) {
 	var userID int
 	var hashedPassword string
 
@@ -58,20 +62,19 @@ func GetUserCredentials(username string) (int, string, error) {
 	return userID, hashedPassword, nil
 }
 
-func VerifyPassword(hashedPassword, password string) error {
+func verifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
-func HandleLoginError(w http.ResponseWriter, message string, err error) {
+func handleLoginError(w http.ResponseWriter, message string, err error) {
 	ErrorHandler(w, message, http.StatusNotFound)
 	log.Println(message, err)
 }
 
-// CreateSession creates a new session for the user
-func CreateSession(w http.ResponseWriter, userID int) error {
+func createSession(w http.ResponseWriter, userID int) error {
+
 	_, err := db.Exec("DELETE FROM Session WHERE user_id = ?", userID)
 	if err != nil {
-		log.Println("Error deleting session:", err)
 		return err
 	}
 
@@ -87,10 +90,6 @@ func CreateSession(w http.ResponseWriter, userID int) error {
 	// Store session ID in database
 	_, err = db.Exec("INSERT INTO Session (id, user_id, created_at) VALUES (?, ?, ?)",
 		sessionID, userID, time.Now().Format("2006-01-02 15:04:05"))
-	if err != nil {
-		log.Println("Error storing session into database:", err)
-		return err
-	}
 
-	return nil
+	return err
 }
