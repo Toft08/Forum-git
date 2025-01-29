@@ -2,9 +2,11 @@
 <body>
 {{template "navBar" .}}
     <main>
-
-        <!-- Filter Form -->
-        <form class="filter" method="POST" action="/">
+ <!-- button to toggle filter visibility -->
+ <button id="filterButton" class="show-filter-button">show filters</button>
+ <!-- Filter Form (hidden by default) -->
+ <form class="filter" method="POST" action="/">
+     <div style="display: none;"> <!-- make sure this is inside the form -->
             <!-- Topic Filter -->
             <div class="filter-group">
                 <label for="topicFilter" class="filter-label">Filter by Topic:</label>
@@ -28,8 +30,8 @@
             </div>
             {{end}}
                 <button type="submit" class="filter-button">Apply Filters</button>
+        </div>
         </form>
-
         <h2>Latest Posts</h2>
 
         {{range .Posts}}
@@ -48,4 +50,18 @@
     </main>
 {{template "footer"}}
 </body>
+
+<script>
+    // Add the following JavaScript to toggle the filter form
+    document.getElementById('filterButton').addEventListener('click', function() {
+        var form = document.querySelector('.filter');
+        if (form.classList.contains('show-filter')) {
+            form.classList.remove('show-filter');
+            this.textContent = 'show filters';
+        } else {
+            form.classList.add('show-filter');
+            this.textContent = 'hide filters';
+        }
+    });
+</script>
 </html>

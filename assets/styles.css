@@ -267,3 +267,13 @@ button:hover {
 .hidden-category {
     display: none;
 }
+
+.show-filter-button {
+    cursor: pointer;
+}
+.filter {
+    display: none;
+}
+.filter.show-filter {
+    display: block;
+}
