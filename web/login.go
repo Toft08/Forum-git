@@ -11,45 +11,64 @@ import (
 
 // login handles both GET and POST requests for user authentication
 func Login(w http.ResponseWriter, r *http.Request, data *PageDetails) {
-	if r.Method == http.MethodGet {
+	switch r.Method {
+	case http.MethodGet:
 		RenderTemplate(w, "login", nil)
+	case http.MethodPost:
+		HandleLoginPost(w, r, data)
+	default:
+		ErrorHandler(w, "Invalid request method", http.StatusMethodNotAllowed)
+	}
+}
+
+func HandleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+
+	userID, hashedPassword, err := GetUserCredentials(username)
+	if err != nil {
+		HandleLoginError(w, "error1InLogin", err)
 		return
 	}
 
-	if r.Method == http.MethodPost {
-		username := r.FormValue("username")
-		password := r.FormValue("password")
-
-		// Query database for user's hashed password using their email
-		var hashedPassword string
-		var userID int
-		err := db.QueryRow("SELECT id, password FROM User WHERE username = ?", username).Scan(&userID, &hashedPassword)
-		if err != nil {
-			ErrorHandler(w, "error1InLogin", http.StatusNotFound)
-			return
-		}
-		// Verify submitted password matches stored hash
-		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-		if err != nil {
-			ErrorHandler(w, "error2InLogin", http.StatusNotFound)
-			return
-		}
-
-		if err := CreateSession(w, userID); err != nil {
-			http.Error(w, "Failed to create session", http.StatusInternalServerError)
-			return
-		}
-
-		data.LoggedIn = true
-
-		http.Redirect(w, r, "/", http.StatusFound)
-
+	// Verify password
+	if err := VerifyPassword(hashedPassword, password); err != nil {
+		HandleLoginError(w, "error2InLogin", err)
+		return
 	}
+
+	// Create session
+	if err := CreateSession(w, userID); err != nil {
+		ErrorHandler(w, "Failed to create session", http.StatusInternalServerError)
+		return
+	}
+
+	data.LoggedIn = true
+	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+func GetUserCredentials(username string) (int, string, error) {
+	var userID int
+	var hashedPassword string
+
+	err := db.QueryRow("SELECT id, password FROM User WHERE username = ?", username).Scan(&userID, &hashedPassword)
+	if err != nil {
+		return 0, "", err
+	}
+	return userID, hashedPassword, nil
+}
+
+func VerifyPassword(hashedPassword, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+}
+
+func HandleLoginError(w http.ResponseWriter, message string, err error) {
+	ErrorHandler(w, message, http.StatusNotFound)
+	log.Println(message, err)
 }
 
 // CreateSession creates a new session for the user
 func CreateSession(w http.ResponseWriter, userID int) error {
-
 	_, err := db.Exec("DELETE FROM Session WHERE user_id = ?", userID)
 	if err != nil {
 		log.Println("Error deleting session:", err)
