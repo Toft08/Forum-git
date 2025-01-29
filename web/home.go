@@ -56,8 +56,7 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	data.LoggedIn, userID = VerifySession(r)
 	data.SelectedFilter = r.FormValue("filter")
 	data.SelectedCategory = r.FormValue("topic")
-	log.Println(data.SelectedCategory)
-	log.Println(data.SelectedFilter)
+
 	if !data.LoggedIn && data.SelectedFilter != "" {
 		log.Println("User not logged in")
 		return
@@ -85,7 +84,6 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	}
 	query += " ORDER BY Post.created_at DESC;"
 	// Fetch posts from the database for a specific user
-	log.Println(query)
 	rows, err = db.Query(query, args...)
 	if err != nil {
 		log.Println("Error fetching posts by filter:", err)
