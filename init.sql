@@ -36,6 +36,8 @@ CREATE TABLE Category (
 
 -- POST_CATEGORY Table
 CREATE TABLE Post_Category (
+    -- Might need to change the primary key to a composite key like the one below.
+    -- PRIMARY KEY (category_id, post_id),
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     category_id INTEGER NOT NULL,
     post_id INTEGER NOT NULL,
@@ -63,6 +65,10 @@ CREATE TABLE Session (
     created_at TEXT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES USER (id)
 );
+
+INSERT INTO Category (name) VALUES ('General');
+INSERT INTO Category (name) VALUES ('Tutorial');
+INSERT INTO Category (name) VALUES ('Question');
 
 INSERT INTO User (email, username, password, created_at) VALUES 
 ('admin@example.com', 'admin', 'hashedpassword', datetime('now'));

@@ -12,10 +12,12 @@
             <br>
             <label for="topics">Select Topics:</label>
             <div class="bubble-buttons" id="topics">
-                <button type="button" class="bubble-button" data-value="General" selected>General</button>
-                <button type="button" class="bubble-button" data-value="Home">Home</button>
-                <button type="button" class="bubble-button" data-value="Health">Health</button>
-                <button type="button" class="bubble-button" data-value="Sports">Sports</button>
+                {{ range $index, $category := .Categories }}
+                <button type="button" class="bubble-button {{ if eq $index 0 }}selected{{ end }}" 
+                        data-value="{{ $category.Name }}">
+                    {{ $category.Name }}
+                </button>
+                {{ end }}
             </div>
             <input type="hidden" name="topics" id="selectedTopics" value="General">
             <br>

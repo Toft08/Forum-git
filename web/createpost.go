@@ -3,6 +3,7 @@ package web
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -27,20 +28,26 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	// Process post creation if POST method and logged in
 	if r.Method == http.MethodPost {
 		if !data.LoggedIn {
-			http.Error(w, "Unauthorized: You must be logged in to create a post", http.StatusUnauthorized)
+			ErrorHandler(w, "Unauthorized: You must be logged in to create a post", http.StatusUnauthorized)
+			// http.Error(w, "Unauthorized: You must be logged in to create a post", http.StatusUnauthorized)
 			return
 		}
 
 		title := r.FormValue("title")
 		content := r.FormValue("content")
+		categoryID, err := strconv.Atoi(r.FormValue("category"))
+		if err != nil {
+			ErrorHandler(w, "Error in CreatePost: Converting category ID", http.StatusBadRequest)
+			return
+		}
 		log.Println("Received title:", title)
 		log.Println("Received content:", content)
+		log.Println("Received category ID:", categoryID)
 
 		// Insert post into the database
-		_, err = db.Exec("INSERT INTO Post (title, content, user_id, created_at) VALUES (?, ?, ?, ?)",
-			title, content, userID, time.Now().Format("2006-01-02 15:04:05"))
+		_, err = db.Exec("INSERT INTO Post (title, content, user_id, category_id, created_at) VALUES (?, ?, ?, ?)",
+			title, content, userID, categoryID, time.Now().Format("2006-01-02 15:04:05"))
 		if err != nil {
-			log.Println("Error creating post:", err)
 			ErrorHandler(w, "errorInCreatePost", http.StatusNotFound)
 			return
 		}
