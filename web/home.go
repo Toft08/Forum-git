@@ -1,6 +1,8 @@
 package web
 
 import (
+	"database/sql"
+	"forum/database"
 	"log"
 	"net/http"
 )
@@ -10,25 +12,48 @@ func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		ErrorHandler(w, "error1InHomepage", http.StatusNotFound)
 		return
 	}
+
+	var userID int
+	var rows *sql.Rows
 	var err error
-	data.LoggedIn, _, err = VerifySession(r)
-	if err != nil {
-		log.Println("Error verifying session:", err)
-	}
+	query := "SELECT id FROM Post ORDER BY created_at DESC"
 
-	//message := r.URL.Query().Get("message")
+	data.LoggedIn, userID = VerifySession(r)
 
-	// Fetch posts from the database
-	rows, err := db.Query("SELECT id FROM Post ORDER BY created_at DESC")
-	if err != nil {
-		// log.Println("Error fetching posts:", err)
-		ErrorHandler(w, "error2InHomePage", http.StatusNotFound)
-		return
+	if r.Method == http.MethodPost {
+		data.SelectedCategory = r.FormValue("topic")
+		if data.LoggedIn {
+			data.SelectedFilter = r.FormValue("filter")
+
+			switch data.SelectedFilter {
+			case "createdByMe":
+				query = "SELECT id FROM Post WHERE user_id = ? ORDER BY created_at DESC"
+			case "likedByMe":
+				query = database.MyLikes()
+			case "dislikedByMe":
+				query = database.MyDislikes()
+			}
+			// Fetch posts from the database for a specific user
+			rows, err = db.Query(query, userID)
+			if err != nil {
+				log.Println("Error fetching posts by filter:", err)
+				ErrorHandler(w, "errorFetchingPosts", http.StatusNotFound)
+				return
+			}
+		}
+	} else if r.Method == http.MethodGet {
+
+		// Fetch posts from the database
+		rows, err = db.Query(query)
+		if err != nil {
+			// log.Println("Error fetching posts:", err)
+			ErrorHandler(w, "error2InHomePage", http.StatusNotFound)
+			return
+		}
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		log.Println("Post id rows")
 		var id int
 		rows.Scan(&id)
 		post, err := getPostDetails(id)
@@ -39,6 +64,6 @@ func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		data.Posts = append(data.Posts, *post)
 
 	}
-	// Pass posts to template
+
 	RenderTemplate(w, "index", data)
 }
