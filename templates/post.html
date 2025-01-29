@@ -11,7 +11,7 @@
             {{end}}
         <h3>Author: {{.Username}}</h3>
         <p>Created at: {{.CreatedAt}}</p>
-        <div class="post">
+        <div class="post-card">
             <p>{{.PostContent}}</p>
             <div class="reaction-buttons">
                 <button id="like-btn" class="reaction-btn">👍</button>
@@ -27,6 +27,7 @@
             {{ range $index, $comment := .Comments }} 
                 <div class="comment">
                     <p><strong>{{ $comment.Username }}</strong> says:</p>
+                    <div class="post-card">
                     <p>{{ $comment.Content }}</p>
                     <div class="reaction-buttons">
                         <button class="comment-like-btn reaction-btn">👍</button>
@@ -34,6 +35,7 @@
                         <button class="comment-dislike-btn reaction-btn">👎</button>
                         <span class="comment-dislike-count reaction-count">0</span>
                       </div>
+                    </div>
                 </div>
             {{ end }}
         {{ end }}
