@@ -9,9 +9,9 @@
             <div class="filter-group">
                 <label for="topicFilter" class="filter-label">Filter by Topic:</label>
                 <select id="topicFilter" name="topic" class="filter-select">
+                    <option value="None">-</option>
                     {{ range $index, $category := .Categories }}
-                    <!-- assuming general is index 0 -->
-                    <option value="{{ $category.CategoryID }}" {{ if eq $index 0 }}selected{{ end }}>{{ $category.CategoryName }}</option>
+                    <option value="{{ $category.CategoryID }}">{{ $category.CategoryName }}</option>
                     {{ end }}
                 </select>
             </div>
