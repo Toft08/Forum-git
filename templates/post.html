@@ -5,7 +5,12 @@
     <main>
         {{range .Posts}}
         <h2>{{.PostTitle}}</h2>
+        <h3>Categories:
+            {{range $index, $category := .Categories}}
+                {{if $index}}{{end}} {{$category}}
+            {{end}}
         <h3>Author: {{.Username}}</h3>
+        <p>Created at: {{.CreatedAt}}</p>
         <div class="post">
             <p>{{.PostContent}}</p>
             <div class="reaction-buttons">
