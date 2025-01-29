@@ -9,10 +9,10 @@
             <div class="filter-group">
                 <label for="topicFilter" class="filter-label">Filter by Topic:</label>
                 <select id="topicFilter" name="topic" class="filter-select">
-                    <option value="General" selected>General</option>
-                    <option value="Home">Home</option>
-                    <option value="Health">Health</option>
-                    <option value="Sports">Sports</option>
+                    {{ range $index, $category := .Categories }}
+                    <!-- assuming general is index 0 -->
+                    <option value="{{ $category.Name }}" {{ if eq $index 0 }}selected{{ end }}>{{ $category.Name }}</option>
+                    {{ end }}
                 </select>
             </div>
             {{if .LoggedIn}}
