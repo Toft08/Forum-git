@@ -1,6 +1,7 @@
 package web
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -33,22 +34,8 @@ func Login(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 			ErrorHandler(w, "error2InLogin", http.StatusNotFound)
 			return
 		}
-		// sessionID := uuid.NewString()
-		// http.SetCookie(w, &http.Cookie{
-		// 	Name:     "session_id",
-		// 	Value:    sessionID,
-		// 	Expires:  time.Now().Add(24 * time.Hour),
-		// 	HttpOnly: true,
-		// 	Path:    "/",
-		// })
 
-		// Store session ID in database, associated with userID
-		// _, err = db.Exec("INSERT INTO Session (id, user_id, created_at) VALUES (?, ?, ?)", sessionID, userID, time.Now().Format("2006-01-02 15:04:05"))
-		// if err != nil {
-		// 	http.Error(w, "Failed to create session", http.StatusInternalServerError)
-		// 	return
-		// }
-		if err := createSession(w, userID); err != nil {
+		if err := CreateSession(w, userID); err != nil {
 			http.Error(w, "Failed to create session", http.StatusInternalServerError)
 			return
 		}
@@ -59,10 +46,13 @@ func Login(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	}
 }
-func createSession(w http.ResponseWriter, userID int) error {
+
+// CreateSession creates a new session for the user
+func CreateSession(w http.ResponseWriter, userID int) error {
 
 	_, err := db.Exec("DELETE FROM Session WHERE user_id = ?", userID)
 	if err != nil {
+		log.Println("Error deleting session:", err)
 		return err
 	}
 
@@ -78,6 +68,10 @@ func createSession(w http.ResponseWriter, userID int) error {
 	// Store session ID in database
 	_, err = db.Exec("INSERT INTO Session (id, user_id, created_at) VALUES (?, ?, ?)",
 		sessionID, userID, time.Now().Format("2006-01-02 15:04:05"))
+	if err != nil {
+		log.Println("Error storing session into database:", err)
+		return err
+	}
 
-	return err
+	return nil
 }

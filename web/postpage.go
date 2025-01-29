@@ -21,12 +21,10 @@ func PostHandler(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	// Check the cookie and get userID
 	var userID int
 	data.LoggedIn, userID = VerifySession(r)
-	if err != nil {
-		log.Println("Error verifying session:", err)
-	}
 	data.Posts = nil
 
 	if r.Method == http.MethodPost {
+		data.LoggedIn, _ = VerifySession(r)
 
 		if !data.LoggedIn {
 			ErrorHandler(w, "Unauthorized: You must be logged in to create a post", http.StatusUnauthorized)
@@ -44,7 +42,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 			return
 		}
 	} else if r.Method != http.MethodGet {
-		ErrorHandler(w, "Method not allowed", http.StatusMethodNotAllowed)
+		ErrorHandler(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 
 	post, err := getPostDetails(postID)

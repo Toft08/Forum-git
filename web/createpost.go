@@ -16,15 +16,16 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	data.LoggedIn, userID = VerifySession(r)
 
 	if r.Method == http.MethodPost {
+		data.LoggedIn, _ = VerifySession(r)
 		if !data.LoggedIn {
-			ErrorHandler(w, "Unauthorized: You must be logged in to create a post", http.StatusUnauthorized)
-			// http.Error(w, "Unauthorized: You must be logged in to create a post", http.StatusUnauthorized)
+			ErrorHandler(w, "You must be logged in to create a post", http.StatusUnauthorized)
 			return
 		}
 
 		err = r.ParseForm()
 		if err != nil {
-			http.Error(w, "Unable to parse form", http.StatusBadRequest)
+			log.Println("Unable to parse form:", err)
+			ErrorHandler(w, "Bad Request", http.StatusBadRequest)
 			return
 		}
 
@@ -33,51 +34,67 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 		categories := r.Form["category"]
 
-		log.Println("Received title:", title)
-		log.Println("Received content:", content)
+		log.Printf("Title: %v\nContent: %v\nCategories: %v\n", title, content, categories)
 
-		// Insert post into the database
-		var result sql.Result
-		result, err = db.Exec("INSERT INTO Post (title, content, user_id, created_at) VALUES (?, ?, ?, ?)",
-			title, content, userID, time.Now().Format("2006-01-02 15:04:05"))
-		if err != nil {
-			ErrorHandler(w, "errorInCreatePost", http.StatusNotFound)
+		if title == "" || content == "" {
+			ErrorHandler(w, "Title or content cannot be empty", http.StatusBadRequest)
 			return
 		}
 
-		// Get the post id for the post inserted
-		postID, err := result.LastInsertId()
-		if err != nil {
-			ErrorHandler(w, "errorGettingPostID", http.StatusInternalServerError)
-			return
-		}
-		// If no category chosen, give category id 1 (=general)
 		if len(categories) == 0 {
-			categories = append(categories, "1")
+			categories = append(categories, "1") // If no category chosen, give category id 1 (=general)
 		}
-		// Add all categories into Post_category table
-		for _, cat := range categories {
-			var categoryID int
-			categoryID, err = strconv.Atoi(cat)
-			if err != nil {
-				log.Println("Error converting categoryID", err)
-				ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 
-			}
-			_, err = db.Exec("INSERT INTO Post_category (category_id, post_id) VALUES (?, ?)",
-				categoryID, postID)
-			if err != nil {
-				ErrorHandler(w, "errorInInsertCategory", http.StatusNotFound)
-				return
-			}
+		err = AddPostToDatabase(title, content, categories, userID)
+		if err != nil {
+			ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
+			return
 		}
 
 		http.Redirect(w, r, "/", http.StatusFound)
 
 	} else if r.Method != http.MethodGet {
 
-		ErrorHandler(w, "Wrong method", http.StatusMethodNotAllowed)
+		ErrorHandler(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 
 	RenderTemplate(w, "create-post", data)
+}
+
+// AddPostToDatabase inserts a new post into the database
+func AddPostToDatabase(title, content string, categories []string, userID int) error {
+
+	var result sql.Result
+	var err error
+	result, err = db.Exec("INSERT INTO Post (title, content, user_id, created_at) VALUES (?, ?, ?, ?)",
+		title, content, userID, time.Now().Format("2006-01-02 15:04:05"))
+	if err != nil {
+		log.Println("Error inserting post:", err)
+		return err
+	}
+
+	// Get the post id for the post inserted
+	postID, err := result.LastInsertId()
+	if err != nil {
+		log.Println("Error getting post ID:", err)
+		return err
+	}
+
+	// Add all categories into Post_category table
+	for _, cat := range categories {
+		var categoryID int
+		categoryID, err = strconv.Atoi(cat)
+		if err != nil {
+			log.Println("Error converting categoryID", err)
+			return err
+		}
+		_, err = db.Exec("INSERT INTO Post_category (category_id, post_id) VALUES (?, ?)",
+			categoryID, postID)
+		if err != nil {
+			log.Println("Error inserting post category:", err)
+			return err
+		}
+	}
+
+	return nil
 }

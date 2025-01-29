@@ -22,6 +22,7 @@ func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	if r.Method == http.MethodPost {
 		data.SelectedCategory = r.FormValue("topic")
+		data.LoggedIn, _ = VerifySession(r)
 		if data.LoggedIn {
 			data.SelectedFilter = r.FormValue("filter")
 

@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Logout logs out the user by deleting the session from the database and setting the session cookie to expire
 func Logout(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	cookie, err := r.Cookie("session_id")
 	if err == nil {
@@ -25,22 +26,5 @@ func Logout(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	data.LoggedIn = false
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/", http.StatusOK)
 }
-
-// func IsLoggedIn(r *http.Request) (bool, int) {
-// 	cookie, err := r.Cookie("session_id")
-// 	if err != nil {
-// 		log.Println("No session ID cookie found")
-// 		return false, 0
-// 	}
-// 	log.Println("Session ID:", cookie.Value)
-
-// 	var userID int
-// 	err = db.QueryRow("SELECT user_id FROM Session WHERE id = ?", cookie.Value).Scan(&userID)
-// 	if err != nil {
-// 		return false, 0
-// 	}
-
-// 	return true, userID
-// }
