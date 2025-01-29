@@ -51,8 +51,7 @@ func MyLikes() string {
 		Post.id 
 	FROM Post 
 	INNER JOIN Like ON Post.id = Like.post_id
-	WHERE Like.user_id = ? AND Like.type = 1
-	ORDER BY Post.created_at DESC;
+	WHERE Like.user_id = ? AND Like.type = 1;
 	`
 
 	return query
@@ -65,9 +64,20 @@ func MyDislikes() string {
 		Post.id 
 	FROM Post 
 	INNER JOIN Like ON Post.id = Like.post_id
-	WHERE Like.user_id = ? AND Like.type = 2
-	ORDER BY Post.created_at DESC;
+	WHERE Like.user_id = ? AND Like.type = 2;
 	`
 
 	return query
+}
+
+func FilterCategories() string {
+	query := `    
+	SELECT p.*
+	FROM Posts p
+	JOIN Post_category pc ON p.post_id = pc.post_id
+	WHERE pc.category_id = ?
+	ORDER BY Post.created_at DESC;
+	`
+	return query
+
 }

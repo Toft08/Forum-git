@@ -11,7 +11,7 @@
                 <select id="topicFilter" name="topic" class="filter-select">
                     {{ range $index, $category := .Categories }}
                     <!-- assuming general is index 0 -->
-                    <option value="{{ $category.CategoryName }}" {{ if eq $index 0 }}selected{{ end }}>{{ $category.CategoryName }}</option>
+                    <option value="{{ $category.CategoryID }}" {{ if eq $index 0 }}selected{{ end }}>{{ $category.CategoryName }}</option>
                     {{ end }}
                 </select>
             </div>
