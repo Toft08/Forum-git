@@ -13,16 +13,12 @@ import (
 func SignUp(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	switch r.Method {
 	case http.MethodGet:
-		handleSignUpGet(w)
+		RenderTemplate(w, "signup", nil)
 	case http.MethodPost:
 		handleSignUpPost(w, r)
 	default:
 		ErrorHandler(w, "Invalid request method", http.StatusNotFound)
 	}
-}
-
-func handleSignUpGet(w http.ResponseWriter) {
-	RenderTemplate(w, "signup", nil)
 }
 
 func handleSignUpPost(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +51,7 @@ func handleSignUpPost(w http.ResponseWriter, r *http.Request) {
 	// Insert user into database
 	err = insertUserIntoDB(username, email, hashedPassword)
 	if err != nil {
-		handleSignUpError(w, "error2InSignup")
+		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 

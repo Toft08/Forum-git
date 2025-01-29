@@ -24,7 +24,7 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	data.Categories, err = GetCategories()
 	if err != nil {
-		ErrorHandler(w, "Error retrieving categories", http.StatusInternalServerError)
+		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -44,7 +44,7 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(r.URL.Path, "/post") {
 			PostHandler(w, r, &data)
 		} else {
-			ErrorHandler(w, "Error1in PageHandle Page not found", http.StatusNotFound)
+			ErrorHandler(w, "Page Not Found", http.StatusNotFound)
 		}
 	}
 }
@@ -55,14 +55,12 @@ func RenderTemplate(w http.ResponseWriter, t string, data interface{}) {
 	err := tmpl.ExecuteTemplate(w, t+".html", data)
 	if err != nil {
 		log.Println("Error executing template:", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		ErrorHandler(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 }
 
 func ErrorHandler(w http.ResponseWriter, errorMessage string, statusCode int) {
-	log.Printf("Response status: %d\n", statusCode)
-	log.Printf("Error message: %s\n", errorMessage)
 
 	w.WriteHeader(statusCode)
 
@@ -70,8 +68,7 @@ func ErrorHandler(w http.ResponseWriter, errorMessage string, statusCode int) {
 		"ErrorMessage": errorMessage,
 	})
 	if err != nil {
-		// If rendering the template fails
-		log.Printf("Error executing template: %s\n", err)
+		log.Println("Error executing template error.html:", err)
 		http.Error(w, errorMessage, statusCode)
 		return
 	}

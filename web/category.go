@@ -4,16 +4,6 @@ import (
 	"log"
 )
 
-// AddCategory adds a new category to the database this is if we want to add a new category to the database
-// func AddCategory(db *sql.DB, name string) error {
-// 	_, err := db.Exec("INSERT INTO Category (name) VALUES (?)", name)
-// 	if err != nil {
-// 		log.Println("Error adding category:", err)
-// 		return err
-// 	}
-// 	return nil
-// }
-
 // GetCategories retrieves all categories from the database
 func GetCategories() ([]CategoryDetails, error) {
 	rows, err := db.Query("SELECT id, name FROM Category")
