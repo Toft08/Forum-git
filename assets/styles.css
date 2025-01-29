@@ -223,39 +223,47 @@ button:hover {
     max-width: 800px;
 }
 
-/* .topic-select {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 15px;
-    margin: 15px 0px;
-} */
-
-.bubble-buttons {
+/* create-post category selection */
+.category-container {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
-    margin-top: 10px;
 }
 
-.bubble-button {
+.category-label {
     padding: 10px 15px;
+    margin-top: 10px;
     border: 2px solid #007BFF;
-    border-radius: 25px;
-    background-color: #fff;
+    border-radius: 20px;
+    font-size: 16px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    color: #0056b3;
-    font-size: 15px;
+    user-select: none;
+    transition: all 0.3s ease-in-out;
+    background-color: white;
+    color: #007BFF;
+    display: inline-block;
+    text-align: center;
 }
 
-.bubble-button.active {
+/* Hide the default checkbox */
+.category-label input {
+    display: none;
+}
+
+/* Style the label when its checkbox is checked */
+.category-label input:checked + label,
+.category-label:has(input:checked) {  /* The :has() selector ensures the label updates */
     background-color: #007BFF;
-    color: #fff;
+    color: white;
     border-color: #007BFF;
 }
 
-.bubble-button:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
-    color: #fff;
+/* Hover effect */
+.category-label:hover {
+    background-color: #f0f8ff;
+}
+
+/* Hide the 'General' category (index 0) */
+.hidden-category {
+    display: none;
 }

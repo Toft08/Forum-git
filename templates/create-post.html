@@ -10,16 +10,15 @@
             <label for="content">Content:</label>
             <textarea id="content" name="content" required></textarea>
             <br>
-            <label for="topics">Select Topics:</label>
-            <div class="bubble-buttons" id="topics">
+            <label>Select Topics:</label>
+            <div class="category-container">
                 {{ range $index, $category := .Categories }}
-                <button type="button" class="bubble-button {{ if eq $index 0 }}selected{{ end }}" 
-                        data-value="{{ $category.CategoryName }}">
+                <label class="category-label {{ if eq $index 0 }}hidden-category{{ end }}">
+                    <input type="checkbox" name="category" value="{{ $category.CategoryID }}">
                     {{ $category.CategoryName }}
-                </button>
+                </label>
                 {{ end }}
             </div>
-            <input type="hidden" name="topics" id="selectedTopics" value="General">
             <br>
             <button type="submit">Submit Post</button>
         </form>
@@ -27,38 +26,6 @@
     <p>You must be logged in to create a post.</p>
     {{end}}
     </div>
-    <script>
-        const bubbleButtons = document.querySelectorAll('.bubble-button');
-        const selectedTopicsInput = document.getElementById('selectedTopics');
-
-        // Set "General" as the default selection
-        const generalButton = document.querySelector('.bubble-button[data-value="General"]');
-        generalButton.classList.add('active');
-
-        // Ensure the hidden input has "General" by default
-        selectedTopicsInput.value = "General";
-
-        // Add click event listeners
-        bubbleButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Toggle the active state
-                button.classList.toggle('active');
-
-                // Update the hidden input with selected values
-                const selectedTopics = Array.from(bubbleButtons)
-                    .filter(btn => btn.classList.contains('active'))
-                    .map(btn => btn.getAttribute('data-value'));
-
-                // Ensure "General" is always selected if no topics are selected
-                if (selectedTopics.length === 0) {
-                    generalButton.classList.add('active');
-                    selectedTopics.push("General");
-                }
-
-                selectedTopicsInput.value = selectedTopics.join(',');
-            });
-        });
-    </script>
 </body>
 {{template "footer"}}
 </html>
