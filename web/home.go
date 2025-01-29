@@ -53,44 +53,42 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	var query string
 
 	data.LoggedIn, userID = VerifySession(r)
-
+	data.SelectedFilter = r.FormValue("filter")
 	data.SelectedCategory = r.FormValue("topic")
+	log.Println(data.SelectedCategory)
+	log.Println(data.SelectedFilter)
+	if !data.LoggedIn && data.SelectedFilter != "" {
+		log.Println("User not logged in")
+		return
+	}
 	categoryID, err := strconv.Atoi(data.SelectedCategory)
 	if err != nil {
 		log.Println("Error converting categoryID", err)
 		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 	}
-	if categoryID > 0 {
+	if data.SelectedCategory != "" && data.SelectedFilter == "None" {
 		query = database.FilterCategories()
-	}
-
-	data.LoggedIn, _ = VerifySession(r)
-	if data.LoggedIn {
+		args = append(args, categoryID)
+	} else {
 		args = append(args, userID)
-		data.SelectedFilter = r.FormValue("filter")
-
 		switch data.SelectedFilter {
 		case "createdByMe":
-			query = "SELECT p.id FROM Post p WHERE p.user_id = ?"
+			query = "SELECT Post.id FROM Post WHERE Post.user_id = ?"
 		case "likedByMe":
 			query = database.MyLikes()
 		case "dislikedByMe":
 			query = database.MyDislikes()
 		}
 
-		if categoryID != 0 {
-			query += " JOIN Post_category pc ON p.id = pc.post_id AND pc.category_id = ?"
-			args = append(args, categoryID)
-
-		}
-		query += " ORDER BY p.created_at DESC"
-		// Fetch posts from the database for a specific user
-		rows, err = db.Query(query, args...)
-		if err != nil {
-			log.Println("Error fetching posts by filter:", err)
-			ErrorHandler(w, "errorFetchingPosts", http.StatusNotFound)
-			return
-		}
+	}
+	query += " ORDER BY Post.created_at DESC;"
+	// Fetch posts from the database for a specific user
+	log.Println(query)
+	rows, err = db.Query(query, args...)
+	if err != nil {
+		log.Println("Error fetching posts by filter:", err)
+		ErrorHandler(w, "errorFetchingPosts", http.StatusNotFound)
+		return
 	}
 
 	for rows.Next() {

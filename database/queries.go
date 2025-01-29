@@ -72,11 +72,10 @@ func MyDislikes() string {
 
 func FilterCategories() string {
 	query := `    
-	SELECT p.*
-	FROM Posts p
-	JOIN Post_category pc ON p.post_id = pc.post_id
-	WHERE pc.category_id = ?
-	ORDER BY Post.created_at DESC;
+	SELECT Post.id
+	FROM Post
+	JOIN Post_category ON Post.id = Post_category.post_id
+	WHERE Post_category.category_id = ?	
 	`
 	return query
 
