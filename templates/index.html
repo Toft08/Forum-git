@@ -2,7 +2,6 @@
 <body>
 {{template "navBar" .}}
     <main>
-
         <!-- Filter Form -->
         <form class="filter" method="POST" action="/">
             <!-- Topic Filter -->
@@ -34,13 +33,18 @@
 
         {{range .Posts}}
         <div class="post">
-            <h3><a href="/post/{{.PostID}}">{{.PostTitle}}</a></h3> 
+            <h3><a href="/post/{{.PostID}}">{{.PostTitle}}</a></h3>
+            <p>Categories: 
+                {{range $index, $category := .Categories}}
+                    {{if $index}} {{end}}{{$category}}
+                {{end}}
+            </p>
             <p>Author: {{.Username}}</p>
             <p class="post-content">{{.PostContent}}</p>
             
             <p><strong>Comments:</strong> {{len .Comments}}</p>
         </div>
-        {{else}}
+    {{else}}
         <p>No posts yet. Be the first to create one!</p>
         {{end}}
         
