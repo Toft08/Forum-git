@@ -12,7 +12,7 @@
         <h3>Author: {{.Username}}</h3>
         <p>Created at: {{.CreatedAt}}</p>
         <div class="post-card">
-            <p>{{.PostContent}}</p>
+            <pre>{{.PostContent}}</pre>
             <div class="reaction-buttons">
                 <button id="like-btn" class="reaction-btn">👍</button>
                 <span id="like-count" class="reaction-count">0</span>
@@ -28,7 +28,7 @@
                 <div class="comment">
                     <p><strong>{{ $comment.Username }}</strong> says:</p>
                     <div class="post-card">
-                    <p>{{ $comment.Content }}</p>
+                    <pre>{{ $comment.Content }}</pre>
                     <div class="reaction-buttons">
                         <button class="comment-like-btn reaction-btn">👍</button>
                         <span class="comment-like-count reaction-count">0</span>
@@ -45,7 +45,7 @@
         {{range .Posts}}
         <form action="/post/{{.PostID}}" method="POST">
             <label for="comment"></label>
-            <textarea id="comment" name="comment" placeholder="Enter comment here" required></textarea>
+            <textarea class="comment-textarea" id="comment" name="comment" placeholder="Enter comment here" required></textarea>
             <br>
             <button type="submit">Submit Comment</button>
         </form>
@@ -60,10 +60,19 @@
 <script>
     const textarea = document.getElementById("comment");
 
-textarea.addEventListener("input", function () {
-    this.style.height = "auto"; // Reset height to auto so it calculates properly
-    this.style.height = this.scrollHeight + "px"; // Set height to scrollHeight
-});
+    textarea.addEventListener("input", function () {
+        this.style.height = "auto"; // Reset height to auto
+        let newHeight = this.scrollHeight; // Get the required height
+
+        if (newHeight > 200) { // Limit to 300px max
+            newHeight = 200;
+            this.style.overflowY = "auto"; // Enable scrolling when max height is reached
+        } else {
+            this.style.overflowY = "hidden"; // Hide scrollbar when below max height
+        }
+
+        this.style.height = newHeight + "px"; // Apply height
+    });
 
 // Get button elements and counters
 const likeBtn = document.getElementById('like-btn');

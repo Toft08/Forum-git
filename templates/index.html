@@ -34,13 +34,16 @@
         {{range .Posts}}
         <div class="post">
             <h3><a href="/post/{{.PostID}}">{{.PostTitle}}</a></h3>
-            <p>Categories: 
+            <div class="category-container">
+          
                 {{range $index, $category := .Categories}}
+                <p class="category-tags">
                     {{if $index}} {{end}}{{$category}}
                 {{end}}
-            </p>
+           </p>
+        </div>
             <p>Author: {{.Username}}</p>
-            <p class="post-content">{{.PostContent}}</p>
+            <pre class="post-content">{{.PostContent}}</pre>
             
             <p><strong>Comments:</strong> {{len .Comments}}</p>
         </div>
