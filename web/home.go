@@ -51,22 +51,23 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	var rows *sql.Rows
 	var err error
 	var query string
+	var categoryID int
 
 	data.LoggedIn, userID = VerifySession(r)
 	data.SelectedFilter = r.FormValue("filter")
 	data.SelectedCategory = r.FormValue("topic")
-	log.Println(data.SelectedCategory)
-	log.Println(data.SelectedFilter)
+
 	if !data.LoggedIn && data.SelectedFilter != "" {
 		log.Println("User not logged in")
 		return
 	}
-	categoryID, err := strconv.Atoi(data.SelectedCategory)
-	if err != nil {
-		log.Println("Error converting categoryID", err)
-		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
-	}
-	if data.SelectedCategory != "" && data.SelectedFilter == "None" {
+
+	if data.SelectedCategory != "None" && data.SelectedFilter == "None" {
+		categoryID, err = strconv.Atoi(data.SelectedCategory)
+		if err != nil {
+			log.Println("Error converting categoryID", err)
+			ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
+		}
 		query = database.FilterCategories()
 		args = append(args, categoryID)
 	} else {
@@ -83,7 +84,6 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	}
 	query += " ORDER BY Post.created_at DESC;"
 	// Fetch posts from the database for a specific user
-	log.Println(query)
 	rows, err = db.Query(query, args...)
 	if err != nil {
 		log.Println("Error fetching posts by filter:", err)
