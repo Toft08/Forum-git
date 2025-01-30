@@ -1,6 +1,7 @@
 {{template "head"}}
 <body>
 {{template "navBar" .}}
+    <div class="wrapper">
     <main>
         <!-- Button to toggle filter visibility -->
         <button onclick="toggleFilter()" class="show-filter-button">Show Filters</button>
@@ -57,6 +58,7 @@
         <p>No posts yet. Be the first to create one!</p>
         {{end}}
     </main>
+</div>
 {{template "footer"}}
 </body>
 <script>
