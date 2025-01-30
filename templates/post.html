@@ -9,11 +9,11 @@
         <div class="post">
             <p>{{.PostContent}}</p>
             <div class="reaction-buttons">
-                <button id="like-btn" class="reaction-btn">👍</button>
-                <span id="like-count" class="reaction-count">0</span>
-                <button id="dislike-btn" class="reaction-btn">👎</button>
-                <span id="dislike-count" class="reaction-count">0</span>
-              </div>
+              <button id="like-btn" data-post-id="{{.PostID}}" class="reaction-btn">👍</button>
+              <span id="like-count" class="reaction-count">0</span>
+              <button id="dislike-btn" data-post-id="{{.PostID}}" class="reaction-btn">👎</button>
+              <span id="dislike-count" class="reaction-count">0</span>
+          </div>
         </div>
         {{ if eq (len .Comments) 0 }}
             <p>No comments yet. Be the first to create one!</p>
@@ -24,11 +24,11 @@
                     <p><strong>{{ $comment.Username }}</strong> says:</p>
                     <p>{{ $comment.Content }}</p>
                     <div class="reaction-buttons">
-                        <button class="comment-like-btn reaction-btn">👍</button>
-                        <span class="comment-like-count reaction-count">0</span>
-                        <button class="comment-dislike-btn reaction-btn">👎</button>
-                        <span class="comment-dislike-count reaction-count">0</span>
-                      </div>
+                      <button class="comment-like-btn" data-comment-id="{{$comment.CommentID}}" class="reaction-btn">👍</button>
+                      <span class="comment-like-count reaction-count">0</span>
+                      <button class="comment-dislike-btn" data-comment-id="{{$comment.CommentID}}" class="reaction-btn">👎</button>
+                      <span class="comment-dislike-count reaction-count">0</span>
+                  </div>
                 </div>
             {{ end }}
         {{ end }}
@@ -67,9 +67,7 @@ const dislikeCount = document.getElementById('dislike-count');
 // Track the state of likes and dislikes
 let isLiked = false;
 let isDisliked = false;
-
-// Event listener for like button
-likeBtn.addEventListener('click', () => {
+likeBtn.addEventListener('click', async () => {
   if (isLiked) {
     // If already liked, remove the like
     likeCount.textContent = parseInt(likeCount.textContent) - 1;
@@ -87,6 +85,29 @@ likeBtn.addEventListener('click', () => {
       isDisliked = false;
     }
   }
+
+try {
+        const response = await fetch('/like', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                post_id: postId, // postId should be set in your template or dynamically
+                is_like: isLiked, // true for like, false for dislike
+            }),
+        });
+
+        if (response.ok) {
+            const data = await response.json(); // Get updated counts
+            likeCount.textContent = data.like;    // Update like count
+            dislikeCount.textContent = data.dislike;  // Update dislike count
+        } else {
+            console.error('Failed to update like/dislike');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
 });
 
 // Event listener for dislike button
