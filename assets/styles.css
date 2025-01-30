@@ -218,6 +218,10 @@ button:hover {
     padding: 10px;
 }
 
+.filter-button {
+    font-size: 14px;
+}
+
 .post-form {
     width: 50%;
     max-width: 800px;
@@ -268,12 +272,53 @@ button:hover {
     display: none;
 }
 
-.show-filter-button {
-    cursor: pointer;
-}
 .filter {
-    display: none;
+    display: none; /* Fully hides it */
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    border: 1px solid transparent; /* Prevents layout shift when toggled */
+    transition: opacity 0.3s ease-in-out, border-color 0.3s ease-in-out;
 }
-.filter.show-filter {
+
+/* When the filter is shown */
+.filter.show {
     display: block;
+    opacity: 1;
+    margin: 10px 0; /* Restore nice spacing */
+    padding: 10px;
+    border-color: #ccc; /* Makes border reappear smoothly */
+    background-color: #f9f9f9;
+}
+
+/* Align the button to the right */
+.show-filter-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    /* padding: 8px 8px; */
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+    margin-bottom: 0;
+    
+    /* Align to the right */
+    display: block;
+    margin-left: auto;
+}
+
+.show-filter-button:hover {
+    background-color: #0056b3;
+}
+
+.latest-posts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;  /* Ensures the container takes the full width */
+}
+
+.create-post {
+    margin-left: auto; /* Pushes the link to the far right */
+    text-decoration: none; /* Optional: remove underline */
 }

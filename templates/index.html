@@ -2,11 +2,11 @@
 <body>
 {{template "navBar" .}}
     <main>
- <!-- button to toggle filter visibility -->
- <button id="filterButton" class="show-filter-button">show filters</button>
- <!-- Filter Form (hidden by default) -->
- <form class="filter" method="POST" action="/">
-     <div style="display: none;"> <!-- make sure this is inside the form -->
+        <!-- Button to toggle filter visibility -->
+        <button onclick="toggleFilter()" class="show-filter-button">Show Filters</button>
+
+        <!-- Filter Form (hidden by default) -->
+        <form class="filter" method="POST" action="/">
             <!-- Topic Filter -->
             <div class="filter-group">
                 <label for="topicFilter" class="filter-label">Filter by Topic:</label>
@@ -29,39 +29,48 @@
                 </select>
             </div>
             {{end}}
-                <button type="submit" class="filter-button">Apply Filters</button>
-        </div>
+            <button type="submit" class="filter-button">Apply Filters</button>
         </form>
-        <h2>Latest Posts</h2>
+
+        <!-- Latest Posts Header with Create Post link -->
+        <div class="latest-posts-header">
+            <h2>Latest Posts</h2>
+            <a class="create-post" href="/create-post">Create Post</a>
+        </div>
 
         {{range .Posts}}
         <div class="post">
             <h3><a href="/post/{{.PostID}}">{{.PostTitle}}</a></h3> 
             <p>Author: {{.Username}}</p>
             <p class="post-content">{{.PostContent}}</p>
-            
             <p><strong>Comments:</strong> {{len .Comments}}</p>
         </div>
         {{else}}
         <p>No posts yet. Be the first to create one!</p>
         {{end}}
-        
-        <a href="/create-post">Create Post</a>
     </main>
 {{template "footer"}}
 </body>
+    <script>
+        function toggleFilter() {
+            var filter = document.querySelector('.filter');
+            var button = document.querySelector('.show-filter-button');
 
-<script>
-    // Add the following JavaScript to toggle the filter form
-    document.getElementById('filterButton').addEventListener('click', function() {
-        var form = document.querySelector('.filter');
-        if (form.classList.contains('show-filter')) {
-            form.classList.remove('show-filter');
-            this.textContent = 'show filters';
-        } else {
-            form.classList.add('show-filter');
-            this.textContent = 'hide filters';
+            if (filter.classList.contains('show')) {
+                filter.style.opacity = '0';
+                setTimeout(() => {
+                    filter.classList.remove('show');
+                    filter.style.display = 'none';
+                }, 300); // Matches transition
+                button.textContent = 'Show Filters';
+            } else {
+                filter.style.display = 'block';
+                setTimeout(() => {
+                    filter.classList.add('show');
+                    filter.style.opacity = '1';
+                }, 10); // Ensures transition works
+                button.textContent = 'Hide Filters';
+            }
         }
-    });
-</script>
+    </script>
 </html>
