@@ -51,7 +51,7 @@ func MyLikes() string {
 		Post.id 
 	FROM Post 
 	INNER JOIN Like ON Post.id = Like.post_id
-	WHERE Like.user_id = ? AND Like.type = 1;
+	WHERE Like.user_id = ? AND Like.type = 1
 	`
 
 	return query
@@ -64,7 +64,7 @@ func MyDislikes() string {
 		Post.id 
 	FROM Post 
 	INNER JOIN Like ON Post.id = Like.post_id
-	WHERE Like.user_id = ? AND Like.type = 2;
+	WHERE Like.user_id = ? AND Like.type = 2
 	`
 
 	return query
