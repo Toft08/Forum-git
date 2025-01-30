@@ -29,16 +29,17 @@ func PostHandler(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	case http.MethodPost:
 		HandlePostPagePost(w, r, data, postID)
 	default:
-		ErrorHandler(w, "Invalid request method", http.StatusMethodNotAllowed)
+		ErrorHandler(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 
 }
 
 func HandlePostPageGet(w http.ResponseWriter, r *http.Request, data *PageDetails, postID int) {
-	data.LoggedIn, _ = VerifySession(r)
+	var userID int
+	data.LoggedIn, userID = VerifySession(r)
 	data.Posts = nil
 
-	post, err := GetPostDetails(postID)
+	post, err := GetPostDetails(postID, userID)
 	if err != nil {
 		log.Println("Error fetching post details:", err)
 		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
@@ -58,8 +59,6 @@ func HandlePostPagePost(w http.ResponseWriter, r *http.Request, data *PageDetail
 		ErrorHandler(w, "Unauthorized: You must be logged in to create a post", http.StatusUnauthorized)
 		return
 	}
-
-	// votes as Roope had them
 
 	content := r.FormValue("comment")
 

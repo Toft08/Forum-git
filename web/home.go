@@ -9,6 +9,7 @@ import (
 )
 
 func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
+	data.ValidationError = ""
 	switch r.Method {
 	case http.MethodGet:
 		HandleHomeGet(w, r, data)
@@ -33,7 +34,7 @@ func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	for rows.Next() {
 		var id int
 		rows.Scan(&id)
-		post, err := GetPostDetails(id)
+		post, err := GetPostDetails(id, 0)
 
 		if err != nil {
 			ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
@@ -97,7 +98,7 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	for rows.Next() {
 		var id int
 		rows.Scan(&id)
-		post, err := GetPostDetails(id)
+		post, err := GetPostDetails(id, userID)
 
 		if err != nil {
 			ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)

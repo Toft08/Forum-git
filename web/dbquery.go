@@ -29,7 +29,7 @@ func GetCategories() ([]CategoryDetails, error) {
 }
 
 // GetPostDetails fetches the details of a specific post from the database
-func GetPostDetails(postID int) (*PostDetails, error) {
+func GetPostDetails(postID, userID int) (*PostDetails, error) {
 
 	row := db.QueryRow(database.PostContent(), postID)
 	var err error
@@ -57,13 +57,13 @@ func GetPostDetails(postID int) (*PostDetails, error) {
 		post.Categories = strings.Split(categories, ",")
 	}
 
-	post.Comments, err = GetComments(postID)
+	post.Comments, err = GetComments(postID, userID)
 	if err != nil {
 		log.Println("Error getting comments")
 		return nil, err
 	}
 
-	post.Votes, err = GetVotes(postID, 0)
+	post.LikedNow, post.DislikedNow, err = GetVotes(userID, postID, 0)
 	if err != nil {
 		log.Println("Error getting votes")
 		return nil, err
@@ -72,7 +72,7 @@ func GetPostDetails(postID int) (*PostDetails, error) {
 }
 
 // GetComments fetches all comments for a specific post from the database
-func GetComments(postID int) ([]CommentDetails, error) {
+func GetComments(postID, userID int) ([]CommentDetails, error) {
 
 	rows, err := db.Query(database.CommentContent(), postID)
 	if err != nil {
@@ -96,7 +96,7 @@ func GetComments(postID int) ([]CommentDetails, error) {
 			log.Println("Error scanning rows")
 			return nil, err
 		}
-		comment.Votes, err = GetVotes(0, comment.CommentID)
+		comment.LikedNow, comment.DislikedNow, err = GetVotes(userID, 0, comment.CommentID)
 		if err != nil {
 			log.Println("Error getting votes")
 			return nil, err
@@ -108,30 +108,35 @@ func GetComments(postID int) ([]CommentDetails, error) {
 }
 
 // GetVotes fetches the votes for a specific post or comment from the database
-func GetVotes(postID, commentID int) (map[int]int, error) {
-	var rows *sql.Rows
-	var err error
-	if postID == 0 {
-		rows, err = db.Query(database.PostVotes(), nil, commentID)
-	} else {
-		rows, err = db.Query(database.PostVotes(), postID, nil)
-	}
-	if err != nil {
-		log.Println("Error fetching votes from database")
-		return nil, err
-	}
-	defer rows.Close()
-
-	votes := make(map[int]int)
-	for rows.Next() {
-		var userID, vote int
-		err := rows.Scan(&userID, &vote)
-		if err != nil {
-			log.Println("Error scanning rows")
-			return nil, err
+func GetVotes(userID, postID, commentID int) (bool, bool, error) {
+	if userID != 0 {
+		var rows *sql.Rows
+		var err error
+		if postID == 0 {
+			rows, err = db.Query(database.PostVotes(), userID, nil, commentID)
+		} else {
+			rows, err = db.Query(database.PostVotes(), userID, postID, nil)
 		}
-		votes[vote] = userID
+		if err != nil {
+			log.Println("Error fetching votes from database")
+			return false, false, err
+		}
+		defer rows.Close()
+
+		var voteType int
+		for rows.Next() {
+			err := rows.Scan(&voteType)
+			if err != nil {
+				log.Println("Error scanning rows")
+				return false, false, err
+			}
+		}
+		if voteType == 1 {
+			return true, false, nil
+		} else if voteType == 2 {
+			return false, true, nil
+		}
 	}
 
-	return votes, nil
+	return false, false, nil
 }

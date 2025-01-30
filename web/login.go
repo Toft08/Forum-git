@@ -1,7 +1,6 @@
 package web
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -11,18 +10,15 @@ import (
 
 // login handles both GET and POST requests for user authentication
 func Login(w http.ResponseWriter, r *http.Request, data *PageDetails) {
+	data.ValidationError = ""
 	switch r.Method {
 	case http.MethodGet:
-		handleLoginGet(w)
+		RenderTemplate(w, "login", data)
 	case http.MethodPost:
 		handleLoginPost(w, r, data)
 	default:
 		ErrorHandler(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
-}
-
-func handleLoginGet(w http.ResponseWriter) {
-	RenderTemplate(w, "login", nil)
 }
 
 func handleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
@@ -31,19 +27,21 @@ func handleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) 
 
 	userID, hashedPassword, err := getUserCredentials(username)
 	if err != nil {
-		handleLoginError(w, "error1InLogin", err)
+		data.ValidationError = "Invalid username"
+		RenderTemplate(w, "login", data)
 		return
 	}
 
 	// Verify password
 	if err := verifyPassword(hashedPassword, password); err != nil {
-		handleLoginError(w, "error2InLogin", err)
+		data.ValidationError = "Invalid password"
+		RenderTemplate(w, "login", data)
 		return
 	}
 
 	// Create session
 	if err := createSession(w, userID); err != nil {
-		http.Error(w, "Failed to create session", http.StatusInternalServerError)
+		ErrorHandler(w, "Failed to create session", http.StatusInternalServerError)
 		return
 	}
 
@@ -64,11 +62,6 @@ func getUserCredentials(username string) (int, string, error) {
 
 func verifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-}
-
-func handleLoginError(w http.ResponseWriter, message string, err error) {
-	ErrorHandler(w, message, http.StatusNotFound)
-	log.Println(message, err)
 }
 
 func createSession(w http.ResponseWriter, userID int) error {

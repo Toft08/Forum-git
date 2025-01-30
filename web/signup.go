@@ -11,46 +11,52 @@ import (
 
 // signUp handles both GET and POST requests for user registration
 func SignUp(w http.ResponseWriter, r *http.Request, data *PageDetails) {
+	data.ValidationError = ""
 	switch r.Method {
 	case http.MethodGet:
-		RenderTemplate(w, "signup", nil)
+		RenderTemplate(w, "signup", data)
 	case http.MethodPost:
-		handleSignUpPost(w, r)
+		handleSignUpPost(w, r, data)
 	default:
 		ErrorHandler(w, "Invalid request method", http.StatusNotFound)
 	}
 }
 
-func handleSignUpPost(w http.ResponseWriter, r *http.Request) {
+func handleSignUpPost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	username := r.FormValue("username")
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
 	if !isValidEmail(email) {
-		handleSignUpError(w, "Invalid email address")
+		data.ValidationError = "Invalid email address"
+		RenderTemplate(w, "signup", data)
 		return
 	}
 
 	isUnique, err := isUsernameUnique(username)
 	if err != nil {
-		handleLoginError(w, "Error checking if username is unique", err)
+		log.Println("Error checking if username is unique:", err)
+		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 	if !isUnique {
-		handleSignUpError(w, "Username already exists")
+		data.ValidationError = "Username is already taken"
+		RenderTemplate(w, "signup", data)
 		return
 	}
 
 	// Hash the password
 	hashedPassword, err := hashPassword(password)
 	if err != nil {
-		handleSignUpError(w, "error1InSignup")
+		log.Println("Error hashing password:", err)
+		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	// Insert user into database
 	err = insertUserIntoDB(username, email, hashedPassword)
 	if err != nil {
+		log.Println("Error inserting user into database:", err)
 		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -67,11 +73,6 @@ func insertUserIntoDB(username, email, hashedPassword string) error {
 	_, err := db.Exec("INSERT INTO User (username, email, password, created_at) VALUES (?, ?, ?, ?)",
 		username, email, hashedPassword, time.Now().Format("2006-01-02 15:04:05"))
 	return err
-}
-
-func handleSignUpError(w http.ResponseWriter, message string) {
-	ErrorHandler(w, message, http.StatusNotFound)
-	log.Println(message)
 }
 
 func isValidEmail(email string) bool {

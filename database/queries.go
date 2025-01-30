@@ -92,10 +92,10 @@ func PostVotes() string {
 
 func Votes() string {
 	query := `
-    SELECT userID, type
-    FROM "Like"
-    WHERE type IN (1, 2)
-      AND (postID = COALESCE(?, postID) AND commentID = COALESCE(?, commentID));
-`
+    SELECT type
+    FROM Like
+    WHERE user_id = ?
+      AND (post_id = COALESCE(?, post_id) AND comment_id = COALESCE(?, comment_id));
+	`
 	return query
 }

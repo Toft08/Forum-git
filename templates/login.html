@@ -12,6 +12,12 @@
             
             <button type="submit">Login</button>
         </form>
+        <br>
+        {{if .ValidationError}}
+            <div class="error">
+                {{.ValidationError}}
+            </div>
+        {{end}}
         <div class="signup-link">
             Don't have an account? <a href="/signup">Sign up here</a>
         </div>

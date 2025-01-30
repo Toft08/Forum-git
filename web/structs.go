@@ -1,13 +1,14 @@
 package web
 
 type CommentDetails struct {
-	CommentID int
-	Content   string
-	UserID    int
-	Username  string
-	Likes     int
-	Dislikes  int
-	Votes     map[int]int
+	CommentID   int
+	Content     string
+	UserID      int
+	Username    string
+	Likes       int
+	Dislikes    int
+	LikedNow    bool
+	DislikedNow bool
 }
 
 type PostDetails struct {
@@ -21,7 +22,8 @@ type PostDetails struct {
 	CreatedAt   string
 	Likes       int
 	Dislikes    int
-	Votes       map[int]int
+	LikedNow    bool
+	DislikedNow bool
 }
 
 type PageDetails struct {
@@ -30,6 +32,7 @@ type PageDetails struct {
 	Posts            []PostDetails
 	SelectedCategory string
 	SelectedFilter   string
+	ValidationError  string
 }
 
 type CategoryDetails struct {
