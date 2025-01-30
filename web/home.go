@@ -62,7 +62,10 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		return
 	}
 
-	if data.SelectedCategory != "None" && data.SelectedFilter == "None" {
+	if data.SelectedCategory == "None" && data.SelectedFilter == "None" {
+		HandleHomeGet(w, r, data)
+		return
+	} else if data.SelectedCategory != "None" && data.SelectedFilter == "None" {
 		categoryID, err = strconv.Atoi(data.SelectedCategory)
 		if err != nil {
 			log.Println("Error converting categoryID", err)
