@@ -80,3 +80,22 @@ func FilterCategories() string {
 	return query
 
 }
+
+func PostVotes() string {
+	query := `
+		SELECT user_id, type
+		FROM Like
+		WHERE type IN (1, 2) AND post_id = ?;
+	`
+	return query
+}
+
+func Votes() string {
+	query := `
+    SELECT userID, type
+    FROM "Like"
+    WHERE type IN (1, 2)
+      AND (postID = COALESCE(?, postID) AND commentID = COALESCE(?, commentID));
+`
+	return query
+}

@@ -7,6 +7,7 @@ type CommentDetails struct {
 	Username  string
 	Likes     int
 	Dislikes  int
+	Votes     map[int]int
 }
 
 type PostDetails struct {
@@ -20,6 +21,7 @@ type PostDetails struct {
 	CreatedAt   string
 	Likes       int
 	Dislikes    int
+	Votes       map[int]int
 }
 
 type PageDetails struct {
