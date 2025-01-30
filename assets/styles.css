@@ -60,6 +60,18 @@ main {
     border-radius: 5px;
 }
 
+.category-tags {
+    padding: 5px 10px;
+    margin-top: 10px;
+    border: 2px solid #007BFF;
+    border-radius: 20px;
+    font-size: 16px;
+    display: inline-block;
+    text-align: center;
+    background-color: #007BFF;
+    color: white;
+}
+
 /* Post Cards */
 .post {
     margin-bottom: 1.5rem;
@@ -80,6 +92,11 @@ main {
     justify-content: space-between;
 }
 
+.content-textarea {
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 50px;
+}
+
 .post h2 {
     margin: 0 0 0.5rem;
 }
@@ -91,6 +108,10 @@ main {
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
     padding: 0.5rem 0;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Default button styles */
@@ -104,33 +125,40 @@ main {
     transition: background-color 0.3s, color 0.3s; /* Smooth transition */
   }
   
-  .reaction-btn:hover {
+.reaction-btn:hover {
     background-color: #c5c5c5;
-  }
+}
 
-  /* Active state for like button */
-  .reaction-btn#like-btn.active {
+/* Active state for like button */
+.reaction-btn#like-btn.active {
     background-color: #469c64;
-  }
+}
   
-  /* Active state for dislike button */
-  .reaction-btn#dislike-btn.active {
+/* Active state for dislike button */
+.reaction-btn#dislike-btn.active {
     background-color: #bc2a42;
-  }
+}
   
-  .comment-like-btn.active{
+.comment-like-btn.active{
     background-color: #469c64;
-  }
+}
 
-  .comment-dislike-btn.active {
+.comment-dislike-btn.active {
     background-color: #bc2a42;
-  }
+}
   
-  .reaction-count {
+.reaction-count {
     font-size: 16px;
     font-weight: bold;
     margin-left: 5px;
-  }
+}
+
+.comment-textarea {
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 50px;   
+}
+
+  
 
 /* Footer styling */
 footer {
@@ -167,6 +195,10 @@ body {
 textarea {
     resize: none; /* Prevent manual horizontal resizing */
     overflow: hidden; /* Hide overflow while resizing */
+}
+
+pre {
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Form styling */

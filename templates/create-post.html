@@ -8,7 +8,7 @@
             <input type="text" id="title" name="title" required>
             <br>
             <label for="content">Content:</label>
-            <textarea id="content" name="content" required></textarea>
+            <textarea class="content-textarea" id="content" name="content" required></textarea>
             <br>
             <label>Select Topics:</label>
             <div class="category-container">
@@ -28,4 +28,21 @@
     </div>
 </body>
 {{template "footer"}}
+<script>
+    const textarea = document.getElementById("content");
+
+    textarea.addEventListener("input", function () {
+        this.style.height = "auto"; // Reset height to auto
+        let newHeight = this.scrollHeight; // Get the required height
+
+        if (newHeight > 300) { // Limit to 300px max
+            newHeight = 300;
+            this.style.overflowY = "auto"; // Enable scrolling when max height is reached
+        } else {
+            this.style.overflowY = "hidden"; // Hide scrollbar when below max height
+        }
+
+        this.style.height = newHeight + "px"; // Apply height
+    });
+</script>
 </html>
