@@ -1,6 +1,7 @@
 package web
 
 import (
+	"database/sql"
 	"forum/database"
 	"log"
 	"net/http"
@@ -45,7 +46,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		ErrorHandler(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 
-	post, err := getPostDetails(postID)
+	post, err := GetPostDetails(postID)
 	if err != nil {
 		log.Println("Error fetching post details:", err)
 		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
@@ -58,8 +59,8 @@ func PostHandler(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 }
 
-// getPostDetails fetches the details of a specific post from the database
-func getPostDetails(postID int) (*PostDetails, error) {
+// GetPostDetails fetches the details of a specific post from the database
+func GetPostDetails(postID int) (*PostDetails, error) {
 
 	row := db.QueryRow(database.PostContent(), postID)
 	var err error
@@ -87,21 +88,26 @@ func getPostDetails(postID int) (*PostDetails, error) {
 		post.Categories = strings.Split(categories, ",")
 	}
 
-	postComments, err := getComments(postID)
+	post.Comments, err = GetComments(postID)
 	if err != nil {
 		log.Println("Error getting comments")
 		return nil, err
 	}
-	post.Comments = postComments
 
+	post.Votes, err = GetVotes(postID, 0)
+	if err != nil {
+		log.Println("Error getting votes")
+		return nil, err
+	}
 	return &post, nil
 }
 
-// getComments fetches all comments for a specific post from the database
-func getComments(postID int) ([]CommentDetails, error) {
+// GetComments fetches all comments for a specific post from the database
+func GetComments(postID int) ([]CommentDetails, error) {
 
 	rows, err := db.Query(database.CommentContent(), postID)
 	if err != nil {
+		log.Println("Error fetching comments from database")
 		return nil, err
 	}
 	defer rows.Close()
@@ -118,10 +124,45 @@ func getComments(postID int) ([]CommentDetails, error) {
 			&comment.Dislikes,
 		)
 		if err != nil {
+			log.Println("Error scanning rows")
+			return nil, err
+		}
+		comment.Votes, err = GetVotes(0, comment.CommentID)
+		if err != nil {
+			log.Println("Error getting votes")
 			return nil, err
 		}
 		comments = append(comments, comment)
 	}
 
 	return comments, nil
+}
+
+// GetVotes fetches the votes for a specific post or comment from the database
+func GetVotes(postID, commentID int) (map[int]int, error) {
+	var rows *sql.Rows
+	var err error
+	if postID == 0 {
+		rows, err = db.Query(database.PostVotes(), nil, commentID)
+	} else {
+		rows, err = db.Query(database.PostVotes(), postID, nil)
+	}
+	if err != nil {
+		log.Println("Error fetching votes from database")
+		return nil, err
+	}
+	defer rows.Close()
+
+	votes := make(map[int]int)
+	for rows.Next() {
+		var userID, vote int
+		err := rows.Scan(&userID, &vote)
+		if err != nil {
+			log.Println("Error scanning rows")
+			return nil, err
+		}
+		votes[vote] = userID
+	}
+
+	return votes, nil
 }

@@ -33,7 +33,7 @@ func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	for rows.Next() {
 		var id int
 		rows.Scan(&id)
-		post, err := getPostDetails(id)
+		post, err := GetPostDetails(id)
 
 		if err != nil {
 			ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
@@ -94,7 +94,7 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	for rows.Next() {
 		var id int
 		rows.Scan(&id)
-		post, err := getPostDetails(id)
+		post, err := GetPostDetails(id)
 
 		if err != nil {
 			ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
