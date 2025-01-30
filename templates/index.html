@@ -7,28 +7,28 @@
 
         <!-- Filter Form (hidden by default) -->
         <form class="filter" method="POST" action="/">
-            <!-- Topic Filter -->
             <div class="filter-group">
-                <label for="topicFilter" class="filter-label">Filter by Topic:</label>
+                <!-- Topic Filter -->
+                <label for="topicFilter" class="filter-label">Filter by Category:</label>
                 <select id="topicFilter" name="topic" class="filter-select">
                     <option value="None">-</option>
                     {{ range $index, $category := .Categories }}
                     <option value="{{ $category.CategoryID }}">{{ $category.CategoryName }}</option>
                     {{ end }}
                 </select>
+                
+                <!-- Only show "Created by Me" if the user is logged in -->
+                {{if .LoggedIn}}
+                    <span class="or">or</span>
+                    <label for="postFilter" class="filter-label">Filter by Action:</label>
+                    <select id="postFilter" name="filter" class="filter-select">
+                        <option value="None">-</option>
+                        <option value="createdByMe">Created by Me</option>
+                        <option value="likedByMe">Liked by Me</option>
+                        <option value="dislikedByMe">Disliked by Me</option>
+                    </select>
+                {{end}}
             </div>
-            {{if .LoggedIn}}
-            <!-- Post Filter -->
-            <div class="filter-group">
-                <label for="postFilter" class="filter-label">Filter Posts:</label>
-                <select id="postFilter" name="filter" class="filter-select">
-                    <option value="None">-</option>
-                    <option value="createdByMe">Created by Me</option>
-                    <option value="likedByMe">Liked by Me</option>
-                    <option value="dislikedByMe">Disliked by Me</option>
-                </select>
-            </div>
-            {{end}}
             <button type="submit" class="filter-button">Apply Filters</button>
         </form>
 
@@ -51,26 +51,26 @@
     </main>
 {{template "footer"}}
 </body>
-    <script>
-        function toggleFilter() {
-            var filter = document.querySelector('.filter');
-            var button = document.querySelector('.show-filter-button');
+<script>
+    function toggleFilter() {
+        var filter = document.querySelector('.filter');
+        var button = document.querySelector('.show-filter-button');
 
-            if (filter.classList.contains('show')) {
-                filter.style.opacity = '0';
-                setTimeout(() => {
-                    filter.classList.remove('show');
-                    filter.style.display = 'none';
-                }, 300); // Matches transition
-                button.textContent = 'Show Filters';
-            } else {
-                filter.style.display = 'block';
-                setTimeout(() => {
-                    filter.classList.add('show');
-                    filter.style.opacity = '1';
-                }, 10); // Ensures transition works
-                button.textContent = 'Hide Filters';
-            }
+        if (filter.classList.contains('show')) {
+            filter.style.opacity = '0';
+            setTimeout(() => {
+                filter.classList.remove('show');
+                filter.style.display = 'none';
+            }, 300); // Matches transition
+            button.textContent = 'Show Filters';
+        } else {
+            filter.style.display = 'flex';  // Change to 'flex' to maintain layout
+            setTimeout(() => {
+                filter.classList.add('show');
+                filter.style.opacity = '1';
+            }, 10); // Ensures transition works
+            button.textContent = 'Hide Filters';
         }
-    </script>
+    }
+</script>
 </html>
