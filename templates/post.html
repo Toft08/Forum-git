@@ -1,7 +1,7 @@
 {{template "head"}}
 <body>
 {{template "navBar" .}}
-   
+   <div class="wrapper">
     <main>
         {{range .Posts}}
         <h2>{{.PostTitle}}</h2>
@@ -71,6 +71,7 @@
         {{end}}
 
     </main>
+    </div>
 {{template "footer"}}
 </body>
 <script>

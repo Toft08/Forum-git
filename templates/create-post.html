@@ -1,6 +1,7 @@
 {{template "head"}}
 <body>
     {{template "navBar" .}}
+    <div class="wrapper">
     {{if .LoggedIn}}
     <div class="container">
         <form action="/create-post" method="POST">
@@ -25,6 +26,7 @@
     {{else}}
     <p>You must be logged in to create a post.</p>
     {{end}}
+    </div>
     </div>
 </body>
 {{template "footer"}}
