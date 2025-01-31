@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined');
+
+
+.material-symbols-outlined {
+    font-size: 30px
+}
+
 /* General styles */
 body {
     font-family: Arial, sans-serif;
@@ -79,7 +86,7 @@ main {
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #fff;
-    display: block
+    display: block;
 }
 
 .post-card {
@@ -114,37 +121,14 @@ main {
     text-overflow: ellipsis;
 }
 
+.like-dislike-form {
+    display: inline;
+    gap: 10px;
+}
+
 /* Default button styles */
-.reaction-btn {
-    background-color: #f0f0f0;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
-  }
-  
-.reaction-btn:hover {
-    background-color: #c5c5c5;
-}
-
-/* Active state for like button */
-.reaction-btn#like-btn.active {
-    background-color: #469c64;
-}
-  
-/* Active state for dislike button */
-.reaction-btn#dislike-btn.active {
-    background-color: #bc2a42;
-}
-  
-.comment-like-btn.active{
-    background-color: #469c64;
-}
-
-.comment-dislike-btn.active {
-    background-color: #bc2a42;
+.reaction-buttons {
+    display: inline-flex;
 }
   
 .reaction-count {
@@ -157,8 +141,6 @@ main {
     font-family: Arial, Helvetica, sans-serif;
     min-height: 50px;   
 }
-
-  
 
 /* Footer styling */
 footer {
