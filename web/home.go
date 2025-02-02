@@ -32,12 +32,18 @@ func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	for rows.Next() {
 		var id int
-		rows.Scan(&id)
+		var title, content, username string
+		if err := rows.Scan(&id, &title, &content, &username); err != nil {
+			ErrorHandler(w, "Error scanning post ID", http.StatusInternalServerError)
+			return
+		}
+		log.Printf("Fetching post details for ID: %d", id)
 		post, err := GetPostDetails(id)
 
 		if err != nil {
 			ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 		}
+
 		data.Posts = append(data.Posts, *post)
 
 	}
