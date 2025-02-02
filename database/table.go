@@ -1,4 +1,4 @@
-package web
+package database
 
 import (
 	"database/sql"
@@ -105,20 +105,23 @@ func MakeTables(db *sql.DB) {
 		return
 	}
 
-	insertUserQuery := `
-    INSERT INTO User (username, email, password, created_at) VALUES
-    ('admin', 'admin@example.com', 'hashedpassword', datetime('now'));
-`
+	// 	insertUserQuery := `
+	//     INSERT INTO User (username, email, password, created_at) VALUES
+	//     ('admin', 'admin@example.com', 'hashedpassword', datetime('now'));
+	// `
 
-if _, err := db.Exec(insertUserQuery); err != nil {
-		fmt.Println("Error inserting into Post table:", err)
-		return
-	}
+	// if _, err := db.Exec(insertUserQuery); err != nil {
+	// 		fmt.Println("Error inserting into Post table:", err)
+	// 		return
+	// 	}
 	// Insert initial data into Post
 	insertPostQuery := `
-        INSERT INTO post (title, content, user_id, created_at) VALUES
-        ('Welcome to the forum', 'This is the first post!', 1, datetime('now'));
-    `
+    INSERT INTO post (title, content, user_id, created_at) 
+    SELECT 'Welcome to the forum', 'This is the first post!', 1, datetime('now')
+    WHERE NOT EXISTS (
+        SELECT 1 FROM post WHERE title = 'Welcome to the forum'
+    );
+`
 	if _, err := db.Exec(insertPostQuery); err != nil {
 		fmt.Println("Error inserting into Post table:", err)
 		return

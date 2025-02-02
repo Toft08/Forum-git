@@ -14,7 +14,7 @@ func main() {
 	db := database.InitDB()
 	defer db.Close()
 
-	web.MakeTables(db)
+	database.MakeTables(db)
 
 	http.HandleFunc("/", web.PageHandler)
 
