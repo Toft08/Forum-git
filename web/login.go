@@ -82,7 +82,7 @@ func createSession(w http.ResponseWriter, userID int) error {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
 		Value:    sessionID,
-		Expires:  time.Now().Add(24 * time.Hour),
+		Expires:  time.Now().Add(30 * time.Minute),
 		HttpOnly: true,
 		Path:     "/",
 	})

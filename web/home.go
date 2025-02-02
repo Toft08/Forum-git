@@ -42,7 +42,7 @@ func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 			ErrorHandler(w, "Error scanning post ID", http.StatusInternalServerError)
 			return
 		}
-		log.Printf("Fetching post details for ID: %d", id)
+		// log.Printf("Fetching post details for ID: %d", id)
 		post, err := GetPostDetails(id)
 
 		if err != nil {
