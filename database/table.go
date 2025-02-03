@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 )
-
+// MakeTables creates the tables in the database if they do not exist and inserts initial data into the tables
 func MakeTables(db *sql.DB) {
 
 	createUserTableQuery := `

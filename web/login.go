@@ -20,11 +20,11 @@ func Login(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		ErrorHandler(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
 }
-
+// handleLoginGet renders the login page
 func handleLoginGet(w http.ResponseWriter) {
 	RenderTemplate(w, "login", nil)
 }
-
+// handleLoginPost handles the login form submission
 func handleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
@@ -50,7 +50,7 @@ func handleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) 
 	data.LoggedIn = true
 	http.Redirect(w, r, "/", http.StatusFound)
 }
-
+// getUserCredentials retrieves the user's ID and hashed password from the database
 func getUserCredentials(username string) (int, string, error) {
 	var userID int
 	var hashedPassword string
@@ -61,16 +61,16 @@ func getUserCredentials(username string) (int, string, error) {
 	}
 	return userID, hashedPassword, nil
 }
-
+// verifyPassword compares the hashed password with the password provided by the user
 func verifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
-
+// handleLoginError logs the error and sends an error response to the client
 func handleLoginError(w http.ResponseWriter, message string, err error) {
 	ErrorHandler(w, message, http.StatusNotFound)
 	log.Println(message, err)
 }
-
+// createSession creates a new session for the user and stores the session ID in the database
 func createSession(w http.ResponseWriter, userID int) error {
 
 	_, err := db.Exec("DELETE FROM Session WHERE user_id = ?", userID)
