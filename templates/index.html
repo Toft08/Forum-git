@@ -12,7 +12,7 @@
                 <!-- Topic Filter -->
                 <label for="topicFilter" class="filter-label">Filter by Category:</label>
                 <select id="topicFilter" name="topic" class="filter-select">
-                    <option value="None">-</option>
+                    <option value="">-</option>
                     {{ range $index, $category := .Categories }}
                     <option value="{{ $category.CategoryID }}">{{ $category.CategoryName }}</option>
                     {{ end }}
@@ -23,7 +23,7 @@
                     <span class="or">or</span>
                     <label for="postFilter" class="filter-label">Filter by Action:</label>
                     <select id="postFilter" name="filter" class="filter-select">
-                        <option value="None">-</option>
+                        <option value="">-</option>
                         <option value="createdByMe">Created by Me</option>
                         <option value="likedByMe">Liked by Me</option>
                         <option value="dislikedByMe">Disliked by Me</option>

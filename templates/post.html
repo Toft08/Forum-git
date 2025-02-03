@@ -18,13 +18,11 @@
         <div class="post-card">
             <pre>{{.PostContent}}</pre>
             <div class="reaction-buttons">
-            <form action="/like_dislike" method="POST" class="like-dislike-form">
-                <input type="hidden" name="post-id" value="{{.PostID}}">
-                <input type="hidden" name="user-id" value="{{.UserID}}">
-                  <button type="submit" title="like" class="like-button">
+            <form action="/post/{{.PostID}}" method="POST" class="like-dislike-form">
+                  <button type="submit" name="vote" value="like" title="like" class="like-button">
                   <span class="material-symbols-outlined">thumb_up</span></button>
                   <span class="reaction-count">{{.Likes}}</span>
-                <button type="submit" title="dislike" class="dislike-button">
+                <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button">
                 <span class="material-symbols-outlined">thumb_down</span></button>
                 <span class="reaction-count">{{.Dislikes}}</span>
           </form>
@@ -40,13 +38,12 @@
                     <div class="post-card">
                     <pre>{{ $comment.Content }}</pre>
                     <div class="reaction-buttons">
-                      <form action="/like_dislike" method="POST" class="like-dislike-form">
+                      <form action="/post/{{.PostID}}" method="POST" class="like-dislike-form">
                           <input type="hidden" name="comment-id" value="{{.CommentID}}">
-                          <input type="hidden" name="user-id" value="{{.UserID}}">
-                            <button type="submit" title="like" class="like-button">
+                            <button type="submit" name="vote" value="like" title="like" class="like-button">
                             <span class="material-symbols-outlined">thumb_up</span></button>
                             <span class="reaction-count">{{ $comment.Likes }}</span>
-                          <button type="submit" title="dislike" class="dislike-button">
+                          <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button">
                           <span class="material-symbols-outlined">thumb_down</span></button>
                           <span class="reaction-count">{{ $comment.Dislikes }}</span>
                     </form>

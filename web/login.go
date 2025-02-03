@@ -1,7 +1,6 @@
 package web
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -11,39 +10,38 @@ import (
 
 // login handles both GET and POST requests for user authentication
 func Login(w http.ResponseWriter, r *http.Request, data *PageDetails) {
+	data.ValidationError = ""
 	switch r.Method {
 	case http.MethodGet:
-		handleLoginGet(w)
+		RenderTemplate(w, "login", data)
 	case http.MethodPost:
 		handleLoginPost(w, r, data)
 	default:
 		ErrorHandler(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
 }
-// handleLoginGet renders the login page
-func handleLoginGet(w http.ResponseWriter) {
-	RenderTemplate(w, "login", nil)
-}
-// handleLoginPost handles the login form submission
+
 func handleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
 	userID, hashedPassword, err := getUserCredentials(username)
 	if err != nil {
-		handleLoginError(w, "Error getting user credentials", err)
+		data.ValidationError = "Invalid username"
+		RenderTemplate(w, "login", data)
 		return
 	}
 
 	// Verify password
 	if err := verifyPassword(hashedPassword, password); err != nil {
-		handleLoginError(w, "Error verifying password", err)
+		data.ValidationError = "Invalid password"
+		RenderTemplate(w, "login", data)
 		return
 	}
 
 	// Create session
 	if err := createSession(w, userID); err != nil {
-		http.Error(w, "Failed to create session", http.StatusInternalServerError)
+		ErrorHandler(w, "Failed to create session", http.StatusInternalServerError)
 		return
 	}
 
@@ -65,12 +63,7 @@ func getUserCredentials(username string) (int, string, error) {
 func verifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
-// handleLoginError logs the error and sends an error response to the client
-func handleLoginError(w http.ResponseWriter, message string, err error) {
-	ErrorHandler(w, message, http.StatusNotFound)
-	log.Println(message, err)
-}
-// createSession creates a new session for the user and stores the session ID in the database
+
 func createSession(w http.ResponseWriter, userID int) error {
 
 	_, err := db.Exec("DELETE FROM Session WHERE user_id = ?", userID)
