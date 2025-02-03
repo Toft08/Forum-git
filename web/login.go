@@ -48,6 +48,7 @@ func HandleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) 
 	data.LoggedIn = true
 	http.Redirect(w, r, "/", http.StatusFound)
 }
+
 // getUserCredentials retrieves the user's ID and hashed password from the database
 func getUserCredentials(username string) (int, string, error) {
 	var userID int
@@ -59,17 +60,13 @@ func getUserCredentials(username string) (int, string, error) {
 	}
 	return userID, hashedPassword, nil
 }
+
 // verifyPassword compares the hashed password with the password provided by the user
 func verifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
 func createSession(w http.ResponseWriter, userID int) error {
-
-	_, err := db.Exec("DELETE FROM Session WHERE user_id = ?", userID)
-	if err != nil {
-		return err
-	}
 
 	sessionID := uuid.NewString()
 	http.SetCookie(w, &http.Cookie{
@@ -81,7 +78,7 @@ func createSession(w http.ResponseWriter, userID int) error {
 	})
 
 	// Store session ID in database
-	_, err = db.Exec("INSERT INTO Session (id, user_id, created_at) VALUES (?, ?, ?)",
+	_, err := db.Exec("INSERT INTO Session (id, user_id, created_at) VALUES (?, ?, ?)",
 		sessionID, userID, time.Now().Format("2006-01-02 15:04:05"))
 
 	return err
