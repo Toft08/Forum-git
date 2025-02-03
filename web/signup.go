@@ -3,6 +3,7 @@ package web
 import (
 	"log"
 	"net/http"
+	"net/mail"
 	"strings"
 	"time"
 
@@ -78,15 +79,8 @@ func insertUserIntoDB(username, email, hashedPassword string) error {
 }
 
 func isValidEmail(email string) bool {
-	at := strings.Index(email, "@")
-	if at <= 0 || at >= len(email)-1 {
-		return false
-	}
-	dot := strings.LastIndex(email, ".")
-	if dot <= at || dot >= len(email)-1 {
-		return false
-	}
-	return true
+	_, err := mail.ParseAddress(email)
+	return err == nil
 }
 
 // isUsernameOrEmailUnique checks if the username or email is unique in the database
