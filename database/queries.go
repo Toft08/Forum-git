@@ -10,17 +10,23 @@ func PostContent() string {
 			Post.title AS post_title,
 			Post.content AS post_content,
 			Post.created_at AS post_created_at,
-			COUNT(CASE WHEN Like.type = 0 THEN 1 END) AS post_likes,
-			COUNT(CASE WHEN Like.type = 1 THEN 1 END) AS post_dislikes,
+			COALESCE(likes.post_likes, 0) AS post_likes,
+   			COALESCE(likes.post_dislikes, 0) AS post_dislikes,
 			COALESCE(GROUP_CONCAT(Category.name, ','), '') AS categories
-		FROM post
-		LEFT JOIN user ON Post.user_id = User.id
-		LEFT JOIN like ON Post.id = Like.post_id
+		FROM Post
+		LEFT JOIN User ON Post.user_id = User.id
+		LEFT JOIN (
+			SELECT 
+				post_id,
+				SUM(CASE WHEN type = 1 THEN 1 ELSE 0 END) AS post_likes,
+				SUM(CASE WHEN type = 2 THEN 1 ELSE 0 END) AS post_dislikes
+			FROM Like
+			GROUP BY post_id
+		) AS likes ON Post.id = likes.post_id
 		LEFT JOIN Post_Category ON Post.id = Post_Category.post_id
 		LEFT JOIN Category ON Post_Category.category_id = Category.id
 		WHERE Post.id = ?
-		GROUP BY Post.id;
-
+		GROUP BY Post.id, Post.user_id, User.username, Post.title, Post.content, Post.created_at;
 	`
 	return query
 }
@@ -30,11 +36,12 @@ func CommentContent() string {
 	query := `
 		SELECT 
 			Comment.id AS comment_id,
+			Comment.post_id AS post_id,
 			Comment.content AS comment_content,
 			Comment.user_id,
 			User.username AS username,
-			COUNT(CASE WHEN Like.type = 0 THEN 1 END) AS comment_likes,
-			COUNT(CASE WHEN Like.type = 1 THEN 1 END) AS comment_dislikes
+			COUNT(CASE WHEN Like.type = 1 THEN 1 END) AS comment_likes,
+			COUNT(CASE WHEN Like.type = 2 THEN 1 END) AS comment_dislikes
 		FROM comment
 		LEFT JOIN user ON Comment.user_id = User.id
 		LEFT JOIN like ON Comment.id = Like.comment_id

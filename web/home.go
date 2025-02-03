@@ -63,28 +63,43 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		return
 	}
 
-	if data.SelectedCategory == "None" && data.SelectedFilter == "None" {
-		HandleHomeGet(w, r, data)
-		return
-	} else if data.SelectedCategory != "None" && data.SelectedFilter == "None" {
-		categoryID, err = strconv.Atoi(data.SelectedCategory)
-		if err != nil {
-			log.Println("Error converting categoryID", err)
-			ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
-		}
-		query = database.FilterCategories()
-		args = append(args, categoryID)
-	} else {
-		args = append(args, userID)
-		switch data.SelectedFilter {
-		case "createdByMe":
-			query = "SELECT Post.id FROM Post WHERE Post.user_id = ?"
-		case "likedByMe":
-			query = database.MyLikes()
-		case "dislikedByMe":
-			query = database.MyDislikes()
-		}
+	if data.LoggedIn {
+		if data.SelectedCategory == "" && data.SelectedFilter == "" {
+			HandleHomeGet(w, r, data)
+			return
+		} else if data.SelectedCategory != "" && data.SelectedFilter == "" {
+			categoryID, err = strconv.Atoi(data.SelectedCategory)
+			if err != nil {
+				log.Println("Error converting categoryID", err)
+				ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
+			}
+			query = database.FilterCategories()
+			args = append(args, categoryID)
+		} else {
+			args = append(args, userID)
+			switch data.SelectedFilter {
+			case "createdByMe":
+				query = "SELECT Post.id FROM Post WHERE Post.user_id = ?"
+			case "likedByMe":
+				query = database.MyLikes()
+			case "dislikedByMe":
+				query = database.MyDislikes()
+			}
 
+		}
+	} else {
+		if data.SelectedCategory == "" {
+			HandleHomeGet(w, r, data)
+			return
+		} else {
+			categoryID, err = strconv.Atoi(data.SelectedCategory)
+			if err != nil {
+				log.Println("Error converting categoryID", err)
+				ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
+			}
+			query = database.FilterCategories()
+			args = append(args, categoryID)
+		}
 	}
 	query += " ORDER BY Post.created_at DESC;"
 	// Fetch posts from the database for a specific user

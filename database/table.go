@@ -49,7 +49,7 @@ func MakeTables(db *sql.DB) {
 	createCategoryTableQuery := `
 		CREATE TABLE IF NOT EXISTS Category (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-    	name TEXT NOT NULL
+    	name TEXT UNIQUE NOT NULL
 	);`
 	if _, err := db.Exec(createCategoryTableQuery); err != nil {
 		fmt.Println("Error creating Category table:", err)

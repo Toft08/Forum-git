@@ -68,6 +68,7 @@ func GetPostDetails(postID, userID int) (*PostDetails, error) {
 		log.Println("Error getting votes")
 		return nil, err
 	}
+
 	return &post, nil
 }
 
@@ -86,6 +87,7 @@ func GetComments(postID, userID int) ([]CommentDetails, error) {
 		var comment CommentDetails
 		err := rows.Scan(
 			&comment.CommentID,
+			&comment.PostID,
 			&comment.Content,
 			&comment.UserID,
 			&comment.Username,

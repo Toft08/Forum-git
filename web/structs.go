@@ -2,6 +2,7 @@ package web
 
 type CommentDetails struct {
 	CommentID   int
+	PostID      int
 	Content     string
 	UserID      int
 	Username    string
