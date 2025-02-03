@@ -60,59 +60,65 @@ func HandlePostPagePost(w http.ResponseWriter, r *http.Request, data *PageDetail
 	var err error
 	data.LoggedIn, userID = VerifySession(r)
 
-	if !data.LoggedIn {
-		ErrorHandler(w, "Unauthorized: You must be logged in to create a post", http.StatusUnauthorized)
-		return
-	}
-	vote := r.FormValue("vote")
-	commentID := r.FormValue("comment-id")
-	content := r.FormValue("comment")
+	if data.LoggedIn {
+		vote := r.FormValue("vote")
+		commentID := r.FormValue("comment-id")
+		content := r.FormValue("comment")
+		log.Println("Vote", vote)
+		log.Println("CommentID", commentID)
+		log.Println("Content", content)
 
-	if content != "" {
-		// Insert comment into the database
-		_, err = db.Exec("INSERT INTO Comment (post_id, content, user_id, created_at) VALUES (?, ?, ?, ?)",
-			postID, content, userID, time.Now().Format("2006-01-02 15:04:05"))
-		if err != nil {
-			log.Println("Error creating post:", err)
-			ErrorHandler(w, "errorInCreatePost", http.StatusNotFound)
-			return
-		}
-	} else {
-		var likeType int
-		var post int
-		var comment int
-		if vote == "like" {
-			likeType = 1
-		} else if vote == "dislike" {
-			likeType = 2
-		} else {
-			log.Println("Invalid vote value: ", vote)
-			ErrorHandler(w, "Bad Request", http.StatusBadRequest)
-			return
-		}
-		if commentID == "" {
-			comment = 0
-			post = postID
-		} else {
-			comment, err = strconv.Atoi(commentID)
+		if content != "" {
+			// Insert comment into the database
+			_, err = db.Exec("INSERT INTO Comment (post_id, content, user_id, created_at) VALUES (?, ?, ?, ?)",
+				postID, content, userID, time.Now().Format("2006-01-02 15:04:05"))
 			if err != nil {
-				log.Println("Error converting commentID", err)
-				ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
+				log.Println("Error creating post:", err)
+				ErrorHandler(w, "errorInCreatePost", http.StatusNotFound)
 				return
 			}
-			exists := ValidateCommentID(comment)
-			if !exists {
-				log.Println("CommentID doesn't exist", comment)
+		} else {
+			var likeType int
+			var post int
+			var comment int
+			if vote == "like" {
+				likeType = 1
+			} else if vote == "dislike" {
+				likeType = 2
+			} else {
+				log.Println("Invalid vote value: ", vote)
 				ErrorHandler(w, "Bad Request", http.StatusBadRequest)
 				return
 			}
-			post = 0
-		}
-		err = AddVotes(userID, post, comment, likeType)
-		if err != nil {
-			log.Printf("Error adding votes to the database: userID %d, postID %d, commentID %d, like type %d\n", userID, post, comment, likeType)
-			ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
-			return
+			if commentID == "" {
+				comment = 0
+				post = postID
+			} else {
+				comment, err = strconv.Atoi(commentID)
+				if err != nil {
+					log.Println("Error converting commentID", err)
+					ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
+					return
+				}
+				exists := ValidateCommentID(comment)
+				if !exists {
+					log.Println("CommentID doesn't exist", comment)
+					ErrorHandler(w, "Bad Request", http.StatusBadRequest)
+					return
+				}
+				post = 0
+			}
+			log.Println("PostID", post)
+			log.Println("CommentID", comment)
+			log.Println("Vote", likeType)
+			log.Println("UserID", userID)
+
+			err = AddVotes(userID, post, comment, likeType)
+			if err != nil {
+				log.Printf("Error adding votes to the database: userID %d, postID %d, commentID %d, like type %d\n", userID, post, comment, likeType)
+				ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
 		}
 	}
 
@@ -143,13 +149,29 @@ func ValidateCommentID(commentID int) bool {
 
 // AddVotes adds or updates a vote type for a post or comment
 func AddVotes(userID, postID, commentID, vote int) error {
+	var row *sql.Row
+	query := `SELECT Type FROM Like WHERE user_id = ? AND `
+	deleteQuery := `UPDATE Like SET type = 0, created_at = ? WHERE user_id = ? AND `
+	updateQuery := `UPDATE Like SET type = ?, created_at = ? WHERE user_id = ? AND `
+	var addon string
+	var ID int
 
 	if postID == 0 && commentID == 0 {
 		return fmt.Errorf("both postID and commentID cannot be zero")
 	}
 
-	query := `SELECT Type FROM Like WHERE user_id = ? AND (post_id = ? OR comment_id = ?)`
-	row := db.QueryRow(query, userID, postID, commentID)
+	if postID == 0 {
+		ID = commentID
+		addon = `comment_id = ?`
+	} else if commentID == 0 {
+		ID = postID
+		addon = `post_id = ?`
+	}
+	query += addon
+	deleteQuery += addon
+	updateQuery += addon
+
+	row = db.QueryRow(query, userID, ID)
 	var likeType int
 	err := row.Scan(&likeType)
 	if err != nil {
@@ -163,8 +185,7 @@ func AddVotes(userID, postID, commentID, vote int) error {
 
 	if likeType == vote {
 		// If existing like type is the same the the current, remove the like by changing the type to 0
-		updateQuery := `UPDATE Like SET type = 0, created_at = ? WHERE user_id = ? AND (post_id = ? OR comment_id = ?)`
-		_, err = db.Exec(updateQuery, time.Now().Format("2006-01-02 15:04:05"), userID, postID, commentID)
+		_, err = db.Exec(deleteQuery, time.Now().Format("2006-01-02 15:04:05"), userID, ID)
 		if err != nil {
 			log.Println("Error updating the record to 0:", err)
 			return err
@@ -178,8 +199,7 @@ func AddVotes(userID, postID, commentID, vote int) error {
 			return err
 		}
 	} else {
-		updateQuery := `UPDATE Like SET type = ?, created_at = ? WHERE user_id = ? AND (post_id = ? OR comment_id = ?)`
-		_, err = db.Exec(updateQuery, vote, time.Now().Format("2006-01-02 15:04:05"), userID, postID, commentID)
+		_, err = db.Exec(updateQuery, vote, time.Now().Format("2006-01-02 15:04:05"), userID, ID)
 		if err != nil {
 			log.Println("Error updating the record to new vote:", err)
 			return err
