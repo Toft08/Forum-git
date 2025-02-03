@@ -64,15 +64,22 @@ func handleSignUpPost(w http.ResponseWriter, r *http.Request, data *PageDetails)
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
+// hashPassword hashes the user's password using bcrypt
 func hashPassword(password string) (string, error) {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(hashed), err
 }
 
+// insertUserIntoDB inserts the user's details into the database
 func insertUserIntoDB(username, email, hashedPassword string) error {
 	_, err := db.Exec("INSERT INTO User (username, email, password, created_at) VALUES (?, ?, ?, ?)",
 		username, email, hashedPassword, time.Now().Format("2006-01-02 15:04:05"))
 	return err
+}
+
+func handleSignUpError(w http.ResponseWriter, message string) {
+	ErrorHandler(w, message, http.StatusNotFound)
+	log.Println(message)
 }
 
 func isValidEmail(email string) bool {
@@ -87,17 +94,18 @@ func isValidEmail(email string) bool {
 	return true
 }
 
+// isUsernameOrEmailUnique checks if the username or email is unique in the database
 func isUsernameOrEmailUnique(username, email string) (bool, error) {
-    username = strings.ToLower(username)
-    email = strings.ToLower(email)
+	username = strings.ToLower(username)
+	email = strings.ToLower(email)
 
-    var count int
-    err := db.QueryRow(`
+	var count int
+	err := db.QueryRow(`
         SELECT COUNT(*) 
         FROM User 
         WHERE username = ? OR email = ?`, username, email).Scan(&count)
-    if err != nil {
-        return false, err
-    }
-    return count == 0, nil  // Returns true if neither username nor email exists
+	if err != nil {
+		return false, err
+	}
+	return count == 0, nil // Returns true if neither username nor email exists
 }

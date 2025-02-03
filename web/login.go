@@ -48,7 +48,7 @@ func handleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) 
 	data.LoggedIn = true
 	http.Redirect(w, r, "/", http.StatusFound)
 }
-
+// getUserCredentials retrieves the user's ID and hashed password from the database
 func getUserCredentials(username string) (int, string, error) {
 	var userID int
 	var hashedPassword string
@@ -59,7 +59,7 @@ func getUserCredentials(username string) (int, string, error) {
 	}
 	return userID, hashedPassword, nil
 }
-
+// verifyPassword compares the hashed password with the password provided by the user
 func verifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }

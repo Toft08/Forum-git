@@ -16,6 +16,7 @@ func Logout(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 			log.Println("Error deleting session:", err)
 		}
 	}
+	// Expire the session cookie
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
 		Value:    "",

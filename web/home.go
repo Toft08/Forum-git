@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 )
-
+// HomePage handles the rendering of the home page
 func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	data.ValidationError = ""
 	switch r.Method {
@@ -19,7 +19,7 @@ func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		ErrorHandler(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
 }
-
+// HandleHomeGet fetches posts from the database and renders the home page
 func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	data.LoggedIn, _ = VerifySession(r)
 	// Fetch posts from the database
@@ -45,7 +45,7 @@ func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	RenderTemplate(w, "index", data)
 }
-
+// HandleHomePost handles the filtering of posts based on the user's selection
 func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	var args []interface{}
 	var userID int
