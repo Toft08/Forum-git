@@ -89,7 +89,7 @@ func MakeTables(db *sql.DB) {
 		id TEXT PRIMARY KEY, -- Unique session ID (UUID)
     	user_id INTEGER NOT NULL,
     	created_at TEXT NOT NULL,
-    	FOREIGN KEY (user_id) REFERENCES USER (id)
+    	FOREIGN KEY (user_id) REFERENCES user (id)
 	);`
 	if _, err := db.Exec(createSessionTableQuery); err != nil {
 		fmt.Println("Error creating Session table:", err)
