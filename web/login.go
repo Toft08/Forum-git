@@ -8,20 +8,20 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// login handles both GET and POST requests for user authentication
+// Login handles both GET and POST requests for user authentication
 func Login(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	data.ValidationError = ""
 	switch r.Method {
 	case http.MethodGet:
 		RenderTemplate(w, "login", data)
 	case http.MethodPost:
-		handleLoginPost(w, r, data)
+		HandleLoginPost(w, r, data)
 	default:
 		ErrorHandler(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
 }
 
-func handleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
+func HandleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 

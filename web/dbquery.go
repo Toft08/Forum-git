@@ -115,9 +115,9 @@ func GetVotes(userID, postID, commentID int) (bool, bool, error) {
 		var rows *sql.Rows
 		var err error
 		if postID == 0 {
-			rows, err = db.Query(database.PostVotes(), userID, nil, commentID)
+			rows, err = db.Query(database.Votes(), userID, nil, commentID)
 		} else {
-			rows, err = db.Query(database.PostVotes(), userID, postID, nil)
+			rows, err = db.Query(database.Votes(), userID, postID, nil)
 		}
 		if err != nil {
 			log.Println("Error fetching votes from database")
