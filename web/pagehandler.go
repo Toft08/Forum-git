@@ -35,14 +35,13 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 		Login(w, r, &data)
 	case "/signup":
 		SignUp(w, r, &data)
-	case "/logout":
-		Logout(w, r, &data)
 	case "/create-post":
 		CreatePost(w, r, &data)
-
 	default:
 		if strings.HasPrefix(r.URL.Path, "/post") {
 			PostHandler(w, r, &data)
+		} else if strings.HasPrefix(r.URL.Path, "/logout") {
+			Logout(w, r, &data)
 		} else {
 			ErrorHandler(w, "Page Not Found", http.StatusNotFound)
 		}

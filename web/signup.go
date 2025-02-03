@@ -77,11 +77,6 @@ func insertUserIntoDB(username, email, hashedPassword string) error {
 	return err
 }
 
-func handleSignUpError(w http.ResponseWriter, message string) {
-	ErrorHandler(w, message, http.StatusNotFound)
-	log.Println(message)
-}
-
 func isValidEmail(email string) bool {
 	at := strings.Index(email, "@")
 	if at <= 0 || at >= len(email)-1 {
