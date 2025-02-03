@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 )
+
 // MakeTables creates the tables in the database if they do not exist and inserts initial data into the tables
 func MakeTables(db *sql.DB) {
 
@@ -95,26 +96,26 @@ func MakeTables(db *sql.DB) {
 		return
 	}
 	insertCategoryQuery := `
-        INSERT INTO category (name) VALUES 
-        ('General'),
-        ('Tutorial'),
-        ('Question');
-    `
+    INSERT INTO category (name)
+    SELECT 'General' WHERE NOT EXISTS (SELECT 1 FROM category WHERE name = 'General')
+    UNION ALL
+    SELECT 'Tutorial' WHERE NOT EXISTS (SELECT 1 FROM category WHERE name = 'Tutorial')
+    UNION ALL
+    SELECT 'Question' WHERE NOT EXISTS (SELECT 1 FROM category WHERE name = 'Question');
+`
 	if _, err := db.Exec(insertCategoryQuery); err != nil {
 		fmt.Println("Error inserting into Category table:", err)
 		return
 	}
-
-	// 	insertUserQuery := `
-	//     INSERT INTO User (username, email, password, created_at) VALUES
-	//     ('admin', 'admin@example.com', 'hashedpassword', datetime('now'));
-	// `
-
-	// if _, err := db.Exec(insertUserQuery); err != nil {
-	// 		fmt.Println("Error inserting into Post table:", err)
-	// 		return
-	// 	}
-	// Insert initial data into Post
+	insertUserQuery := `
+	    INSERT INTO User (username, email, password, created_at) VALUES
+	    ('admin', 'admin@example.com', 'hashedpassword', datetime('now'));
+	`
+	if _, err := db.Exec(insertUserQuery); err != nil {
+		fmt.Println("Error inserting into Post table:", err)
+		return
+	}
+	//Insert initial data into Post
 	insertPostQuery := `
     INSERT INTO post (title, content, user_id, created_at) 
     SELECT 'Welcome to the forum', 'This is the first post!', 1, datetime('now')
@@ -122,8 +123,26 @@ func MakeTables(db *sql.DB) {
         SELECT 1 FROM post WHERE title = 'Welcome to the forum'
     );
 `
-	if _, err := db.Exec(insertPostQuery); err != nil {
+	result, err := db.Exec(insertPostQuery)
+	if err != nil {
 		fmt.Println("Error inserting into Post table:", err)
+		return
+	}
+
+	// Retrieve the last inserted ID
+	lastInsertID, err := result.LastInsertId()
+	if err != nil {
+		fmt.Println("Error retrieving last insert ID:", err)
+		return
+	}
+
+	insertPostCategoryQuery := `
+    INSERT INTO Post_category (post_id, category_id)
+	VALUES (?, 1);
+`
+
+	if _, err := db.Exec(insertPostCategoryQuery, int(lastInsertID)); err != nil {
+		fmt.Println("Error inserting into Post_category table:", err)
 		return
 	}
 

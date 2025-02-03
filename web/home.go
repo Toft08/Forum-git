@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 )
+
 // HomePage handles the rendering of the home page
 func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	data.ValidationError = ""
@@ -19,11 +20,22 @@ func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		ErrorHandler(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
 }
+
 // HandleHomeGet fetches posts from the database and renders the home page
 func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	data.LoggedIn, _ = VerifySession(r)
 	// Fetch posts from the database
-	rows, err := db.Query("SELECT id FROM Post ORDER BY created_at DESC")
+	rows, err := db.Query(`
+        SELECT Post.id
+        FROM Post
+        ORDER BY Post.created_at DESC;
+    `)
+	// rows, err := db.Query(`
+	//     SELECT p.id, p.title, p.content, u.username
+	//     FROM Post p
+	//     JOIN User u ON p.user_id = u.id
+	//     ORDER BY p.created_at DESC;
+	// `)
 	if err != nil {
 		log.Println("Error fetching posts:", err)
 		ErrorHandler(w, "error2InHomePage", http.StatusNotFound)
@@ -33,7 +45,11 @@ func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	for rows.Next() {
 		var id int
-		rows.Scan(&id)
+		//var title, content, username string
+		if err := rows.Scan(&id); err != nil {
+			ErrorHandler(w, "Error scanning post ID", http.StatusInternalServerError)
+			return
+		}
 		post, err := GetPostDetails(id, 0)
 
 		if err != nil {
@@ -45,6 +61,7 @@ func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	RenderTemplate(w, "index", data)
 }
+
 // HandleHomePost handles the filtering of posts based on the user's selection
 func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	var args []interface{}
