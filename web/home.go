@@ -25,7 +25,7 @@ func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	// Fetch posts from the database
 	rows, err := db.Query("SELECT id FROM Post ORDER BY created_at DESC")
 	if err != nil {
-		// log.Println("Error fetching posts:", err)
+		log.Println("Error fetching posts:", err)
 		ErrorHandler(w, "error2InHomePage", http.StatusNotFound)
 		return
 	}

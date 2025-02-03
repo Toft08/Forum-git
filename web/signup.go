@@ -33,7 +33,7 @@ func handleSignUpPost(w http.ResponseWriter, r *http.Request, data *PageDetails)
 		return
 	}
 
-	isUnique, err := isUsernameUnique(username)
+	isUnique, err := isUsernameOrEmailUnique(username, email)
 	if err != nil {
 		log.Println("Error checking if username is unique:", err)
 		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
@@ -87,11 +87,17 @@ func isValidEmail(email string) bool {
 	return true
 }
 
-func isUsernameUnique(username string) (bool, error) {
-	var count int
-	err := db.QueryRow("SELECT COUNT(*) FROM User WHERE username = ?", username).Scan(&count)
-	if err != nil {
-		return false, err
-	}
-	return count == 0, nil
+func isUsernameOrEmailUnique(username, email string) (bool, error) {
+    username = strings.ToLower(username)
+    email = strings.ToLower(email)
+
+    var count int
+    err := db.QueryRow(`
+        SELECT COUNT(*) 
+        FROM User 
+        WHERE username = ? OR email = ?`, username, email).Scan(&count)
+    if err != nil {
+        return false, err
+    }
+    return count == 0, nil  // Returns true if neither username nor email exists
 }

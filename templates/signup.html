@@ -1,6 +1,7 @@
 {{template "head"}}
 <body>
    {{template "navBar" .}}
+   <div class="wrapper">
     <div class="container">
         <h1>Sign Up</h1>
         <form action="/signup" method="POST">
@@ -24,6 +25,7 @@
         <div class="signup-link">
             Already have an account? <a href="/login">Login here</a>
         </div>
+    </div>
     </div>
 </body>
 {{template "footer"}}

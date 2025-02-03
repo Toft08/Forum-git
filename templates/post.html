@@ -1,24 +1,34 @@
 {{template "head"}}
 <body>
 {{template "navBar" .}}
-   
+   <div class="wrapper">
     <main>
         {{range .Posts}}
         <h2>{{.PostTitle}}</h2>
-        <h3>Categories:
-            {{range $index, $category := .Categories}}
-                {{if $index}}{{end}} {{$category}}
+        <div class="category-container">
+        {{range $index, $category := .Categories}}
+        <p class="category-tags">{{if $index}}{{end}} {{$category}}
             {{end}}
-        <h3>Author: {{.Username}}</h3>
+        </p>
+        </div>
+        <p><span class="material-symbols-outlined">
+          person
+          </span> {{.Username}}</p>
         <p>Created at: {{.CreatedAt}}</p>
         <div class="post-card">
             <pre>{{.PostContent}}</pre>
             <div class="reaction-buttons">
-                <button id="like-btn" class="reaction-btn">👍</button>
-                <span id="like-count" class="reaction-count">0</span>
-                <button id="dislike-btn" class="reaction-btn">👎</button>
-                <span id="dislike-count" class="reaction-count">0</span>
-              </div>
+            <form action="/like_dislike" method="POST" class="like-dislike-form">
+                <input type="hidden" name="post-id" value="{{.PostID}}">
+                <input type="hidden" name="user-id" value="{{.UserID}}">
+                  <button type="submit" title="like" class="like-button">
+                  <span class="material-symbols-outlined">thumb_up</span></button>
+                  <span class="reaction-count">{{.Likes}}</span>
+                <button type="submit" title="dislike" class="dislike-button">
+                <span class="material-symbols-outlined">thumb_down</span></button>
+                <span class="reaction-count">{{.Dislikes}}</span>
+          </form>
+        </div>
         </div>
         {{ if eq (len .Comments) 0 }}
             <p>No comments yet. Be the first to create one!</p>
@@ -30,11 +40,17 @@
                     <div class="post-card">
                     <pre>{{ $comment.Content }}</pre>
                     <div class="reaction-buttons">
-                        <button class="comment-like-btn reaction-btn">👍</button>
-                        <span class="comment-like-count reaction-count">0</span>
-                        <button class="comment-dislike-btn reaction-btn">👎</button>
-                        <span class="comment-dislike-count reaction-count">0</span>
-                      </div>
+                      <form action="/like_dislike" method="POST" class="like-dislike-form">
+                          <input type="hidden" name="comment-id" value="{{.CommentID}}">
+                          <input type="hidden" name="user-id" value="{{.UserID}}">
+                            <button type="submit" title="like" class="like-button">
+                            <span class="material-symbols-outlined">thumb_up</span></button>
+                            <span class="reaction-count">{{ $comment.Likes }}</span>
+                          <button type="submit" title="dislike" class="dislike-button">
+                          <span class="material-symbols-outlined">thumb_down</span></button>
+                          <span class="reaction-count">{{ $comment.Dislikes }}</span>
+                    </form>
+                  </div>
                     </div>
                 </div>
             {{ end }}
@@ -55,6 +71,7 @@
         {{end}}
 
     </main>
+    </div>
 {{template "footer"}}
 </body>
 <script>
@@ -73,104 +90,5 @@
 
         this.style.height = newHeight + "px"; // Apply height
     });
-
-// Get button elements and counters
-const likeBtn = document.getElementById('like-btn');
-const dislikeBtn = document.getElementById('dislike-btn');
-const likeCount = document.getElementById('like-count');
-const dislikeCount = document.getElementById('dislike-count');
-
-// Track the state of likes and dislikes
-let isLiked = false;
-let isDisliked = false;
-
-// Event listener for like button
-likeBtn.addEventListener('click', () => {
-  if (isLiked) {
-    // If already liked, remove the like
-    likeCount.textContent = parseInt(likeCount.textContent) - 1;
-    likeBtn.classList.remove('active');
-    isLiked = false;
-  } else {
-    // Add like and remove dislike if needed
-    likeCount.textContent = parseInt(likeCount.textContent) + 1;
-    likeBtn.classList.add('active');
-    isLiked = true;
-
-    if (isDisliked) {
-      dislikeCount.textContent = parseInt(dislikeCount.textContent) - 1;
-      dislikeBtn.classList.remove('active');
-      isDisliked = false;
-    }
-  }
-});
-
-// Event listener for dislike button
-dislikeBtn.addEventListener('click', () => {
-  if (isDisliked) {
-    // If already disliked, remove the dislike
-    dislikeCount.textContent = parseInt(dislikeCount.textContent) - 1;
-    dislikeBtn.classList.remove('active');
-    isDisliked = false;
-  } else {
-    // Add dislike and remove like if needed
-    dislikeCount.textContent = parseInt(dislikeCount.textContent) + 1;
-    dislikeBtn.classList.add('active');
-    isDisliked = true;
-
-    if (isLiked) {
-      likeCount.textContent = parseInt(likeCount.textContent) - 1;
-      likeBtn.classList.remove('active');
-      isLiked = false;
-    }
-  }
-});
-
-// Like and dislike functionality for comments
-document.querySelectorAll('.comment').forEach(comment => {
-  const likeBtn = comment.querySelector('.comment-like-btn');
-  const dislikeBtn = comment.querySelector('.comment-dislike-btn');
-  const likeCount = comment.querySelector('.comment-like-count');
-  const dislikeCount = comment.querySelector('.comment-dislike-count');
-
-  let isLiked = false;
-  let isDisliked = false;
-
-  likeBtn.addEventListener('click', () => {
-    if (isLiked) {
-      likeCount.textContent = parseInt(likeCount.textContent) - 1;
-      likeBtn.classList.remove('active');
-      isLiked = false;
-    } else {
-      likeCount.textContent = parseInt(likeCount.textContent) + 1;
-      likeBtn.classList.add('active');
-      isLiked = true;
-
-      if (isDisliked) {
-        dislikeCount.textContent = parseInt(dislikeCount.textContent) - 1;
-        dislikeBtn.classList.remove('active');
-        isDisliked = false;
-      }
-    }
-  });
-
-  dislikeBtn.addEventListener('click', () => {
-    if (isDisliked) {
-      dislikeCount.textContent = parseInt(dislikeCount.textContent) - 1;
-      dislikeBtn.classList.remove('active');
-      isDisliked = false;
-    } else {
-      dislikeCount.textContent = parseInt(dislikeCount.textContent) + 1;
-      dislikeBtn.classList.add('active');
-      isDisliked = true;
-
-      if (isLiked) {
-        likeCount.textContent = parseInt(likeCount.textContent) - 1;
-        likeBtn.classList.remove('active');
-        isLiked = false;
-      }
-    }
-  });
-});
 </script>
 </html>
