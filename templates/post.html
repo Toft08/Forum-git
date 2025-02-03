@@ -4,29 +4,29 @@
    <div class="wrapper">
     <main>
         {{range .Posts}}
+        <div class="container-post">
         <h2>{{.PostTitle}}</h2>
+        <div class="reaction-buttons">
+          <form action="/post/{{.PostID}}" method="POST" class="like-dislike-form">
+                <button type="submit" name="vote" value="like" title="like" class="like-button">
+                  <span class="material-symbols-outlined">thumb_up</span></button>
+                  <span class="reaction-count">{{.Likes}}</span>
+              <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button">
+                <span class="material-symbols-outlined">thumb_down</span></button>
+                <span class="reaction-count">{{.Dislikes}}</span>
+        </form>
+      </div>
+    </div>
         <div class="category-container">
         {{range $index, $category := .Categories}}
         <p class="category-tags">{{if $index}}{{end}} {{$category}}
             {{end}}
         </p>
         </div>
-        <p><span class="material-symbols-outlined">
-          person
-          </span> {{.Username}}</p>
-        <p>Created at: {{.CreatedAt}}</p>
+        <p><span class="material-symbols-outlined">person</span> {{.Username}}</p>
+            <p>Created at: {{.CreatedAt}}</p>
         <div class="post-card">
             <pre>{{.PostContent}}</pre>
-            <div class="reaction-buttons">
-            <form action="/post/{{.PostID}}" method="POST" class="like-dislike-form">
-                  <button type="submit" name="vote" value="like" title="like" class="like-button">
-                  <span class="material-symbols-outlined">thumb_up</span></button>
-                  <span class="reaction-count">{{.Likes}}</span>
-                <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button">
-                <span class="material-symbols-outlined">thumb_down</span></button>
-                <span class="reaction-count">{{.Dislikes}}</span>
-          </form>
-        </div>
         </div>
         {{ if eq (len .Comments) 0 }}
             <p>No comments yet. Be the first to create one!</p>
@@ -34,9 +34,8 @@
             <h3>Comments:</h3>
             {{ range $index, $comment := .Comments }} 
                 <div class="comment">
+                  <div class="container-post">
                     <p><strong>{{ $comment.Username }}</strong> says:</p>
-                    <div class="post-card">
-                    <pre>{{ $comment.Content }}</pre>
                     <div class="reaction-buttons">
                       <form action="/post/{{.PostID}}" method="POST" class="like-dislike-form">
                           <input type="hidden" name="comment-id" value="{{.CommentID}}">
@@ -48,6 +47,9 @@
                           <span class="reaction-count">{{ $comment.Dislikes }}</span>
                     </form>
                   </div>
+                </div>
+                    <div class="post-card">
+                    <pre>{{ $comment.Content }}</pre>
                     </div>
                 </div>
             {{ end }}

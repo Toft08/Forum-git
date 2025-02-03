@@ -111,8 +111,6 @@ main {
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #fff;
-    display: flex;
-    justify-content: space-between;
 }
 
 .content-textarea {
@@ -128,19 +126,23 @@ main {
 }
 
 .post-content {
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    padding: 0.5rem 0;
-    display: block;
-    white-space: normal; /* Allow text wrapping */
-    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .like-dislike-form {
     display: inline;
     gap: 10px;
+}
+
+.container-post {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 /* Default button styles */
@@ -188,6 +190,9 @@ textarea {
 
 pre {
     font-family: Arial, Helvetica, sans-serif;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 /* Form styling */
