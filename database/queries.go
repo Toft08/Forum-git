@@ -69,7 +69,7 @@ func MyDislikes() string {
 
 	return query
 }
-
+// FilterCategories returns the query to filter posts by category
 func FilterCategories() string {
 	query := `    
 	SELECT Post.id
@@ -80,7 +80,7 @@ func FilterCategories() string {
 	return query
 
 }
-
+// PostComments returns the query to fetch comments for a post
 func PostVotes() string {
 	query := `
 		SELECT user_id, type
@@ -89,7 +89,7 @@ func PostVotes() string {
 	`
 	return query
 }
-
+// CommentVotes returns the query to fetch votes for a comment
 func Votes() string {
 	query := `
     SELECT userID, type

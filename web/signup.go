@@ -20,7 +20,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		ErrorHandler(w, "Invalid request method", http.StatusNotFound)
 	}
 }
-
+// handleSignUpPost handles the sign up form submission
 func handleSignUpPost(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	email := r.FormValue("email")
@@ -57,12 +57,12 @@ func handleSignUpPost(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusFound)
 }
-
+// hashPassword hashes the user's password using bcrypt
 func hashPassword(password string) (string, error) {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(hashed), err
 }
-
+// insertUserIntoDB inserts the user's details into the database
 func insertUserIntoDB(username, email, hashedPassword string) error {
 	_, err := db.Exec("INSERT INTO User (username, email, password, created_at) VALUES (?, ?, ?, ?)",
 		username, email, hashedPassword, time.Now().Format("2006-01-02 15:04:05"))
@@ -73,7 +73,7 @@ func handleSignUpError(w http.ResponseWriter, message string) {
 	ErrorHandler(w, message, http.StatusNotFound)
 	log.Println(message)
 }
-
+// isValidEmail checks if the email address is in a valid format
 func isValidEmail(email string) bool {
 	at := strings.Index(email, "@")
 	if at <= 0 || at >= len(email)-1 {
@@ -85,7 +85,7 @@ func isValidEmail(email string) bool {
 	}
 	return true
 }
-
+// isUsernameOrEmailUnique checks if the username or email is unique in the database
 func isUsernameOrEmailUnique(username, email string) (bool, error) {
     username = strings.ToLower(username)
     email = strings.ToLower(email)
