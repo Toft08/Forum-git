@@ -108,9 +108,11 @@ func MakeTables(db *sql.DB) {
 		return
 	}
 	insertUserQuery := `
-	    INSERT INTO User (username, email, password, created_at) VALUES
-	    ('admin', 'admin@example.com', 'hashedpassword', datetime('now'));
-	`
+    INSERT INTO User (username, email, password, created_at)
+    SELECT 'admin', 'admin@example.com', 'hashedpassword', datetime('now')
+    WHERE NOT EXISTS (SELECT 1 FROM User WHERE username = 'admin');
+`
+
 	if _, err := db.Exec(insertUserQuery); err != nil {
 		fmt.Println("Error inserting into Post table:", err)
 		return
