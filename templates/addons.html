@@ -18,7 +18,9 @@
         </div>
         <div class="nav-right">
             {{if .LoggedIn}}
-            <button class="logout-button" onclick="window.location.href='/logout';">Log Out</button>
+            <form action="/logout" method="POST">
+            <button type="submit" class="logout-button">Log Out</button>
+            </form>
             {{else}}
             <button class="signup-button" onclick="window.location.href='/signup';">Sign Up</button>
             <button class="login-button" onclick="window.location.href='/login';">Log In</button>

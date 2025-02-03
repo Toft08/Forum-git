@@ -10,6 +10,7 @@ import (
 func Logout(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	cookie, err := r.Cookie("session_id")
 	if err == nil {
+		log.Println("Logging out session with ID:", cookie.Value)
 		// Delete session from database
 		_, err := db.Exec("DELETE FROM Session WHERE id = ?", cookie.Value)
 		if err != nil {
@@ -20,12 +21,12 @@ func Logout(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
 		Value:    "",
-		Expires:  time.Now().Add(-1 * time.Hour),
+		Expires:  time.Now(),
 		HttpOnly: true,
 		Path:     "/",
 	})
 
 	data.LoggedIn = false
 
-	http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+	http.Redirect(w, r, "/login", http.StatusFound)
 }
