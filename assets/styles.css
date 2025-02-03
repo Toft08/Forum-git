@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined');
 
 
+
 .material-symbols-outlined {
     font-size: 30px
 }
@@ -138,6 +139,18 @@ main {
     gap: 10px;
 }
 
+.like-button, .dislike-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: #000000;
+    padding: 0;
+}
+
+.like-button:hover, .dislike-button:hover {
+    background-color: transparent;
+}
+
 .container-post {
     display: flex;
     justify-content: space-between;
@@ -147,13 +160,13 @@ main {
 
 /* Default button styles */
 .reaction-buttons {
-    display: inline-flex;
+    display: inline-block;
 }
   
 .reaction-count {
     font-size: 16px;
     font-weight: bold;
-    margin-left: 5px;
+    margin: 5px;
 }
 
 .comment-textarea {

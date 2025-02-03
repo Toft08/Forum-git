@@ -8,12 +8,24 @@
         <h2>{{.PostTitle}}</h2>
         <div class="reaction-buttons">
           <form action="/post/{{.PostID}}" method="POST" class="like-dislike-form">
-                <button type="submit" name="vote" value="like" title="like" class="like-button">
+            {{if .LikedNow}}
+                <button type="submit" name="vote" value="like" title="like" class="like-button" style="color: green;">
                   <span class="material-symbols-outlined">thumb_up</span></button>
                   <span class="reaction-count">{{.Likes}}</span>
-              <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button">
+            {{else}}
+            <button type="submit" name="vote" value="like" title="like" class="like-button">
+                <span class="material-symbols-outlined">thumb_up</span></button>
+                <span class="reaction-count">{{.Likes}}</span>
+                {{end}}
+                {{if .DislikedNow}}
+              <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button" style="color: red;">
                 <span class="material-symbols-outlined">thumb_down</span></button>
                 <span class="reaction-count">{{.Dislikes}}</span>
+                {{else}}
+                <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button">
+                    <span class="material-symbols-outlined">thumb_down</span></button>
+                    <span class="reaction-count">{{.Dislikes}}</span>
+                    {{end}}
         </form>
       </div>
     </div>
@@ -39,12 +51,24 @@
                     <div class="reaction-buttons">
                       <form action="/post/{{.PostID}}" method="POST" class="like-dislike-form">
                           <input type="hidden" name="comment-id" value="{{.CommentID}}">
-                            <button type="submit" name="vote" value="like" title="like" class="like-button">
+                          {{if .LikedNow}}
+                            <button type="submit" name="vote" value="like" title="like" class="like-button" style="color: green;">
                             <span class="material-symbols-outlined">thumb_up</span></button>
                             <span class="reaction-count">{{ $comment.Likes }}</span>
-                          <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button">
+                            {{else}}
+                            <button type="submit" name="vote" value="like" title="like" class="like-button">
+                                <span class="material-symbols-outlined">thumb_up</span></button>
+                                <span class="reaction-count">{{ $comment.Likes }}</span>
+                                {{end}}
+                                {{if .DislikedNow}}
+                          <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button" style="color: red;">
                           <span class="material-symbols-outlined">thumb_down</span></button>
                           <span class="reaction-count">{{ $comment.Dislikes }}</span>
+                          {{else}}
+                            <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button">
+                                <span class="material-symbols-outlined">thumb_down</span></button>
+                                <span class="reaction-count">{{ $comment.Dislikes }}</span>
+                                {{end}}
                     </form>
                   </div>
                 </div>
