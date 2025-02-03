@@ -31,13 +31,13 @@ func handleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) 
 
 	userID, hashedPassword, err := getUserCredentials(username)
 	if err != nil {
-		handleLoginError(w, "error1InLogin", err)
+		handleLoginError(w, "Error getting user credentials", err)
 		return
 	}
 
 	// Verify password
 	if err := verifyPassword(hashedPassword, password); err != nil {
-		handleLoginError(w, "error2InLogin", err)
+		handleLoginError(w, "Error verifying password", err)
 		return
 	}
 
