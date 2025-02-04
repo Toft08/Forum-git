@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined');
+@import url('https://fonts.googleapis.com/css2?family=Limelight&display=swap');
 
 
 
@@ -9,7 +10,7 @@
 /* General styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    background-color: white;
     margin: 0;
     padding: 0;
     height: 100%; 
@@ -33,14 +34,30 @@ body {
 /* Headings */
 h1 {
     text-align: center;
-    color: #000000;
+    color: #5C7164;
+}
+
+h2 {
+    color: #1b2218be;
+}
+
+p {
+    color: #1b2218be;
+}
+
+/* header for main */
+header {
+    text-align: center;
+    width: 100%;
+    font-size: 2.5em;
+    font-family: 'Limelight', cursive;
 }
 
 /* Navigation bar */
 nav {
     display: flex;
     justify-content: space-between;
-    background-color: #333;
+    background-color: #e5f0e5;
     padding: 1rem 0;
     position: fixed; 
     top: 0; 
@@ -55,21 +72,21 @@ nav {
     padding-right: 20px;
 }
 nav a {
-    color: white;
+    color: #1b2218be;
     text-decoration: none;
     margin: 0 1rem;
     font-size: 1.1rem;
 }
 nav a:hover {
-    color : #ccc;
+    color : #738b7c;
 }
 
 a {
-    color: #007BFF;
+    color: #1b2218be;
     text-decoration: none;
 }
 a:hover {
-    color:#0056b3;
+    color:#738b7c;
 }
 
 /* Main content area */
@@ -78,7 +95,7 @@ main {
     width: 60%;
     margin: 0 auto;
     padding: 1rem;
-    background: white;
+    background: #e5f0e5;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
     min-height: 100%; /* Allow it to expand */
@@ -87,12 +104,12 @@ main {
 .category-tags {
     padding: 5px 10px;
     margin-top: 10px;
-    border: 2px solid #007BFF;
+    border: 2px solid #5C7164;
     border-radius: 20px;
     font-size: 16px;
     display: inline-block;
     text-align: center;
-    background-color: #007BFF;
+    background-color: #5C7164;
     color: white;
 }
 
@@ -188,7 +205,7 @@ main {
 
 /* Footer styling */
 footer {
-    background-color: #333;
+    background-color: #e5f0e5;
     color: white;
     text-align: center;
     padding: 1rem 0;
@@ -201,7 +218,7 @@ footer {
 .container {
     width: 100%;
     max-width: 400px;
-    background: #fff;
+    background: #e5f0e5;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -218,6 +235,7 @@ pre {
     white-space: pre-wrap;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    color: #1b2218be
 }
 
 /* Form styling */
@@ -241,7 +259,7 @@ input[type="text"], input[type="password"] {
 /* Buttons */
 button {
     padding: 10px;
-    background-color: #007BFF;
+    background-color: #5C7164;
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -250,7 +268,8 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #74907f;
+    transition: background-color 0.1s ease-in 0.1s;
 }
 
 /* Links inside the form (e.g., for signup links) */
@@ -260,7 +279,7 @@ button:hover {
 }
 
 .signup-link a {
-    color: #007BFF;
+    color: #5C7164;
     text-decoration: none;
 }
 
@@ -283,14 +302,14 @@ button:hover {
 .category-label {
     padding: 10px 15px;
     margin-top: 10px;
-    border: 2px solid #007BFF;
+    border: 2px solid #5C7164;
     border-radius: 20px;
     font-size: 16px;
     cursor: pointer;
     user-select: none;
     transition: all 0.3s ease-in-out;
     background-color: white;
-    color: #007BFF;
+    color: #5C7164;
     display: inline-block;
     text-align: center;
 }
@@ -303,14 +322,14 @@ button:hover {
 /* Style the label when its checkbox is checked */
 .category-label input:checked + label,
 .category-label:has(input:checked) {  /* The :has() selector ensures the label updates */
-    background-color: #007BFF;
+    background-color: #5C7164;
     color: white;
-    border-color: #007BFF;
+    border-color: #5C7164;
 }
 
 /* Hover effect */
 .category-label:hover {
-    background-color: #f0f8ff;
+    background-color: #C9DED1;
 }
 
 /* Filtering */
@@ -362,12 +381,12 @@ button:hover {
     margin: 10px 0; /* Restores nice spacing */
     padding: 10px;
     border-color: #ccc;
-    background-color: #f9f9f9;
+    background-color: white;
 }
 
 /* Align the button to the right */
 .show-filter-button {
-    background-color: #007bff;
+    background-color: #5C7164;
     color: white;
     border: none;
     cursor: pointer;
@@ -379,7 +398,7 @@ button:hover {
 }
 
 .show-filter-button:hover {
-    background-color: #0056b3;
+    background-color: #74907f;
 }
 
 /* Posts header for main page */
