@@ -13,7 +13,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	var userID int
 	var err error
 
-	data.LoggedIn, userID, data.Username = VerifySession(r)
+	data.LoggedIn, _, data.Username = VerifySession(r)
 
 	if r.Method == http.MethodPost {
 		data.LoggedIn, userID, data.Username = VerifySession(r)
