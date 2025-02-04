@@ -2,10 +2,8 @@ package web
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -13,6 +11,7 @@ import (
 func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	var userID int
 	var err error
+	var categoryIDs []int
 
 	data.LoggedIn, _, data.Username = VerifySession(r)
 
@@ -45,7 +44,19 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 			categories = append(categories, "1") // If no category chosen, give category id 1 (=general)
 		}
 
-		err = AddPostToDatabase(title, content, categories, userID)
+		// Converting categoryIDs to integers and validating that they exists in the database
+		for _, cat := range categories {
+			var categoryID int
+			categoryID, err = HandleCategory(cat)
+			if err != nil {
+				log.Println("Error handling categoryID in createpost", err)
+				ErrorHandler(w, "Bad Request", http.StatusBadRequest)
+			}
+
+			categoryIDs = append(categoryIDs, categoryID)
+		}
+
+		err = AddPostToDatabase(title, content, categoryIDs, userID)
 		if err != nil {
 			ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 			return
@@ -62,7 +73,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 }
 
 // AddPostToDatabase inserts a new post into the database
-func AddPostToDatabase(title, content string, categories []string, userID int) error {
+func AddPostToDatabase(title, content string, categories []int, userID int) error {
 
 	var result sql.Result
 	var err error
@@ -81,18 +92,7 @@ func AddPostToDatabase(title, content string, categories []string, userID int) e
 	}
 
 	// Add all categories into Post_category table
-	for _, cat := range categories {
-		var categoryID int
-		categoryID, err = strconv.Atoi(cat)
-		if err != nil {
-			log.Println("Error converting categoryID", err)
-			return err
-		}
-		valid := ValidateCategoryID(categoryID)
-		if !valid {
-			log.Println("Invalid categoryID", categoryID)
-			return fmt.Errorf("invalid category id: %d", categoryID)
-		}
+	for _, categoryID := range categories {
 		_, err = db.Exec("INSERT INTO Post_category (category_id, post_id) VALUES (?, ?)",
 			categoryID, postID)
 		if err != nil {
