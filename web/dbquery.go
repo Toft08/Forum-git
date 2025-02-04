@@ -90,6 +90,7 @@ func GetComments(postID, userID int) ([]CommentDetails, error) {
 			&comment.PostID,
 			&comment.Content,
 			&comment.UserID,
+			&comment.CreatedAt,
 			&comment.Username,
 			&comment.Likes,
 			&comment.Dislikes,
@@ -98,6 +99,7 @@ func GetComments(postID, userID int) ([]CommentDetails, error) {
 			log.Println("Error scanning rows")
 			return nil, err
 		}
+
 		comment.LikedNow, comment.DislikedNow, err = GetVotes(userID, 0, comment.CommentID)
 		if err != nil {
 			log.Println("Error getting votes")

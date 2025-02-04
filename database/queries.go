@@ -39,6 +39,7 @@ func CommentContent() string {
 			Comment.post_id AS post_id,
 			Comment.content AS comment_content,
 			Comment.user_id,
+			Comment.created_at,
 			User.username AS username,
 			COUNT(CASE WHEN Like.type = 1 THEN 1 END) AS comment_likes,
 			COUNT(CASE WHEN Like.type = 2 THEN 1 END) AS comment_dislikes

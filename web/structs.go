@@ -6,6 +6,7 @@ type CommentDetails struct {
 	Content     string
 	UserID      int
 	Username    string
+	CreatedAt   string
 	Likes       int
 	Dislikes    int
 	LikedNow    bool
