@@ -70,7 +70,33 @@ a {
 a:hover {
     color:#0056b3;
 }
+.icon {
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    z-index: 2;
+}
 
+/* Hide the info text by default */
+.tooltip {
+    display: none;
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+    padding: 5px;
+    border-radius: 8px;
+    position: absolute;
+    top: 25px; 
+    left: 0;
+    font-size: 14px;
+    min-width: 360px;
+    z-index: 10;
+}
+
+/* Show info text when hovering over the icon */
+.icon:hover .tooltip {
+    display: block;
+}
 /* Main content area */
 main {
     max-width: 800px;
