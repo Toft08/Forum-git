@@ -20,7 +20,7 @@ func Login(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		ErrorHandler(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
 }
-
+// HandleLoginPost handles the user login form submission
 func HandleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
@@ -65,7 +65,7 @@ func getUserCredentials(username string) (int, string, error) {
 func verifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
-
+// createSession creates a new session for the user and stores it in the database
 func createSession(w http.ResponseWriter, userID int) error {
 
 	sessionID := uuid.NewString()

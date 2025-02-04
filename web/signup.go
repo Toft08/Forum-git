@@ -77,7 +77,7 @@ func insertUserIntoDB(username, email, hashedPassword string) error {
 		username, email, hashedPassword, time.Now().Format("2006-01-02 15:04:05"))
 	return err
 }
-
+// isValidEmail checks if the email address is valid
 func isValidEmail(email string) bool {
 	_, err := mail.ParseAddress(email)
 	return err == nil

@@ -30,12 +30,6 @@ func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
         FROM Post
         ORDER BY Post.created_at DESC;
     `)
-	// rows, err := db.Query(`
-	//     SELECT p.id, p.title, p.content, u.username
-	//     FROM Post p
-	//     JOIN User u ON p.user_id = u.id
-	//     ORDER BY p.created_at DESC;
-	// `)
 	if err != nil {
 		log.Println("Error fetching posts:", err)
 		ErrorHandler(w, "error2InHomePage", http.StatusNotFound)
