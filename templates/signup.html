@@ -4,10 +4,14 @@
    <div class="wrapper">
     <div class="container">
         <h1>Sign Up</h1>
+        <div class="icon">
+            ℹ️
+            <span class="tooltip">username must be 3-20 characters, letters, numbers, or _ </span>
+        </div>
         <form action="/signup" method="POST">
             <label for="username">Username</label>
             <input type="text" id="username" name="username" placeholder="Enter your username" required>
-
+            
             <label for="email">Email</label>
             <input type="text" id="email" name="email" placeholder="Enter your email" required>
 
