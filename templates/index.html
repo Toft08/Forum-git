@@ -2,6 +2,9 @@
 <body>
 {{template "navBar" .}}
     <div class="wrapper">
+        <header>
+            <h1>grit:garden</h1>
+        </header>
     <main>
         <!-- Button to toggle filter visibility -->
         <button onclick="toggleFilter()" class="show-filter-button">Show Filters</button>
@@ -82,5 +85,23 @@
             button.textContent = 'Hide Filters';
         }
     }
+    document.addEventListener("DOMContentLoaded", function() {
+        var topicFilter = document.getElementById("topicFilter");
+        var postFilter = document.getElementById("postFilter");
+
+        if (topicFilter && postFilter) {
+            topicFilter.addEventListener("change", function() {
+                if (this.value !== "") {
+                    postFilter.value = ""; // Reset the other dropdown
+                }
+            });
+
+            postFilter.addEventListener("change", function() {
+                if (this.value !== "") {
+                    topicFilter.value = ""; // Reset the other dropdown
+                }
+            });
+        }
+    });
 </script>
 </html>
