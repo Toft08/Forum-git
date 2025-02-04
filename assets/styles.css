@@ -49,12 +49,12 @@ p {
     color: #1b2218be;
 }
 
-/* header for main */
+/* grit:garden header */
 header {
     text-align: center;
     width: 100%;
-    font-size: 2.5em;
-    font-family: 'Limelight', cursive;
+    font-size:clamp(1.2rem, 5vw, 2.5rem);
+    font-family: 'Limelight', Helvetica;
 }
 
 /* Navigation bar */
@@ -196,9 +196,6 @@ main {
     line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    border-top: #ccc 1px solid;
-    border-bottom: #ccc 1px solid;
-    padding: 10px;
 }
 
 .like-dislike-form {
