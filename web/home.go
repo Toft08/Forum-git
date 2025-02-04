@@ -11,6 +11,7 @@ import (
 // HomePage handles the rendering of the home page
 func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	data.ValidationError = ""
+
 	switch r.Method {
 	case http.MethodGet:
 		HandleHomeGet(w, r, data)
@@ -23,7 +24,8 @@ func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 // HandleHomeGet fetches posts from the database and renders the home page
 func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
-	data.LoggedIn, _ = VerifySession(r)
+	data.LoggedIn, _, data.Username = VerifySession(r)
+
 	// Fetch posts from the database
 	rows, err := db.Query(`
         SELECT Post.id
@@ -65,7 +67,7 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	var query string
 	var categoryID int
 
-	data.LoggedIn, userID = VerifySession(r)
+	data.LoggedIn, userID, data.Username = VerifySession(r)
 	data.SelectedFilter = r.FormValue("filter")
 	data.SelectedCategory = r.FormValue("topic")
 

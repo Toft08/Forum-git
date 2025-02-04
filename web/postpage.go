@@ -39,7 +39,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 // HandlePostPageGet handles get requests to the post page
 func HandlePostPageGet(w http.ResponseWriter, r *http.Request, data *PageDetails, postID int) {
 	var userID int
-	data.LoggedIn, userID = VerifySession(r)
+	data.LoggedIn, userID, data.Username = VerifySession(r)
 	data.Posts = nil
 
 	post, err := GetPostDetails(postID, userID)
@@ -58,15 +58,12 @@ func HandlePostPageGet(w http.ResponseWriter, r *http.Request, data *PageDetails
 func HandlePostPagePost(w http.ResponseWriter, r *http.Request, data *PageDetails, postID int) {
 	var userID int
 	var err error
-	data.LoggedIn, userID = VerifySession(r)
+	data.LoggedIn, userID, data.Username = VerifySession(r)
 
 	if data.LoggedIn {
 		vote := r.FormValue("vote")
 		commentID := r.FormValue("comment-id")
 		content := r.FormValue("comment")
-		log.Println("Vote", vote)
-		log.Println("CommentID", commentID)
-		log.Println("Content", content)
 
 		if content != "" {
 			// Insert comment into the database
@@ -78,9 +75,10 @@ func HandlePostPagePost(w http.ResponseWriter, r *http.Request, data *PageDetail
 				return
 			}
 		} else {
+			// Insert vote into the database
 			var likeType int
-			var post int
-			var comment int
+			var post_id int
+			var comment_id int
 			if vote == "like" {
 				likeType = 1
 			} else if vote == "dislike" {
@@ -91,31 +89,27 @@ func HandlePostPagePost(w http.ResponseWriter, r *http.Request, data *PageDetail
 				return
 			}
 			if commentID == "" {
-				comment = 0
-				post = postID
+				comment_id = 0
+				post_id = postID
 			} else {
-				comment, err = strconv.Atoi(commentID)
+				comment_id, err = strconv.Atoi(commentID)
 				if err != nil {
 					log.Println("Error converting commentID", err)
-					ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
-					return
-				}
-				exists := ValidateCommentID(comment)
-				if !exists {
-					log.Println("CommentID doesn't exist", comment)
 					ErrorHandler(w, "Bad Request", http.StatusBadRequest)
 					return
 				}
-				post = 0
+				exists := ValidateCommentID(comment_id)
+				if !exists {
+					log.Println("CommentID doesn't exist", comment_id)
+					ErrorHandler(w, "Bad Request", http.StatusBadRequest)
+					return
+				}
+				post_id = 0
 			}
-			log.Println("PostID", post)
-			log.Println("CommentID", comment)
-			log.Println("Vote", likeType)
-			log.Println("UserID", userID)
 
-			err = AddVotes(userID, post, comment, likeType)
+			err = AddVotes(userID, post_id, comment_id, likeType)
 			if err != nil {
-				log.Printf("Error adding votes to the database: userID %d, postID %d, commentID %d, like type %d\n", userID, post, comment, likeType)
+				log.Printf("Error adding votes to the database: userID %d, postID %d, commentID %d, like type %d\n", userID, post_id, comment_id, likeType)
 				ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
