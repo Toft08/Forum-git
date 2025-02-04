@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"net/mail"
+	"regexp"
 	"strings"
 	"time"
 
@@ -27,6 +28,13 @@ func handleSignUpPost(w http.ResponseWriter, r *http.Request, data *PageDetails)
 	username := r.FormValue("username")
 	email := r.FormValue("email")
 	password := r.FormValue("password")
+
+	// Validate username
+	if !IsValidUsername(username) {
+		data.ValidationError = "Invalid username: must be 3-20 characters, letters, numbers, or _"
+		RenderTemplate(w, "signup", data)
+		return
+	}
 
 	if !isValidEmail(email) {
 		data.ValidationError = "Invalid email address"
@@ -77,10 +85,16 @@ func insertUserIntoDB(username, email, hashedPassword string) error {
 		username, email, hashedPassword, time.Now().Format("2006-01-02 15:04:05"))
 	return err
 }
+
 // isValidEmail checks if the email address is valid
 func isValidEmail(email string) bool {
 	_, err := mail.ParseAddress(email)
 	return err == nil
+}
+// IsValidUsername checks if the username is valid
+func IsValidUsername(username string) bool {
+	re := regexp.MustCompile(`^[a-zA-Z0-9_]{3,20}$`) // Only letters, numbers, and _
+	return re.MatchString(username)
 }
 
 // isUsernameOrEmailUnique checks if the username or email is unique in the database
