@@ -18,6 +18,7 @@
         </div>
         <div class="nav-right">
             {{if .LoggedIn}}
+            <p class="welcome-text">Logged in as: <strong>{{.Username}}</strong></p>
             <form action="/logout" method="POST">
             <button type="submit" class="logout-button">Log Out</button>
             </form>
