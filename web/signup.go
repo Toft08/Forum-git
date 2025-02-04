@@ -42,14 +42,19 @@ func handleSignUpPost(w http.ResponseWriter, r *http.Request, data *PageDetails)
 		return
 	}
 
-	isUnique, err := isUsernameOrEmailUnique(username, email)
+	uniqueUsername, uniqueEmail, err := isUsernameOrEmailUnique(username, email)
 	if err != nil {
 		log.Println("Error checking if username is unique:", err)
 		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	if !isUnique {
+	if !uniqueUsername {
 		data.ValidationError = "Username is already taken"
+		RenderTemplate(w, "signup", data)
+		return
+	}
+	if !uniqueEmail {
+		data.ValidationError = "Email is already registered to existing user"
 		RenderTemplate(w, "signup", data)
 		return
 	}
@@ -91,6 +96,7 @@ func isValidEmail(email string) bool {
 	_, err := mail.ParseAddress(email)
 	return err == nil
 }
+
 // IsValidUsername checks if the username is valid
 func IsValidUsername(username string) bool {
 	re := regexp.MustCompile(`^[a-zA-Z0-9_]{3,20}$`) // Only letters, numbers, and _
@@ -98,7 +104,7 @@ func IsValidUsername(username string) bool {
 }
 
 // isUsernameOrEmailUnique checks if the username or email is unique in the database
-func isUsernameOrEmailUnique(username, email string) (bool, error) {
+func isUsernameOrEmailUnique(username, email string) (bool, bool, error) {
 	username = strings.ToLower(username)
 	email = strings.ToLower(email)
 
@@ -106,9 +112,16 @@ func isUsernameOrEmailUnique(username, email string) (bool, error) {
 	err := db.QueryRow(`
         SELECT COUNT(*) 
         FROM User 
-        WHERE username = ? OR email = ?`, username, email).Scan(&count)
-	if err != nil {
-		return false, err
+        WHERE username = ?`, username).Scan(&count)
+	if err != nil || count != 0 {
+		return false, false, err
 	}
-	return count == 0, nil // Returns true if neither username nor email exists
+	err = db.QueryRow(`
+        SELECT COUNT(*) 
+        FROM User 
+        WHERE email = ?`, email).Scan(&count)
+	if err != nil || count != 0 {
+		return true, false, err
+	}
+	return true, true, nil // Returns true if neither username nor email exists
 }
