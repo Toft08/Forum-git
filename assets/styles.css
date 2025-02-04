@@ -96,6 +96,16 @@ main {
     color: white;
 }
 
+.post-info {
+    display: flex;
+    align-items: center;
+    margin: 5px 0; 
+}
+
+.username {
+    font-size: 18px;
+}
+
 /* Post Cards */
 .post {
     margin-bottom: 1.5rem;
@@ -160,7 +170,9 @@ main {
 
 /* Default button styles */
 .reaction-buttons {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    margin: 5px 0; 
 }
   
 .reaction-count {

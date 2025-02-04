@@ -35,7 +35,10 @@
             {{end}}
         </p>
         </div>
-        <p><span class="material-symbols-outlined">person</span> {{.Username}}</p>
+        <div class="post-info">
+            <span class="material-symbols-outlined">filter_vintage</span>
+            <span class="username">{{.Username}}</span>
+        </div>
             <p>Created at: {{.CreatedAt}}</p>
         <div class="post-card">
             <pre>{{.PostContent}}</pre>

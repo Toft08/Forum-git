@@ -49,10 +49,21 @@
                     {{if $index}} {{end}}{{$category}}
                 {{end}}
            </p>
-        </div>
-            <p>Author: {{.Username}}</p>
+            </div>
+            <div class="post-info">
+                <span class="material-symbols-outlined">filter_vintage</span>
+                <span class="username">{{.Username}}</span>
+            </div>
             <p class="post-content">{{.PostContent}}</p>
-            <p><strong>Comments:</strong> {{len .Comments}}</p>
+            <div class="container-post">
+            <span class="post-info"><span class="material-symbols-outlined">chat</span>{{len .Comments}}</span>
+            <div class="reaction-buttons">
+                <span class="material-symbols-outlined">thumb_up</span>
+                <span class="reaction-count">{{.Likes}}</span>
+                <span class="material-symbols-outlined">thumb_down</span>
+                <span class="reaction-count">{{.Dislikes}}</span>
+            </div>
+        </div>
         </div>
     {{else}}
         <p>No posts yet. Be the first to create one!</p>
