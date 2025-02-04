@@ -21,6 +21,7 @@ func Login(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	}
 }
 
+// HandleLoginPost handles the user login form submission
 func HandleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
@@ -38,7 +39,16 @@ func HandleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) 
 		RenderTemplate(w, "login", data)
 		return
 	}
-
+	// Check for active session
+	var existingSession string
+	err = db.QueryRow("SELECT id FROM Session WHERE user_id = ? AND created_at > datetime('now', '-30 minutes')",
+		userID).Scan(&existingSession)
+	if err == nil {
+		// Active session exists
+		data.ValidationError = "User already logged in from another session"
+		RenderTemplate(w, "login", data)
+		return
+	}
 	// Create session
 	if err := createSession(w, userID); err != nil {
 		ErrorHandler(w, "Failed to create session", http.StatusInternalServerError)
@@ -66,8 +76,13 @@ func verifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
+// createSession creates a new session for the user and stores it in the database
 func createSession(w http.ResponseWriter, userID int) error {
-
+	// First check for and delete any existing sessions for this user
+	_, err := db.Exec("DELETE FROM Session WHERE user_id = ?", userID)
+	if err != nil {
+		return err
+	}
 	sessionID := uuid.NewString()
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
@@ -78,7 +93,7 @@ func createSession(w http.ResponseWriter, userID int) error {
 	})
 
 	// Store session ID in database
-	_, err := db.Exec("INSERT INTO Session (id, user_id, created_at) VALUES (?, ?, ?)",
+	_, err = db.Exec("INSERT INTO Session (id, user_id, created_at) VALUES (?, ?, ?)",
 		sessionID, userID, time.Now().Format("2006-01-02 15:04:05"))
 
 	return err
