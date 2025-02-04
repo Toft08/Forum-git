@@ -53,13 +53,13 @@
                 {{end}}
            </p>
             </div>
-            <div class="post-info">
-                <span class="material-symbols-outlined">filter_vintage</span>
+            <div class="post-info-home">
+                <span class="material-symbols-outlined" style="font-size: 24px;">filter_vintage</span>
                 <span class="username">{{.Username}}</span>
             </div>
             <p class="post-content">{{.PostContent}}</p>
-            <div class="container-post">
-            <span class="post-info"><span class="material-symbols-outlined">chat</span>{{len .Comments}}</span>
+            <div class="container-post-home">
+            <span class="comment-icon"><span class="material-symbols-outlined">chat</span>{{len .Comments}}</span>
             <div class="reaction-buttons">
                 <span class="material-symbols-outlined">thumb_up</span>
                 <span class="reaction-count">{{.Likes}}</span>
