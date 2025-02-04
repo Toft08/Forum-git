@@ -2,6 +2,9 @@
 <body>
 {{template "navBar" .}}
     <div class="wrapper">
+        <header>
+            <h1>grit:garden</h1>
+        </header>
     <main>
         <!-- Button to toggle filter visibility -->
         <button onclick="toggleFilter()" class="show-filter-button">Show Filters</button>
@@ -49,13 +52,24 @@
                     {{if $index}} {{end}}{{$category}}
                 {{end}}
            </p>
-        </div>
-            <p>Author: {{.Username}}</p>
+            </div>
+            <div class="post-info-home">
+                <span class="material-symbols-outlined" style="font-size: 24px;">filter_vintage</span>
+                <span class="username">{{.Username}}</span>
+            </div>
             <p class="post-content">{{.PostContent}}</p>
-            <p><strong>Comments:</strong> {{len .Comments}}</p>
+            <div class="container-post-home">
+            <span class="comment-icon"><span class="material-symbols-outlined">chat</span>{{len .Comments}}</span>
+            <div class="reaction-buttons">
+                <span class="material-symbols-outlined">thumb_up</span>
+                <span class="reaction-count">{{.Likes}}</span>
+                <span class="material-symbols-outlined">thumb_down</span>
+                <span class="reaction-count">{{.Dislikes}}</span>
+            </div>
+        </div>
         </div>
     {{else}}
-        <p>No posts yet. Be the first to create one!</p>
+        <p>No posts...</p>
         {{end}}
     </main>
 </div>
@@ -82,5 +96,23 @@
             button.textContent = 'Hide Filters';
         }
     }
+    document.addEventListener("DOMContentLoaded", function() {
+        var topicFilter = document.getElementById("topicFilter");
+        var postFilter = document.getElementById("postFilter");
+
+        if (topicFilter && postFilter) {
+            topicFilter.addEventListener("change", function() {
+                if (this.value !== "") {
+                    postFilter.value = ""; // Reset the other dropdown
+                }
+            });
+
+            postFilter.addEventListener("change", function() {
+                if (this.value !== "") {
+                    topicFilter.value = ""; // Reset the other dropdown
+                }
+            });
+        }
+    });
 </script>
 </html>

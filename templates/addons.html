@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/assets/styles.css">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     <title>Forum</title>
 </head>
 {{end}}
@@ -12,13 +13,11 @@
 {{define "navBar"}}
   <nav class="nav">
         <div class="nav-left">
-            <a href="/"><span class="material-symbols-outlined">
-                home
-                </span></a>
+            <a href="/"><span class="material-symbols-outlined" style="font-size: 40px">home</span></a>
         </div>
         <div class="nav-right">
             {{if .LoggedIn}}
-            <p>Logged in as: {{.Username}}</p>
+            <p class="welcome-text">Logged in as: <strong>{{.Username}}</strong></p>
             <form action="/logout" method="POST">
             <button type="submit" class="logout-button">Log Out</button>
             </form>
@@ -44,6 +43,6 @@
 {{end}}
 {{define "footer"}}
 <footer>
-    <p>&copy; 2025 Simple Forum. All rights reserved.</p>
+    <p>&copy; 2025 grit:garden. All rights reserved.</p>
 </footer>
 {{end}}

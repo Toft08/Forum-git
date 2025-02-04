@@ -4,50 +4,80 @@
    <div class="wrapper">
     <main>
         {{range .Posts}}
+        <div class="container-post">
         <h2>{{.PostTitle}}</h2>
+          <form action="/post/{{.PostID}}" method="POST" class="like-dislike-form">
+            <div class="reaction-buttons">
+            {{if .LikedNow}}
+                <button type="submit" name="vote" value="like" title="like" class="like-button" style="color: #54956d;">
+                  <span class="material-symbols-outlined">thumb_up</span></button>
+                  <span class="reaction-count">{{.Likes}}</span>
+            {{else}}
+            <button type="submit" name="vote" value="like" title="like" class="like-button">
+                <span class="material-symbols-outlined">thumb_up</span></button>
+                <span class="reaction-count">{{.Likes}}</span>
+                {{end}}
+                {{if .DislikedNow}}
+              <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button" style="color: rgb(197, 54, 64);">
+                <span class="material-symbols-outlined">thumb_down</span></button>
+                <span class="reaction-count">{{.Dislikes}}</span>
+                {{else}}
+                <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button">
+                    <span class="material-symbols-outlined">thumb_down</span></button>
+                    <span class="reaction-count">{{.Dislikes}}</span>
+                    {{end}}
+                </div>
+        </form>
+      
+    </div>
         <div class="category-container">
         {{range $index, $category := .Categories}}
         <p class="category-tags">{{if $index}}{{end}} {{$category}}
             {{end}}
         </p>
         </div>
-        <p><span class="material-symbols-outlined">
-          person
-          </span> {{.Username}}</p>
-        <p>Created at: {{.CreatedAt}}</p>
+        <div class="post-info">
+            <span class="material-symbols-outlined" style="font-size: 24px;">filter_vintage</span>
+            <span class="username">{{.Username}}</span>
+        </div>
+            <p>Created at: {{.CreatedAt}}</p>
         <div class="post-card">
             <pre>{{.PostContent}}</pre>
-            <div class="reaction-buttons">
-            <form action="/post/{{.PostID}}" method="POST" class="like-dislike-form">
-                  <button type="submit" name="vote" value="like" title="like" class="like-button">
-                  <span class="material-symbols-outlined">thumb_up</span></button>
-                  <span class="reaction-count">{{.Likes}}</span>
-                <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button">
-                <span class="material-symbols-outlined">thumb_down</span></button>
-                <span class="reaction-count">{{.Dislikes}}</span>
-          </form>
-        </div>
         </div>
         {{ if eq (len .Comments) 0 }}
             <p>No comments yet. Be the first to create one!</p>
         {{ else }}
-            <h3>Comments:</h3>
+            <h3 class="comment-header">Comments:</h3>
             {{ range $index, $comment := .Comments }} 
                 <div class="comment">
-                    <p><strong>{{ $comment.Username }}</strong> says:</p>
-                    <div class="post-card">
-                    <pre>{{ $comment.Content }}</pre>
-                    <div class="reaction-buttons">
+                  <div class="container-post">
+                    <p><strong>{{ $comment.Username }}</strong>:</p>
                       <form action="/post/{{.PostID}}" method="POST" class="like-dislike-form">
+                        <div class="reaction-buttons">
                           <input type="hidden" name="comment-id" value="{{.CommentID}}">
-                            <button type="submit" name="vote" value="like" title="like" class="like-button">
+                          {{if .LikedNow}}
+                            <button type="submit" name="vote" value="like" title="like" class="like-button" style="color: #54956d;">
                             <span class="material-symbols-outlined">thumb_up</span></button>
                             <span class="reaction-count">{{ $comment.Likes }}</span>
-                          <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button">
+                            {{else}}
+                            <button type="submit" name="vote" value="like" title="like" class="like-button">
+                                <span class="material-symbols-outlined">thumb_up</span></button>
+                                <span class="reaction-count">{{ $comment.Likes }}</span>
+                                {{end}}
+                                {{if .DislikedNow}}
+                          <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button" style="color: rgb(197, 54, 64);">
                           <span class="material-symbols-outlined">thumb_down</span></button>
                           <span class="reaction-count">{{ $comment.Dislikes }}</span>
+                          {{else}}
+                            <button type="submit" name="vote" value="dislike" title="dislike" class="dislike-button">
+                                <span class="material-symbols-outlined">thumb_down</span></button>
+                                <span class="reaction-count">{{ $comment.Dislikes }}</span>
+                                {{end}}
+                            </div>
                     </form>
-                  </div>
+                </div>
+                    <div class="post-card">
+                    <pre>{{ $comment.Content }}</pre>
                     </div>
                 </div>
             {{ end }}
