@@ -39,16 +39,7 @@ func HandleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) 
 		RenderTemplate(w, "login", data)
 		return
 	}
-	// Check for active session
-	var existingSession string
-	err = db.QueryRow("SELECT id FROM Session WHERE user_id = ? AND created_at > datetime('now', '-30 minutes')",
-		userID).Scan(&existingSession)
-	if err == nil {
-		// Active session exists
-		data.ValidationError = "User already logged in from another session"
-		RenderTemplate(w, "login", data)
-		return
-	}
+
 	// Create session
 	if err := createSession(w, userID); err != nil {
 		ErrorHandler(w, "Failed to create session", http.StatusInternalServerError)

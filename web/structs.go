@@ -29,6 +29,7 @@ type PostDetails struct {
 
 type PageDetails struct {
 	LoggedIn         bool
+	Username         string
 	Categories       []CategoryDetails
 	Posts            []PostDetails
 	SelectedCategory string
