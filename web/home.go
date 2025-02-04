@@ -2,6 +2,7 @@ package web
 
 import (
 	"database/sql"
+	"fmt"
 	"forum/database"
 	"log"
 	"net/http"
@@ -65,11 +66,11 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	var rows *sql.Rows
 	var err error
 	var query string
-	var categoryID int
 
 	data.LoggedIn, userID, data.Username = VerifySession(r)
 	data.SelectedFilter = r.FormValue("filter")
-	data.SelectedCategory = r.FormValue("topic")
+	selectedCat := r.FormValue("topic")
+	data.SelectedCategory = selectedCat
 
 	if !data.LoggedIn && data.SelectedFilter != "" {
 		log.Println("User not logged in")
@@ -81,13 +82,14 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 			HandleHomeGet(w, r, data)
 			return
 		} else if data.SelectedCategory != "" && data.SelectedFilter == "" {
-			categoryID, err = strconv.Atoi(data.SelectedCategory)
+			query, args, err = HandleCategory(selectedCat)
+			// categoryID, err = strconv.Atoi(data.SelectedCategory)
 			if err != nil {
-				log.Println("Error converting categoryID", err)
+				log.Println("Error handling category", err)
 				ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 			}
-			query = database.FilterCategories()
-			args = append(args, categoryID)
+			// query = database.FilterCategories()
+			// args = append(args, categoryID)
 		} else {
 			args = append(args, userID)
 			switch data.SelectedFilter {
@@ -105,13 +107,11 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 			HandleHomeGet(w, r, data)
 			return
 		} else {
-			categoryID, err = strconv.Atoi(data.SelectedCategory)
+			query, args, err = HandleCategory(selectedCat)
 			if err != nil {
-				log.Println("Error converting categoryID", err)
+				log.Println("Error handling category", err)
 				ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 			}
-			query = database.FilterCategories()
-			args = append(args, categoryID)
 		}
 	}
 	query += " ORDER BY Post.created_at DESC;"
@@ -136,4 +136,36 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	}
 
 	RenderTemplate(w, "index", data)
+}
+
+func HandleCategory(category string) (string, []interface{}, error) {
+	var args []interface{}
+	categoryID, err := strconv.Atoi(category)
+	if err != nil {
+		log.Println("Error converting categoryID", err)
+		return "", nil, err
+	}
+
+	valid := ValidateCategoryID(categoryID)
+	if !valid {
+		log.Println("Invalid categoryID", category)
+		return "", nil, fmt.Errorf("invalid category id: %s", category)
+	}
+
+	query := database.FilterCategories()
+	args = append(args, categoryID)
+
+	return query, args, nil
+
+}
+
+// ValidateCategoryID checks if the category ID given exists in the databse
+func ValidateCategoryID(categoryID int) bool {
+	var category int
+	err := db.QueryRow("SELECT id FROM Category WHERE id = ?", categoryID).Scan(&category)
+	if err != nil {
+		log.Println("Error scanning category ID:", err)
+		return false
+	}
+	return true
 }

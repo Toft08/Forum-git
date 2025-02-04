@@ -2,6 +2,7 @@ package web
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -86,6 +87,11 @@ func AddPostToDatabase(title, content string, categories []string, userID int) e
 		if err != nil {
 			log.Println("Error converting categoryID", err)
 			return err
+		}
+		valid := ValidateCategoryID(categoryID)
+		if !valid {
+			log.Println("Invalid categoryID", categoryID)
+			return fmt.Errorf("invalid category id: %d", categoryID)
 		}
 		_, err = db.Exec("INSERT INTO Post_category (category_id, post_id) VALUES (?, ?)",
 			categoryID, postID)
