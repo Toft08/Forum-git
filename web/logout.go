@@ -8,10 +8,9 @@ import (
 
 // Logout logs out the user by deleting the session from the database and setting the session cookie to expire
 func Logout(w http.ResponseWriter, r *http.Request, data *PageDetails) {
-	log.Println("Logging out")
+
 	cookie, err := r.Cookie("session_id")
 	if err == nil {
-		log.Println("Logging out session with ID:", cookie.Value)
 		// Delete session from database
 		_, err := db.Exec("DELETE FROM Session WHERE id = ?", cookie.Value)
 		if err != nil {
@@ -29,5 +28,5 @@ func Logout(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	data.LoggedIn = false
 
-	http.Redirect(w, r, "/login", http.StatusFound)
+	http.Redirect(w, r, "/", http.StatusFound)
 }

@@ -19,7 +19,7 @@ func HomePage(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	case http.MethodPost:
 		HandleHomePost(w, r, data)
 	default:
-		ErrorHandler(w, "Invalid request method", http.StatusMethodNotAllowed)
+		ErrorHandler(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -35,7 +35,7 @@ func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
     `)
 	if err != nil {
 		log.Println("Error fetching posts:", err)
-		ErrorHandler(w, "error2InHomePage", http.StatusNotFound)
+		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 	defer rows.Close()
@@ -44,7 +44,7 @@ func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		var id int
 		//var title, content, username string
 		if err := rows.Scan(&id); err != nil {
-			ErrorHandler(w, "Error scanning post ID", http.StatusInternalServerError)
+			ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 		post, err := GetPostDetails(id, 0)
@@ -122,7 +122,7 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	rows, err = db.Query(query, args...)
 	if err != nil {
 		log.Println("Error fetching posts by filter:", err)
-		ErrorHandler(w, "errorFetchingPosts", http.StatusNotFound)
+		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 

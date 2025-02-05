@@ -33,8 +33,6 @@ func CreatePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 		content := r.FormValue("content")
 		categories := r.Form["category"]
 
-		log.Printf("Title: %v\nContent: %v\nCategories: %v\n", title, content, categories)
-
 		if title == "" || content == "" {
 			ErrorHandler(w, "Title or content cannot be empty", http.StatusBadRequest)
 			return

@@ -17,7 +17,7 @@ func Login(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	case http.MethodPost:
 		HandleLoginPost(w, r, data)
 	default:
-		ErrorHandler(w, "Invalid request method", http.StatusMethodNotAllowed)
+		ErrorHandler(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -42,7 +42,7 @@ func HandleLoginPost(w http.ResponseWriter, r *http.Request, data *PageDetails) 
 
 	// Create session
 	if err := createSession(w, userID); err != nil {
-		ErrorHandler(w, "Failed to create session", http.StatusInternalServerError)
+		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 

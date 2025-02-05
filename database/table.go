@@ -101,7 +101,13 @@ func MakeTables(db *sql.DB) {
     UNION ALL
     SELECT 'Tutorial' WHERE NOT EXISTS (SELECT 1 FROM category WHERE name = 'Tutorial')
     UNION ALL
-    SELECT 'Question' WHERE NOT EXISTS (SELECT 1 FROM category WHERE name = 'Question');
+    SELECT 'Question' WHERE NOT EXISTS (SELECT 1 FROM category WHERE name = 'Question')
+	UNION ALL
+    SELECT 'Plants' WHERE NOT EXISTS (SELECT 1 FROM category WHERE name = 'Plants')
+	UNION ALL
+    SELECT 'Pests' WHERE NOT EXISTS (SELECT 1 FROM category WHERE name = 'Pests')
+	UNION ALL
+    SELECT 'Sustainability' WHERE NOT EXISTS (SELECT 1 FROM category WHERE name = 'Sustainability');
 `
 	if _, err := db.Exec(insertCategoryQuery); err != nil {
 		fmt.Println("Error inserting into Category table:", err)

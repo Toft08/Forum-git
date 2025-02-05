@@ -20,7 +20,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	case http.MethodPost:
 		handleSignUpPost(w, r, data)
 	default:
-		ErrorHandler(w, "Invalid request method", http.StatusNotFound)
+		ErrorHandler(w, "Method Not Allowed", http.StatusNotFound)
 	}
 }
 
@@ -38,6 +38,11 @@ func handleSignUpPost(w http.ResponseWriter, r *http.Request, data *PageDetails)
 
 	if !isValidEmail(email) {
 		data.ValidationError = "Invalid email address"
+		RenderTemplate(w, "signup", data)
+		return
+	}
+	if password == "" {
+		data.ValidationError = "Password cannot be empty"
 		RenderTemplate(w, "signup", data)
 		return
 	}
@@ -75,7 +80,7 @@ func handleSignUpPost(w http.ResponseWriter, r *http.Request, data *PageDetails)
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r, "/login", http.StatusFound)
 }
 
 // hashPassword hashes the user's password using bcrypt

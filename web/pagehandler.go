@@ -55,7 +55,7 @@ func RenderTemplate(w http.ResponseWriter, t string, data interface{}) {
 	err := tmpl.ExecuteTemplate(w, t+".html", data)
 	if err != nil {
 		log.Println("Error executing template:", err)
-		ErrorHandler(w, "Internal server error", http.StatusInternalServerError)
+		ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 }
@@ -81,7 +81,6 @@ func VerifySession(r *http.Request) (bool, int, string) {
 	var username string
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		log.Println("No session ID cookie found")
 		return false, 0, ""
 	}
 
