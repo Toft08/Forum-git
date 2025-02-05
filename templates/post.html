@@ -40,7 +40,7 @@
             <span class="material-symbols-outlined" style="font-size: 24px;">filter_vintage</span>
             <span class="username">{{.Username}}</span>
         </div>
-            <p>Created at: {{.CreatedAt}}</p>
+            <p>{{.CreatedAt}}</p>
         <div class="post-card">
             <pre>{{.PostContent}}</pre>
         </div>
@@ -51,7 +51,7 @@
             {{ range $index, $comment := .Comments }} 
                 <div class="comment">
                   <div class="container-post">
-                    <p><strong>{{ $comment.Username }}</strong>:</p>
+                    <p><strong>{{ $comment.Username }}</strong>: {{ $comment.CreatedAt }}</p> 
                       <form action="/post/{{.PostID}}" method="POST" class="like-dislike-form">
                         <div class="reaction-buttons">
                           <input type="hidden" name="comment-id" value="{{.CommentID}}">
