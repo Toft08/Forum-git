@@ -41,6 +41,11 @@ func handleSignUpPost(w http.ResponseWriter, r *http.Request, data *PageDetails)
 		RenderTemplate(w, "signup", data)
 		return
 	}
+	if password == "" {
+		data.ValidationError = "Password cannot be empty"
+		RenderTemplate(w, "signup", data)
+		return
+	}
 
 	uniqueUsername, uniqueEmail, err := isUsernameOrEmailUnique(username, email)
 	if err != nil {
@@ -75,7 +80,7 @@ func handleSignUpPost(w http.ResponseWriter, r *http.Request, data *PageDetails)
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r, "/login", http.StatusFound)
 }
 
 // hashPassword hashes the user's password using bcrypt

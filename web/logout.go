@@ -29,5 +29,5 @@ func Logout(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	data.LoggedIn = false
 
-	http.Redirect(w, r, "/login", http.StatusFound)
+	http.Redirect(w, r, "/", http.StatusFound)
 }
