@@ -21,7 +21,7 @@ func Logout(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
 		Value:    "",
-		Expires:  time.Now(),
+		Expires:  time.Now().Add(-1 * time.Hour),
 		HttpOnly: true,
 		Path:     "/",
 	})
