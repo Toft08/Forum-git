@@ -20,7 +20,7 @@ func SignUp(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	case http.MethodPost:
 		handleSignUpPost(w, r, data)
 	default:
-		ErrorHandler(w, "Invalid request method", http.StatusNotFound)
+		ErrorHandler(w, "Method Not Allowed", http.StatusNotFound)
 	}
 }
 

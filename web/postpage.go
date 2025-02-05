@@ -71,7 +71,7 @@ func HandlePostPagePost(w http.ResponseWriter, r *http.Request, data *PageDetail
 				postID, content, userID, time.Now().Format("2006-01-02 15:04:05"))
 			if err != nil {
 				log.Println("Error creating post:", err)
-				ErrorHandler(w, "errorInCreatePost", http.StatusNotFound)
+				ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 		} else {
