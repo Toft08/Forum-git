@@ -360,6 +360,13 @@ header {
     font-size: 15px;
 }
 
+.container-post {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
 /*------ Filtering ------*/
 
 .filter {
@@ -393,11 +400,6 @@ header {
 .filter-button {
     font-size: 14px;
     margin-top: 10px;
-}
-
-/* Hide the 'General' category (index 0) */
-.hidden-category {
-    display: none;
 }
 
 /* When the filter is shown */
@@ -525,6 +527,11 @@ input[type="text"], input[type="password"] {
 /* Hover effect */
 .category-label:hover {
     background-color: #C9DED1;
+}
+
+/* Hide the 'General' category (index 0) */
+.hidden-category {
+    display: none;
 }
 
 /*------ Footer ------*/
