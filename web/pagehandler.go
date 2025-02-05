@@ -2,7 +2,6 @@ package web
 
 import (
 	"database/sql"
-	"forum/database"
 	"html/template"
 	"log"
 	"net/http"
@@ -14,12 +13,11 @@ var db *sql.DB
 var tmpl = template.Must(template.ParseGlob("templates/*.html"))
 
 // PageDetails contains the data to be passed to the HTML templates
-func PageHandler(w http.ResponseWriter, r *http.Request) {
+func PageHandler(w http.ResponseWriter, r *http.Request, database *sql.DB) {
 
 	data := PageDetails{}
 
-	db = database.InitDB()
-	defer db.Close()
+	db = database
 
 	// Retrieve categories from the database
 	var err error
