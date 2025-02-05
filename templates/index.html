@@ -5,77 +5,81 @@
         <header>
             <h1>grit:garden</h1>
         </header>
-    <main>
-        <!-- Button to toggle filter visibility -->
-        <button onclick="toggleFilter()" class="show-filter-button">Show Filters</button>
+        <main>
+            <!-- Button to toggle filter visibility -->
+            <button onclick="toggleFilter()" class="show-filter-button">Show Filters</button>
 
-        <!-- Filter Form (hidden by default) -->
-        <form class="filter" method="POST" action="/">
-            <div class="filter-group">
-                <!-- Topic Filter -->
-                <label for="topicFilter" class="filter-label">Filter by Category:</label>
-                <select id="topicFilter" name="topic" class="filter-select">
-                    <option value="">-</option>
-                    {{ range $index, $category := .Categories }}
-                    <option value="{{ $category.CategoryID }}">{{ $category.CategoryName }}</option>
-                    {{ end }}
-                </select>
-                
-                <!-- Only show "Created by Me" if the user is logged in -->
-                {{if .LoggedIn}}
-                    <span class="or">or</span>
-                    <label for="postFilter" class="filter-label">Filter by Action:</label>
-                    <select id="postFilter" name="filter" class="filter-select">
+            <!-- Filter Form (hidden by default) -->
+            <form class="filter" method="POST" action="/">
+                <div class="filter-group">
+                    <!-- Topic Filter -->
+                    <label for="topicFilter" class="filter-label">Filter by Category:</label>
+                    <select id="topicFilter" name="topic" class="filter-select">
                         <option value="">-</option>
-                        <option value="createdByMe">Created by Me</option>
-                        <option value="likedByMe">Liked by Me</option>
-                        <option value="dislikedByMe">Disliked by Me</option>
+                        {{ range $index, $category := .Categories }}
+                        <option value="{{ $category.CategoryID }}">{{ $category.CategoryName }}</option>
+                        {{ end }}
                     </select>
+                    
+                    <!-- Only show "Created by Me" if the user is logged in -->
+                    {{if .LoggedIn}}
+                        <span class="or">or</span>
+                        <label for="postFilter" class="filter-label">Filter by Action:</label>
+                        <select id="postFilter" name="filter" class="filter-select">
+                            <option value="">-</option>
+                            <option value="createdByMe">Created by Me</option>
+                            <option value="likedByMe">Liked by Me</option>
+                            <option value="dislikedByMe">Disliked by Me</option>
+                        </select>
+                    {{end}}
+                </div>
+                <button type="submit" class="filter-button">Apply Filters</button>
+            </form>
+
+            <!-- Latest Posts Header with Create Post link -->
+            <div class="latest-posts-header">
+                <h2>Latest Posts</h2>
+                {{if .LoggedIn}}
+                <a class="create-post" href="/create-post">Create Post</a>
+                {{else}}
+                <p>Log in to create post.</p>
                 {{end}}
             </div>
-            <button type="submit" class="filter-button">Apply Filters</button>
-        </form>
 
-        <!-- Latest Posts Header with Create Post link -->
-        <div class="latest-posts-header">
-            <h2>Latest Posts</h2>
-            <a class="create-post" href="/create-post">Create Post</a>
-        </div>
-
-        {{range .Posts}}
-        <div class="post">
-            <h3><a href="/post/{{.PostID}}">{{.PostTitle}}</a></h3>
-            <div class="category-container">
-          
-                {{range $index, $category := .Categories}}
-                <p class="category-tags">
-                    {{if $index}} {{end}}{{$category}}
-                {{end}}
-           </p>
+            {{range .Posts}}
+            <div class="post">
+                <h3><a href="/post/{{.PostID}}">{{.PostTitle}}</a></h3>
+                <div class="category-container">
+            
+                    {{range $index, $category := .Categories}}
+                    <p class="category-tags">
+                    {{if $index}} {{end}}{{$category}} {{end}}
+                    </p>
+                </div>
+                <div class="post-info-home">
+                    <span class="material-symbols-outlined" style="font-size: 24px;">filter_vintage</span>
+                    <span class="username">{{.Username}}</span>
+                </div>
+                <p class="post-content">{{.PostContent}}</p>
+                <div class="icons-container">
+                    <span class="comment-icon"><span class="material-symbols-outlined">chat</span>{{len .Comments}}</span>
+                    <div class="reaction-buttons">
+                        <span class="material-symbols-outlined">thumb_up</span>
+                        <span class="reaction-count">{{.Likes}}</span>
+                        <span class="material-symbols-outlined">thumb_down</span>
+                        <span class="reaction-count">{{.Dislikes}}</span>
+                    </div>
+                </div>
             </div>
-            <div class="post-info-home">
-                <span class="material-symbols-outlined" style="font-size: 24px;">filter_vintage</span>
-                <span class="username">{{.Username}}</span>
-            </div>
-            <p class="post-content">{{.PostContent}}</p>
-            <div class="container-post-home">
-            <span class="comment-icon"><span class="material-symbols-outlined">chat</span>{{len .Comments}}</span>
-            <div class="reaction-buttons">
-                <span class="material-symbols-outlined">thumb_up</span>
-                <span class="reaction-count">{{.Likes}}</span>
-                <span class="material-symbols-outlined">thumb_down</span>
-                <span class="reaction-count">{{.Dislikes}}</span>
-            </div>
-        </div>
-        </div>
-    {{else}}
-        <p>No posts...</p>
-        {{end}}
-    </main>
-</div>
+            {{else}}
+            <p>No posts...</p>
+            {{end}}
+        </main>
+    </div>
 {{template "footer"}}
 </body>
 <script>
+    // function to toggle filter visibility
     function toggleFilter() {
         var filter = document.querySelector('.filter');
         var button = document.querySelector('.show-filter-button');
@@ -85,17 +89,19 @@
             setTimeout(() => {
                 filter.classList.remove('show');
                 filter.style.display = 'none';
-            }, 300); // Matches transition
+            }, 300); // Transition duration
             button.textContent = 'Show Filters';
         } else {
-            filter.style.display = 'flex';  // Change to 'flex' to maintain layout
+            filter.style.display = 'flex';  // Display as flex
             setTimeout(() => {
                 filter.classList.add('show');
                 filter.style.opacity = '1';
-            }, 10); // Ensures transition works
+            }, 10); // Ensure display is set before transitioning
             button.textContent = 'Hide Filters';
         }
     }
+
+    // To ensure only one filter is selected at a time
     document.addEventListener("DOMContentLoaded", function() {
         var topicFilter = document.getElementById("topicFilter");
         var postFilter = document.getElementById("postFilter");

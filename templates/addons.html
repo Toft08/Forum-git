@@ -11,36 +11,24 @@
 {{end}}
 
 {{define "navBar"}}
-  <nav class="nav">
+    <nav class="nav">
         <div class="nav-left">
             <a href="/"><span class="material-symbols-outlined" style="font-size: 40px">home</span></a>
         </div>
         <div class="nav-right">
             {{if .LoggedIn}}
-            <p class="welcome-text">Logged in as: <strong>{{.Username}}</strong></p>
-            <form action="/logout" method="POST">
-            <button type="submit" class="logout-button">Log Out</button>
-            </form>
+                <p class="welcome-text">Logged in as: <strong>{{.Username}}</strong></p>
+                <form action="/logout" method="POST">
+                <button type="submit" class="logout-button">Log Out</button>
+                </form>
             {{else}}
-            <button class="signup-button" onclick="window.location.href='/signup';">Sign Up</button>
-            <button class="login-button" onclick="window.location.href='/login';">Log In</button>
+                <button class="signup-button" onclick="window.location.href='/signup';">Sign Up</button>
+                <button class="login-button" onclick="window.location.href='/login';">Log In</button>
             {{end}}
-        
         </div>
     </nav>
 {{end}}
 
-{{define "posts"}}
-{{range .Posts}}
-<div class="post">
-    <h3><a href="/post/{{.PostID}}">{{.PostTitle}}</a></h3> 
-    <p>{{.PostContent}}</p>
-</div>
-    {{else}}
-    <p>No posts yet. Be the first to create one!</p>
-    {{end}}
-<a href="/create-post">Create Post</a>
-{{end}}
 {{define "footer"}}
 <footer>
     <p>&copy; 2025 grit:garden. All rights reserved.</p>

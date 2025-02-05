@@ -2,35 +2,39 @@
 <body>
     {{template "navBar" .}}
     <div class="wrapper">
-    {{if .LoggedIn}}
-    <div class="container">
-        <form action="/create-post" method="POST">
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title" required>
-            <br>
-            <label for="content">Content:</label>
-            <textarea class="content-textarea" id="content" name="content" required></textarea>
-            <br>
-            <label>Select Topics:</label>
-            <div class="category-container">
-                {{ range $index, $category := .Categories }}
-                <label class="category-label {{ if eq $index 0 }}hidden-category{{ end }}">
-                    <input type="checkbox" name="category" value="{{ $category.CategoryID }}">
-                    {{ $category.CategoryName }}
-                </label>
-                {{ end }}
-            </div>
-            <br>
-            <button type="submit">Submit Post</button>
-        </form>
-    {{else}}
-    <p>You must be logged in to create a post.</p>
-    {{end}}
-    </div>
+        {{if .LoggedIn}}
+        <div class="container">
+            <form action="/create-post" method="POST">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required maxlength="50">
+                <br>
+
+                <label for="content">Content:</label>
+                <textarea class="content-textarea" id="content" name="content" required></textarea>
+                <br>
+
+                <label>Select Topics:</label>
+                <div class="category-container">
+                    {{ range $index, $category := .Categories }}
+                    <label class="category-label {{ if eq $index 0 }}hidden-category{{ end }}">
+                        <input type="checkbox" name="category" value="{{ $category.CategoryID }}">
+                        {{ $category.CategoryName }}
+                    </label>
+                    {{ end }}
+                </div>
+                <br>
+
+                <button type="submit">Submit Post</button>
+            </form>
+        {{else}}
+            <p>You must be logged in to create a post.</p>
+        {{end}}
+        </div>
     </div>
 </body>
 {{template "footer"}}
 <script>
+    // Auto-resize textarea
     const textarea = document.getElementById("content");
 
     textarea.addEventListener("input", function () {
@@ -44,7 +48,7 @@
             this.style.overflowY = "hidden"; // Hide scrollbar when below max height
         }
 
-        this.style.height = newHeight + "px"; // Apply height
+        this.style.height = newHeight + "px"; // Apply height to textarea
     });
 </script>
 </html>
