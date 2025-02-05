@@ -17,12 +17,14 @@ func PostHandler(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	if err != nil {
 		log.Println("Error converting postID to int:", err)
 		ErrorHandler(w, "Page Not Found", http.StatusNotFound)
+		return
 	}
 
 	valid := ValidatePostID(postID)
 	if !valid {
 		log.Println("Invalid postID")
 		ErrorHandler(w, "Page Not Found", http.StatusNotFound)
+		return
 	}
 
 	switch r.Method {

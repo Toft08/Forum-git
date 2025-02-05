@@ -42,7 +42,6 @@ func HandleHomeGet(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 
 	for rows.Next() {
 		var id int
-		//var title, content, username string
 		if err := rows.Scan(&id); err != nil {
 			ErrorHandler(w, "Internal Server Error", http.StatusInternalServerError)
 			return
@@ -84,7 +83,6 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 			return
 		} else if data.SelectedCategory != "" && data.SelectedFilter == "" {
 			categoryID, err = HandleCategory(selectedCat)
-			// categoryID, err = strconv.Atoi(data.SelectedCategory)
 			if err != nil {
 				log.Println("Error handling category", err)
 				ErrorHandler(w, "Bad request", http.StatusBadRequest)
@@ -141,6 +139,7 @@ func HandleHomePost(w http.ResponseWriter, r *http.Request, data *PageDetails) {
 	RenderTemplate(w, "index", data)
 }
 
+// HandleCategory converts the category ID into a string and returns validated ID
 func HandleCategory(category string) (int, error) {
 
 	categoryID, err := strconv.Atoi(category)
